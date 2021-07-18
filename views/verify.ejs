@@ -4,10 +4,25 @@
   </head>
   <body>
     <div>
-      <span style="font-weight: bold;">Hi <%= fullName %>, Congratulations!</span><br>
+      <span style="font-weight: bold">Hi <%= fullName %></span><br />
+      <span>Congratulations!</span>
       <span>You have successfully created your account.</span>
-      <span>Complete account sign up by clicking on the link:<br/> <%= verificationLink %> <br>Thank you!</span>
+      <span>
+        Complete account sign up by clicking on the link:
+        <br />
+        <%= verificationLink %>
+        <br />cheers!</span
+      >
     </div>
     twizll team
   </body>
 </html>
+<!-- export default (requiredRole) => {
+  return (req, res, next) => {
+    if(req.currentUser.role === requiredRole) {
+      return next();
+    } else {
+      return res.status(401).send('Action not allowed');
+    }
+  }
+} -->

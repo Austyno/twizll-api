@@ -2,6 +2,7 @@ const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv')
 const mongoSanitize = require('express-mongo-sanitize')
+const cookieParser = require('cookie-parser')
 const helmet = require('helmet')
 const xss = require('xss-clean')
 const hpp = require('hpp')
@@ -13,10 +14,11 @@ const app = express()
 dotenv.config({ path: './config/config.env' })
 connectToDb()
 
-app.use(express.json());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static(path.join(__dirname, './views/static')))
 
-app.set('view engine','ejs')
-
+app.set('view engine', 'ejs')
 
 //enable cors
 app.use(cors())
@@ -32,30 +34,27 @@ app.use(xss())
 
 // Prevent http param pollution
 app.use(hpp())
+app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
-
-
-
-
 
 app.use(Errors)
 
 const PORT = process.env.PORT || 5000
 const server = app.listen(
-	PORT,
-	console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  PORT,
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 )
 process.on('uncaughtException', err => {
-	console.log('UNCAUGHT EXCEPTION! 🙄 Shutting down...')
-	console.error(err.name, err.message)
-	process.exit(1)
+  console.log('UNCAUGHT EXCEPTION! 🙄 Shutting down...')
+  console.error(err.name, err.message)
+  process.exit(1)
 })
 
 process.on('unhandledRejection', err => {
-	console.error(err.name, err.message)
-	console.log('UNHANDLED REJECTION! 😞 Shutting down Server...')
-	server.close(() => {
-		process.exit(1)
-	})
+  console.error(err.name, err.message)
+  console.log('UNHANDLED REJECTION! 😞 Shutting down Server...')
+  server.close(() => {
+    process.exit(1)
+  })
 })

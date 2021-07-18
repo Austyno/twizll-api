@@ -1,34 +1,43 @@
 const User = require('../../models/userModel')
 const Error = require('../../utils/errorResponse')
 const generateToken = require('../../utils/generateToken')
+const bcrypt = require('bcryptjs')
+const createAuthToken = require('../../utils/createAuthToken')
 
 
-const login = async (req,res,next) => {
-  const {email, password} = req.body
+const login = async (req, res, next) => {
+  const { email, password } = req.body
 
-  const user = await User.findOne({email})
-  
-    if(!user){
-      return next(new Error('your credentials are incorrect', 400))
-    }
+  const user = await User.findOne({ email }).select('+password')
 
-    if(!(user.isValidPassword(password,user.password))){
-       return next(new Error('your credentials are incorrect', 400))
-    }
+  if (!user) {
+    return next(new Error('incorrect credentials', 400))
+  }
+  const verifyPass = bcrypt.compareSync(password, user.password)
 
-    try{
-      const token  = generateToken(user._id)
+  if (!verifyPass) {
+    return next(new Error('incorrect credentials', 400))
+  }
 
-      res.status(200).json({
-        status:'success',
-        message:'user logged in successfully',
-        data:user,
-        token
-      })
+  try {
+    const loggedInUser = await User.findOne({ email })
+    const token = generateToken(loggedInUser._id)
 
-    }catch(e){
-      return next(new Error(e.message,500))
-    }
+    // res.status(200).json({
+    //   status: 'success',
+    //   message: 'user logged in successfully',
+    //   data: loggedInUser,
+    //   token,
+    // })
+    return createAuthToken(
+      loggedInUser,
+      'user logged in successfully',
+      200,
+      res
+    )
+  } catch (e) {
+    return next(new Error(e.message, 500))
+  }
 }
 
 module.exports = login

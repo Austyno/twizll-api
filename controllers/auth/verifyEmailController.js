@@ -3,6 +3,7 @@ const Error = require('../../utils/errorResponse')
 
 //TODO:create beautifull ejs pages for error and thank you pages
 
+//this verifys email when a user clicks on the email verification link in email
 const verifyEmail = async (req,res,next) => {
   const {code} = req.params
 
