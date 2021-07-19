@@ -1,8 +1,12 @@
 const { model, Schema } = require('mongoose')
-const ProductReview = require('./cardModel')
 
 const productSchema = new Schema(
   {
+    owner: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'Please provide the id of the seller of this product'],
+      ref: 'User',
+    },
     name: {
       required: [true, 'Product name not provided'],
       type: String,
@@ -13,7 +17,7 @@ const productSchema = new Schema(
       type: Schema.Types.Decimal128,
     },
     photos: [String],
-    briefDescription: String,
+    briefDesc: String,
     description: {
       required: [true, 'Product description not provided'],
       type: String,
@@ -22,12 +26,20 @@ const productSchema = new Schema(
       required: [true, 'Product mainPhoto not provided'],
       type: String,
     },
+    numberSold: {
+      type: Number,
+      default: 0,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
     totalNoOfUnits: {
       required: [true, 'Product total Number Of Units not provided'],
       type: Number,
     },
-    attributes:{
-      type:Array
+    attributes: {
+      type: Array,
     },
     availableUnits: Number,
     categoryID: {
@@ -71,6 +83,5 @@ productSchema.methods.calculateAverageRating = async function (defaultRating) {
     await this.save()
   }
 }
-
 
 module.exports = model('Product', productSchema)

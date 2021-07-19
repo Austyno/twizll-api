@@ -1,6 +1,7 @@
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const { Schema, model } = require('mongoose')
+const mongoose = require('mongoose')
 
 const userSchema = new Schema(
   {
@@ -18,6 +19,22 @@ const userSchema = new Schema(
     appleUserId: {
       type: String,
     },
+    storeVisits: {
+      type: Number,
+      default: 0,
+    },
+    totalSales: {
+      type: Number,
+      default: 0,
+    },
+    totalOrders: {
+      type: Number,
+      default: 0,
+    },
+    totalReturns:{
+      type:Number,
+      default:0
+    },
     email: {
       type: String,
       trim: true,
@@ -32,8 +49,8 @@ const userSchema = new Schema(
       validate: [validator.isMobilePhone, 'please enter a valid mobile phone'],
     },
     photo: {
-      default: '',
       type: String,
+      default: '',
     },
     password: {
       type: String,
@@ -83,19 +100,4 @@ userSchema.methods.isValidPassword = async function (
   return await bcrypt.compare(userEnteredPassword, userSavedPassword)
 }
 
-/*
- ** REMOVE SOME ATTRIBUTES ON THE OUTPUT OF USER's OBJECT
- */
-userSchema.methods.toJSON = function () {
-  const userObject = this.toObject()
-  delete userObject.password
-  delete userObject.active
-  delete userObject.emailVerificationCode
-  delete userObject.emailCodeTimeExpiry
-  delete userObject.passwordResetToken
-  delete userObject.passwordResetExpires
-  delete userObject.__v
-  return userObject
-}
-
-module.exports = model('User', userSchema)
+module.exports = mongoose.models.User || model('User', userSchema)

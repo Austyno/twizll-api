@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const Error = require('../../utils/errorResponse')
 const generateToken = require('../../utils/generateToken')
 const sendMail = require('../../utils/sendMail')
+const createAuthToken = require('../../utils/createAuthToken')
 
 const signUp = async (req, res, next) => {
   const { email, phone, password, fullName } = req.body

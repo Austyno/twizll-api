@@ -4,6 +4,7 @@ const signUp = require('../controllers/auth/signUpController')
 const verifyEmail = require('../controllers/auth/verifyEmailController')
 const login = require('../controllers/auth/loginController')
 const forgotPassword = require('../controllers/auth/forgotPasswordController')
+const logOut = require('../controllers/auth/logOutController')
 const {
   resetPassWordForm,
   resetPassword,
@@ -25,5 +26,7 @@ router
 router.route('/google').get(googleAuth)
 router.route('/me').get(userInfo)
 router.route('/test').get(showLogin)
+
+router.route('/logout').post(logOut)
 
 module.exports = router

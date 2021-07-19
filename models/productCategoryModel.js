@@ -7,7 +7,7 @@ const productCategorySchema = new Schema(
       type: String,
       unique: true,
     },
-    briefDetails: String,
+    briefDesc: String,
     mainPhoto: String,
   },
   {
