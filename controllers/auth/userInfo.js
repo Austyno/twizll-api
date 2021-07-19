@@ -26,15 +26,14 @@ const userInfo = async (req, res, next) => {
       throw new Error('We could not find a user with this credentilas')
     }
 
-    userFromDb.photo =
-      userFromDb.photo === ''
-        ? (userFromDb.photo = userData.picture)
-        : userFromDb.photo
-
-    if (userFromDb.emailVerified === false){
-      userFromDb.emailVerified = true
-    } 
+    if (userFromDb.photo === '') {
+      userFromDb.photo = userData.picture
+    }
     
+    if (userFromDb.emailVerified === false) {
+      userFromDb.emailVerified = true
+    }
+
     await userFromDb.save()
 
     console.log(userData.data)

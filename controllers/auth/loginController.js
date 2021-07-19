@@ -22,13 +22,7 @@ const login = async (req, res, next) => {
   try {
     const loggedInUser = await User.findOne({ email })
     const token = generateToken(loggedInUser._id)
-
-    // res.status(200).json({
-    //   status: 'success',
-    //   message: 'user logged in successfully',
-    //   data: loggedInUser,
-    //   token,
-    // })
+    
     return createAuthToken(
       loggedInUser,
       'user logged in successfully',
