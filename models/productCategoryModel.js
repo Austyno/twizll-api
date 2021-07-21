@@ -17,5 +17,4 @@ const productCategorySchema = new Schema(
 
 productCategorySchema.index({ name: 1, briefDetails: 1 })
 
-
-module.exports = model('ProductCategory', productCategorySchema)
+module.exports = model('Category', productCategorySchema)

@@ -30,6 +30,7 @@ const signUp = async (req, res, next) => {
 
     await user.save()
 
+    //send verification mail
     await sendMail.withTemplate(
       { verificationLink, fullName: user.fullName },
       user.email,

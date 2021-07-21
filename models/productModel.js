@@ -2,10 +2,15 @@ const { model, Schema } = require('mongoose')
 
 const productSchema = new Schema(
   {
-    owner: {
+    store: {
       type: Schema.Types.ObjectId,
       required: [true, 'Please provide the id of the seller of this product'],
-      ref: 'User',
+      ref: 'Store',
+    },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
     },
     name: {
       required: [true, 'Product name not provided'],
@@ -42,11 +47,7 @@ const productSchema = new Schema(
       type: Array,
     },
     availableUnits: Number,
-    categoryID: {
-      type: Schema.Types.ObjectId,
-      ref: 'ProductCategory',
-      required: true,
-    },
+
     ratingAvg: {
       type: Number,
       default: 0,

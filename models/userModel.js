@@ -19,22 +19,6 @@ const userSchema = new Schema(
     appleUserId: {
       type: String,
     },
-    storeVisits: {
-      type: Number,
-      default: 0,
-    },
-    totalSales: {
-      type: Number,
-      default: 0,
-    },
-    totalOrders: {
-      type: Number,
-      default: 0,
-    },
-    totalReturns:{
-      type:Number,
-      default:0
-    },
     email: {
       type: String,
       trim: true,
@@ -73,16 +57,17 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    docsVerified: {
-      type: Boolean,
-      default: false,
-    },
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
   },
-  { timestamps: true }
+
+  { toJSON: { virtuals: true } }
 )
 
 userSchema.pre('save', async function (next) {
@@ -99,5 +84,12 @@ userSchema.methods.isValidPassword = async function (
 ) {
   return await bcrypt.compare(userEnteredPassword, userSavedPassword)
 }
+
+userSchema.virtual('stores', {
+  ref: 'Store',
+  localField: '_id',
+  foreignField: 'owner',
+  justOne: false,
+})
 
 module.exports = mongoose.models.User || model('User', userSchema)

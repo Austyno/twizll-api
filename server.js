@@ -22,8 +22,8 @@ app.set('view engine', 'ejs')
 
 //enable cors
 app.use(cors())
-const authRoutes = require('./routes/authRoutes')
-const sellerProductRoutes = require('./routes/sellerProductRoutes')
+const authRoutes = require('./routes/auth/authRoutes')
+const sellerRoutes = require('./routes/seller/sellerRoutes')
 
 app.use(mongoSanitize())
 
@@ -39,7 +39,7 @@ app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
 
-app.use('/api/seller', sellerProductRoutes)
+app.use('/api/seller', sellerRoutes)
 
 app.use(Errors)
 
