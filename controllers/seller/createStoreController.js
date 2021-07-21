@@ -25,6 +25,7 @@ const createStore = async(req,res,next) => {
     })
 
   }catch(e){
+    return next(new Error(e.message, 500))
 
   }
 
