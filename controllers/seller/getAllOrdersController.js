@@ -1,8 +1,7 @@
-const Product = require('../../models/productModel')
+const Order = require('../../models/orderModel')
 const Error = require('../../utils/errorResponse')
-const Store = require('../../models/storeModel')
 
-const bestSelling = async (req, res, next) => {
+const allOrders = async (req, res, next) => {
   const seller = req.user
   const sellerStore = req.store
 
@@ -14,20 +13,19 @@ const bestSelling = async (req, res, next) => {
   }
 
   try {
-    const bestSellingProducts = await Product.find({ store: sellerStore._id })
-      .sort({
-        numberSold: -1,
-      })
-      .limit(10)
+    //get orders by store
+    const orders = await Order.find({
+      $and: [{ store: sellerStore.id }, { orderStatus: 'new' }],
+    }).populate('buyer', 'fullName address email phone')
 
     res.status(200).json({
       status: 'success',
-      message: 'Your products',
-      data: bestSellingProducts,
+      message: 'These are all your new/unprocessed orders',
+      data: orders,
     })
   } catch (e) {
     return next(new Error(e.message, 500))
   }
 }
 
-module.exports = bestSelling
+module.exports = allOrders

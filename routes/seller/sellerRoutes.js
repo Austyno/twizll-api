@@ -13,6 +13,8 @@ const editProduct = require('../../controllers/seller/editProductController')
 const updateProduct = require('../../controllers/seller/updateProductController')
 const deleteProduct = require('../../controllers/seller/deleteProductController')
 const getAllCategory = require('../../controllers/seller/getAllCategoryController')
+const allOrders = require('../../controllers/seller/getAllOrdersController')
+const order = require('../../controllers/seller/getOrderByTrackingIdController')
 
 router
   .route('/products/:catId')
@@ -30,6 +32,8 @@ router.route('/inventory').get(authenticated, authRole('seller'), inventory)
 router.route('/new-store').post(authenticated, authRole('seller'), createStore)
 router.route('/new-product').post(authenticated, authRole('seller'), addProduct)
 router.route('/category').get(authenticated, authRole('seller'), getAllCategory)
+router.route('/orders').get(authenticated, authRole('seller'), allOrders)
+router.route('/order/:trackingId').get(authenticated, authRole('seller'), order)
 // router
 //   .route('/create-order')
 //   .post(authenticated, authRole('seller'), async (req, res) => {

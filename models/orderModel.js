@@ -2,7 +2,7 @@ const { model, Schema } = require('mongoose')
 
 const OrderSchema = new Schema(
   {
-    storeId: {
+    store: {
       type: Schema.Types.ObjectId,
       ref: 'Store',
       required: [true, 'Please provide the store this order belongs to'],
@@ -10,7 +10,7 @@ const OrderSchema = new Schema(
     trackingId: {
       type: String,
     },
-    buyerId: {
+    buyer: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'the buyer id is required'],
@@ -21,22 +21,23 @@ const OrderSchema = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['delivered', 'processing', 'shipped', 'arrived', 'completed'],
-      default:'processing'
+      enum: ['processing', 'shipped', 'arrived', 'delivered', 'completed'],
+      default: 'new',
     },
     orderItems: {
       type: Array,
       required: true,
     },
-    deliveryType:{
-      type:String,
-      enum:['express','regular']
-    }
+    deliveryType: {
+      type: String,
+      enum: ['express', 'regular'],
+    },
   },
   { timestamps: true }
 )
+OrderSchema.index({ trackingId: 1, orderStatus: 1, buyer: 1, store: 1 })
 
-OrderSchema.pre('save',function(){
+OrderSchema.pre('save', function () {
   this.trackingId = this._id
 })
 
