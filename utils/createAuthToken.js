@@ -6,7 +6,7 @@ const createAuthTokenAndSend = (user, message, statusCode, res) => {
   const cookieOptions = {
     expires: new Date(
       // Convert expires time to miliseconds
-      Date.now() + process.env.JWT_EXPIRE * 24 * 60 * 60 * 1000
+      Date.now() + 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
   }
@@ -17,10 +17,8 @@ const createAuthTokenAndSend = (user, message, statusCode, res) => {
 
   res.status(statusCode).json({
     status: 'success',
-    code: res.statusCode,
     message,
     data: user,
-    token,
   })
 }
 

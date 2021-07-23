@@ -26,7 +26,7 @@ const productSchema = new Schema({
   },
   weight: {
     type: Number,
-    required: [true, 'please tell us what is the weight of this item'],
+    required: [true, 'please tell us the weight of this item'],
   },
   brand: {
     type: String,
@@ -61,7 +61,7 @@ const productSchema = new Schema({
   availableUnits: {
     type: Number,
   },
-  source: {
+  sourceOfMaterial: {
     type: String,
   },
   ratingAvg: {
@@ -72,11 +72,11 @@ const productSchema = new Schema({
   },
 })
 
-productSchema.index({ name: 1, mainPhoto: 1, unitPrice: 1 })
-productSchema.index({ name: 1, category: 1 })
+// productSchema.index({ name: 1, mainPhoto: 1, unitPrice: 1 })
+// productSchema.index({ name: 1, category: 1 })
 
-productSchema.set('toObject', { virtuals: true })
-productSchema.set('toJSON', { virtuals: true })
+// productSchema.set('toObject', { virtuals: true })
+// productSchema.set('toJSON', { virtuals: true })
 
 productSchema.methods.calculateAverageRating = async function (defaultRating) {
   let productReviewsAvg = await ProductReview.db

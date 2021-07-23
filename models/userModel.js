@@ -47,10 +47,13 @@ const userSchema = new Schema(
       },
       select: false,
     },
+    address: {
+      type: String,
+    },
     role: {
       type: String,
       lowercase: true,
-      enum: ['user', 'admin', 'seller', 'stylist'],
+      enum: ['buyer', 'admin', 'seller', 'stylist'],
       default: 'user',
     },
     emailVerified: {

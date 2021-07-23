@@ -11,7 +11,7 @@ const mostViewed = async (req,res,next) => {
     return next(new Error('You need to sign in to view this page', 401))
   }
   if(!sellerStore){
-    return next(new Error('You need to sign in to view this page', 401))
+    return next(new Error('Only store owners can perform this action', 403))
   }
 
   try {

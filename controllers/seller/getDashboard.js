@@ -11,6 +11,9 @@ const dashboardProducts = async(req,res,next) => {
   if(!seller){
     return next(new Error('You need to sign in to view this page',401))
   }
+  if (!sellerStore) {
+    return next(new Error('Only store owners can perform this action', 403))
+  }
 
   try{
     const products = await Product.find({ store: sellerStore._id })

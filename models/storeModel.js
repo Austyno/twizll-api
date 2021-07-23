@@ -12,7 +12,10 @@ const StoreSchema = new Schema({
     trim: true,
     required: [true, 'Please tell us your store name!'],
   },
-
+  storeAddress:{
+    type:String,
+    required:[true,'Your store address is required']
+  },
   storeVisits: {
     type: Number,
     default: 0,
