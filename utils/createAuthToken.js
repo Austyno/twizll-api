@@ -4,10 +4,7 @@ const createAuthTokenAndSend = (user, message, statusCode, res) => {
   const token = signJWT(user._id)
 
   const cookieOptions = {
-    expires: new Date(
-      // Convert expires time to miliseconds
-      Date.now() + 24 * 60 * 60 * 1000
-    ),
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     httpOnly: true,
   }
 

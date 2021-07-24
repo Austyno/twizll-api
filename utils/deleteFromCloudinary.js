@@ -10,7 +10,10 @@ const cloudDelete = filename => {
     ssl_detected: true,
   })
 
-  cloudinary.uploader.destroy(filename, result => {
+  cloudinary.uploader.destroy(filename, (err,result) => {
+    if(err){
+      console.log(err)
+    }
     console.log(result)
     return result
   })

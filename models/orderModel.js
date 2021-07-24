@@ -21,9 +21,16 @@ const OrderSchema = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['processing', 'shipped', 'arrived', 'delivered', 'completed'],
+      enum: ['processing', 'shipped', 'delivered', 'completed'],
       default: 'new',
     },
+    shippingAddress: {
+      type: String,
+    },
+    shippedDate: {
+      type: Date,
+    },
+    paymentRef: Object,
     orderItems: {
       type: Array,
       required: true,
