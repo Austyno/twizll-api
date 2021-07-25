@@ -51,13 +51,14 @@ const server = app.listen(
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! 🙄 Shutting down...')
   console.error(err.name, err.message)
-  process.exit(1)
+  // process.exit(1)
 })
 
 process.on('unhandledRejection', err => {
   console.error(err.name, err.message)
   console.log('UNHANDLED REJECTION! 😞 Shutting down Server...')
-  server.close(() => {
-    process.exit(1)
-  })
+    // process.exit(1)
+
+  // server.close(() => {
+  // })
 })

@@ -21,8 +21,8 @@ const OrderSchema = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['processing', 'shipped', 'delivered', 'completed'],
-      default: 'new',
+      enum: ['pending', 'shipped', 'delivered'],
+      default: 'pending',
     },
     shippingAddress: {
       type: String,
@@ -30,10 +30,8 @@ const OrderSchema = new Schema(
     shippedDate: {
       type: Date,
     },
-    paymentRef: Object,
-    orderItems: {
-      type: Array,
-      required: true,
+    paymentRef: {
+      type: String,
     },
     deliveryType: {
       type: String,
@@ -46,6 +44,13 @@ OrderSchema.index({ trackingId: 1, orderStatus: 1, buyer: 1, store: 1 })
 
 OrderSchema.pre('save', function () {
   this.trackingId = this._id
+})
+
+OrderSchema.virtual('orderItems', {
+  ref: 'OrderItem',
+  localField: '_id',
+  foreignField: 'orderId',
+  justOne: false,
 })
 
 module.exports = model('Order', OrderSchema)

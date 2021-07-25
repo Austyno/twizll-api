@@ -26,7 +26,7 @@ const trackOrder = async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'this is the order',
+      message: 'this is your order',
       data: order,
     })
   } catch (e) {

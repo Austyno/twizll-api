@@ -13,11 +13,18 @@ const editProduct = require('../../controllers/seller/editProductController')
 const updateProduct = require('../../controllers/seller/updateProductController')
 const deleteProduct = require('../../controllers/seller/deleteProductController')
 const getAllCategory = require('../../controllers/seller/getAllCategoryController')
-const allOrders = require('../../controllers/seller/getAllOrdersController')
+const allOrders = require('../../controllers/seller/getAllPendingOrdersController')
 const order = require('../../controllers/seller/getOrderByTrackingIdController')
 const updateOrder = require('../../controllers/seller/updateOrderStatusController')
 const completedOrders = require('../../controllers/seller/getCompletedOrdersController')
+const singleOrder = require('../../controllers/seller/getSingleOrderController')
+const addBankDetails = require('../../controllers/seller/addBankDetailsController')
 
+
+router
+  .route('/orders/:orderId')
+  .put(authenticated, authRole('seller'), updateOrder)
+  .get(authenticated, authRole('seller'), singleOrder)
 router
   .route('/products/:catId')
   .get(authenticated, authRole('seller'), getAllProductsByCat)
@@ -41,16 +48,14 @@ router.route('/orders').get(authenticated, authRole('seller'), allOrders)
 router
   .route('/orders/:trackingId')
   .get(authenticated, authRole('seller'), order)
-router
-  .route('/orders/:orderId')
-  .put(authenticated, authRole('seller'), updateOrder)
 
+router.route('/bankdetails').post(authenticated, authRole('seller'), addBankDetails)
 // router
 //   .route('/create-order')
 //   .post(authenticated, authRole('seller'), async (req, res) => {
-//     const Order = require('../../models/orderModel')
+//     const OrderItem = require('../../models/orderItemModel')
 
-//     const order = await Order.create(req.body)
+//     const order = await OrderItem.create(req.body)
 
 //     res.status(201).json({
 //       status: 'success',
