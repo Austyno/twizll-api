@@ -1,33 +1,31 @@
-const { connect } = require('mongoose');
+const { connect } = require('mongoose')
 
 module.exports = async () => {
   return new Promise(async (resolve, reject) => {
     let url
-    if(process.env.NODE_ENV === 'development'){
+    if (process.env.NODE_ENV === 'development') {
       url = process.env.MONGODB_DEV_URL
-    }else{
+    } else {
       url = process.env.MONGODB_URL
     }
 
     try {
-      const connectDB = await connect(url, {
+      const connectDB = await connect(process.env.MONGODB_DEV_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
-      });
+      })
 
       if (!connectDB) {
-        throw new Error('Not connected');
+        throw new Error('Not connected')
       } else {
-        console.log('Connected to DB');
+        console.log('Connected to DB')
       }
 
-      resolve(true);
-    } 
-    
-    catch (error) {
-      console.log(error);
+      resolve(true)
+    } catch (error) {
+      console.log(error)
     }
   })
 }

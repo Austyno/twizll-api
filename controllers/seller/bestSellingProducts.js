@@ -22,7 +22,7 @@ const bestSelling = async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Your products',
+      message: 'Top 10 best selling products retrieved successfully',
       data: bestSellingProducts,
     })
   } catch (e) {

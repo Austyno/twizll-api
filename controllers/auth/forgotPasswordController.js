@@ -3,7 +3,6 @@ const Error = require('../../utils/errorResponse')
 const crypto = require('crypto')
 const sendMail = require('../../utils/sendMail')
 
-
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body
 
@@ -17,7 +16,8 @@ const forgotPassword = async (req, res, next) => {
   const tokenExpiresIn = Date.now() + 60 * 60 * 60 - 1000
 
   const resetLink = `${
-    req.protocol + '://' + req.get('host') + req.originalUrl +'/'+resetToken}`
+    req.protocol + '://' + req.get('host') + req.originalUrl + '/' + resetToken
+  }`
 
   try {
     user.passwordResetToken = resetToken
@@ -32,13 +32,17 @@ const forgotPassword = async (req, res, next) => {
     )
 
     res.status(200).json({
-      status: "success",
-      message: "A reset link has been sent to your email. Please click on the link to reset your password",
-      data: ""
+      status: 'success',
+      message:
+        'A reset link has been sent to your email. Please click on the link to reset your password',
+      data: '',
     })
-
   } catch (e) {
-    return next(new Error(e.message,500))
+    user.passwordResetToken = undefined
+    user.passwordResetExpires = undefined
+
+    await user.save()
+    return next(new Error(e.message, 500))
   }
 }
 module.exports = forgotPassword

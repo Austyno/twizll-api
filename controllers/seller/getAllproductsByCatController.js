@@ -23,11 +23,10 @@ const getAllProductsByCat = async (req, res, next) => {
       $and: [{ store: sellerStore._id }, { category: catId }],
     })
       .populate('store', 'storeName')
-      .populate('category', 'name')
 
     res.status(200).json({
       status: 'success',
-      message: 'These are your products',
+      message: 'Products retrieved successfully',
       data: catProducts,
     })
   } catch (e) {

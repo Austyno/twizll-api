@@ -19,7 +19,8 @@ const updateOrder = require('../../controllers/seller/updateOrderStatusControlle
 const completedOrders = require('../../controllers/seller/getCompletedOrdersController')
 const singleOrder = require('../../controllers/seller/getSingleOrderController')
 const addBankDetails = require('../../controllers/seller/addBankDetailsController')
-
+const uploadDocs = require('../../controllers/seller/uploadVerificationDocsController')
+const profile = require('../../controllers/seller/getSellerProfileController')
 
 router
   .route('/orders/:orderId')
@@ -38,7 +39,9 @@ router
   .route('/orders/completed')
   .get(authenticated, authRole('seller'), completedOrders)
 router.route('/dashboard').get(authenticated, authRole('seller'), dashboard)
-router.route('/mostviewed').get(authenticated, authRole('seller'), mostViewed)
+router
+  .route('/mostviewed/:categoryId?')
+  .get(authenticated, authRole('seller'), mostViewed)
 router.route('/bestselling').get(authenticated, authRole('seller'), bestSelling)
 router.route('/inventory').get(authenticated, authRole('seller'), inventory)
 router.route('/new-store').post(authenticated, authRole('seller'), createStore)
@@ -49,7 +52,11 @@ router
   .route('/orders/:trackingId')
   .get(authenticated, authRole('seller'), order)
 
-router.route('/bankdetails').post(authenticated, authRole('seller'), addBankDetails)
+router
+  .route('/bankdetails')
+  .post(authenticated, authRole('seller'), addBankDetails)
+router.route('/upload').post(authenticated, authRole('seller'), uploadDocs)
+router.route('/profile').get(authenticated, authRole('seller'), profile)
 // router
 //   .route('/create-order')
 //   .post(authenticated, authRole('seller'), async (req, res) => {

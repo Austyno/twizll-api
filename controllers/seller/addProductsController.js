@@ -69,3 +69,4 @@ const uploadedPhotos = []
   }
 
 module.exports = addProduct
+950279

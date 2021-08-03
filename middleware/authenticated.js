@@ -29,10 +29,10 @@ const authenticated = async (req, res, next) => {
 
     req.user = await User.findById(decoded.id)
 
-    if(req.user.role === 'seller'){
-      
+    if (req.user.role === 'seller') {
       //locate user store and add to request object
       req.store = await Store.findOne({ owner: decoded.id })
+
     }
 
     next()

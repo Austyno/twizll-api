@@ -10,10 +10,9 @@ const bankDetailsSchema = new Schema({
     required: [true, 'Bank name not provided'],
     uppercase: true,
   },
-  // bankCode: {
-  //   type: String,
-  //   required: [true, 'Bank code not provided'],
-  // },
+  sortCode: {
+    type: String,
+  },
   accountNumber: {
     type: String,
     required: [true, 'Account number not provided'],

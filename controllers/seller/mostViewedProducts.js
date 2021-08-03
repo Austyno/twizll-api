@@ -1,9 +1,9 @@
 const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
-const Store = require('../../models/storeModel')
 
 
 const mostViewed = async (req,res,next) => {
+  const {category} = req.params
   const seller = req.user,
   sellerStore = req.store
 
@@ -23,7 +23,7 @@ const mostViewed = async (req,res,next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Your products',
+      message: 'Top 10 most viewed products retrieved successfully',
       data: mostViewedProducts,
     })
   } catch (e) {

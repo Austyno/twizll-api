@@ -25,7 +25,7 @@ const dashboardProducts = async(req,res,next) => {
 
       res.status(200).json({
         status: 'success',
-        message: 'Your products',
+        message: 'Best selling and most viewed products retrieved successfully',
         data: { bestSellers, mostViewed },
       })
 
