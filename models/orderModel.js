@@ -40,9 +40,10 @@ const OrderSchema = new Schema(
   },
   { timestamps: true }
 )
-OrderSchema.index({ trackingId: 1, orderStatus: 1, buyer: 1, store: 1 })
+OrderSchema.index({ trackingId: 1, buyer: 1, store: 1 })
 
 OrderSchema.pre('save', function () {
+  //tracking id will be given by shipping company. this is temp for now
   this.trackingId = this._id
 })
 

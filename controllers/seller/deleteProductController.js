@@ -23,14 +23,15 @@ const deleteProduct = async (req, res, next) => {
   }
 
   try {
-    prod.photos.forEach(photo => {
-      const del = deleteFromCloudinary(photo)
-      console.log(del)
-    })
+    if(prod.photos !== null){
+      prod.photos.forEach(photo => {
+        deleteFromCloudinary(photo)
+      })
+    }
 
-    const delmainPhoto = deleteFromCloudinary(prod.mainPhoto)
+  deleteFromCloudinary(prod.mainPhoto)
 
-    const delProd = await Product.findByIdAndDelete(productId)
+    await Product.findByIdAndDelete(productId)
 
     res.status(200).json({
       status: 'success',

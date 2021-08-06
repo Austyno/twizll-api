@@ -41,18 +41,20 @@ const createStore = async (req, res, next) => {
     storeWallet[0].save({ session })
 
     await session.commitTransaction()
+    session.endSession()
+
+    res.status(201).json({
+      status: 'success',
+      message:
+        'Store created successfully. You neeed to verify your store by uploading supporting documents',
+      data: newStore,
+    })
   } catch (e) {
     await session.abortTransaction()
-    return next(new Error(e.message, 500))
-  } finally {
     session.endSession()
-  }
+    return next(new Error(e.message, 500))
+  } 
 
-  res.status(201).json({
-    status: 'success',
-    message:
-      'Store created successfully. You neeed to verify your store by uploading supporting documents',
-    data: newStore,
-  })
+  
 }
 module.exports = createStore

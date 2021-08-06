@@ -12,10 +12,9 @@ const cloudStorage = filename => {
     })
 
     cloudinary.uploader
-      .upload(filename, { use_filename: true, folder: 'twizll' })
+      .upload(filename, { use_filename: true, folder: 'shop', quality: 100 })
       .then(result => {
         resolve(result)
-        console.log(result)
       })
       .catch(error => {
         reject(error)

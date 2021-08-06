@@ -46,7 +46,9 @@ router.route('/bestselling').get(authenticated, authRole('seller'), bestSelling)
 router.route('/inventory').get(authenticated, authRole('seller'), inventory)
 router.route('/new-store').post(authenticated, authRole('seller'), createStore)
 router.route('/new-product').post(authenticated, authRole('seller'), addProduct)
-router.route('/category').get(authenticated, authRole('seller'), getAllCategory)
+router
+  .route('/categories')
+  .get(authenticated, authRole('seller'), getAllCategory)
 router.route('/orders').get(authenticated, authRole('seller'), allOrders)
 router
   .route('/orders/:trackingId')
@@ -57,17 +59,17 @@ router
   .post(authenticated, authRole('seller'), addBankDetails)
 router.route('/upload').post(authenticated, authRole('seller'), uploadDocs)
 router.route('/profile').get(authenticated, authRole('seller'), profile)
-// router
-//   .route('/create-order')
-//   .post(authenticated, authRole('seller'), async (req, res) => {
-//     const OrderItem = require('../../models/orderItemModel')
+router
+  .route('/create-order')
+  .post(authenticated, authRole('seller'), async (req, res) => {
+    const OrderItem = require('../../models/orderItemModel')
 
-//     const order = await OrderItem.create(req.body)
+    const order = await OrderItem.create(req.body)
 
-//     res.status(201).json({
-//       status: 'success',
-//       data: order,
-//     })
-//   })
+    res.status(201).json({
+      status: 'success',
+      data: order,
+    })
+  })
 
 module.exports = router

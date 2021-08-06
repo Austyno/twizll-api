@@ -3,7 +3,6 @@ const Error = require('../utils/errorResponse')
 const User = require('../models/UserModel')
 const Store = require('../models/storeModel')
 
-
 // Protect routes
 const authenticated = async (req, res, next) => {
   let token
@@ -29,10 +28,10 @@ const authenticated = async (req, res, next) => {
 
     req.user = await User.findById(decoded.id)
 
+
     if (req.user.role === 'seller') {
       //locate user store and add to request object
       req.store = await Store.findOne({ owner: decoded.id })
-
     }
 
     next()

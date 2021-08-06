@@ -4,7 +4,6 @@ const generateToken = require('../../utils/generateToken')
 const bcrypt = require('bcryptjs')
 const createAuthToken = require('../../utils/createAuthToken')
 
-
 const login = async (req, res, next) => {
   const { email, password } = req.body
 
@@ -21,8 +20,10 @@ const login = async (req, res, next) => {
 
   try {
     const loggedInUser = await User.findOne({ email })
+    loggedInUser.emailCodeTimeExpiry = undefined
+    loggedInUser.emailVerificationCode = undefined
     const token = generateToken(loggedInUser._id)
-    
+
     return createAuthToken(
       loggedInUser,
       'user logged in successfully',

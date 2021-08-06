@@ -19,6 +19,7 @@ const bestSelling = async (req, res, next) => {
         numberSold: -1,
       })
       .limit(10)
+      .populate({ path: 'category', select: 'name briefDesc mainPhoto' })
 
     res.status(200).json({
       status: 'success',

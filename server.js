@@ -9,7 +9,7 @@ const hpp = require('hpp')
 const cors = require('cors')
 const connectToDb = require('./config/db')
 const Errors = require('./middleware/error')
-const fileUpload = require('express-fileupload') 
+const fileUpload = require('express-fileupload')
 const app = express()
 
 dotenv.config({ path: './config/config.env' })
@@ -18,7 +18,7 @@ connectToDb()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, './views/static')))
-app.use(fileUpload())
+app.use(fileUpload({ useTempFiles: true }))
 
 app.set('view engine', 'ejs')
 
@@ -59,7 +59,7 @@ process.on('uncaughtException', err => {
 process.on('unhandledRejection', err => {
   console.error(err.name, err.message)
   console.log('UNHANDLED REJECTION! 😞 Shutting down Server...')
-    // process.exit(1)
+  // process.exit(1)
 
   // server.close(() => {
   // })

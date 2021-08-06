@@ -38,8 +38,6 @@ const uploadDocs = async (req, res, next) => {
 
       const upldPath = path.join(__dirname, '../../upload/')
 
-      // const upld = doc.mv(`${upldPath}/${newName}`)
-
       const docExist = await VerificationDoc.findOne({ store: sellerStore._id })
 
       if (!docExist) {

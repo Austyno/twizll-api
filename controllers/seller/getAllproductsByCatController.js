@@ -13,16 +13,21 @@ const getAllProductsByCat = async (req, res, next) => {
   if (!seller) {
     return next(new Error('You need to sign in', 401))
   }
+
   if (!sellerStore) {
-    return next(new Error('Only store owners can perform this action', 403))
+    return next(
+      new Error(
+        'Only store owners can perform this action. Please create a store and add products',
+        403
+      )
+    )
   }
 
   try {
     //locate all products by the seller store where category id = catId
     const catProducts = await Product.find({
       $and: [{ store: sellerStore._id }, { category: catId }],
-    })
-      .populate('store', 'storeName')
+    }).populate('store', 'storeName')
 
     res.status(200).json({
       status: 'success',
