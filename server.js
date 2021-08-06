@@ -17,7 +17,7 @@ connectToDb()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static(path.join(__dirname, './views/static')))
+app.use(express.static(path.join(__dirname, './public')))
 app.use(fileUpload({ useTempFiles: true }))
 
 app.set('view engine', 'ejs')
@@ -78,7 +78,7 @@ app.use('/api/seller', sellerRoutes)
 app.use(Errors)
 
 const PORT = process.env.PORT || 5000
-const server = app.listen(
+app.listen(
   PORT,
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 )
