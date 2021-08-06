@@ -37,3 +37,4 @@ const addBankDetails = async(req,res,next) => {
   }
 }
 module.exports = addBankDetails
+
