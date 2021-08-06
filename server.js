@@ -23,7 +23,39 @@ app.use(fileUpload({ useTempFiles: true }))
 app.set('view engine', 'ejs')
 
 //enable cors
-app.use(cors())
+app.use(
+  cors({
+    origin: '*',
+    credentials: true,
+  })
+)
+
+app.use(async (req, res, next) => {
+  res.set('Access-Control-Allow-Methods', [
+    'GET',
+    'POST',
+    'PATCH',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+  ])
+  res.set('Access-Control-Allow-Headers', [
+    'Origin',
+    'Content-Type',
+    'X-Auth-Token',
+    'Access-Control-Allow-Headers',
+    'Authorization',
+    'X-Requested-With',
+    'Set-Cookie',
+    'Access-Control-Allow-Credentials',
+  ])
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200)
+  } else {
+    return next()
+  }
+})
 const authRoutes = require('./routes/auth/authRoutes')
 const sellerRoutes = require('./routes/seller/sellerRoutes')
 
