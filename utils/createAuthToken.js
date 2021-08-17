@@ -10,11 +10,12 @@ const createAuthTokenAndSend = (user, message, statusCode, res) => {
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true
 
-  res.cookie('token', token, cookieOptions)
+  // res.cookie('token', token, cookieOptions)
 
   res.status(statusCode).json({
     status: 'success',
     message,
+    token,
     data: user,
   })
 }

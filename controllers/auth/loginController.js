@@ -22,7 +22,6 @@ const login = async (req, res, next) => {
     const loggedInUser = await User.findOne({ email })
     loggedInUser.emailCodeTimeExpiry = undefined
     loggedInUser.emailVerificationCode = undefined
-    const token = generateToken(loggedInUser._id)
 
     return createAuthToken(
       loggedInUser,

@@ -11,9 +11,41 @@ const connectToDb = require('./config/db')
 const Errors = require('./middleware/error')
 const fileUpload = require('express-fileupload')
 const app = express()
+const stripe = require('stripe')
+
+const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
+const webHook = require('./controllers/stripe/webHooksController')
 
 dotenv.config({ path: './config/config.env' })
 connectToDb()
+app.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  webHook
+  // (req, res) => {
+  //   const sig = req.headers['stripe-signature']
+
+  //   let event
+  //   try {
+  //     event = Stripe.webhooks.constructEvent(
+  //       req.body,
+  //       sig,
+  //       process.env.STRIPE_TEST_WEBHOK_SECRET
+  //     )
+  //   } catch (err) {
+  //     // On error, log and return the error message
+  //     console.log(`❌ Error message: ${err.message}`)
+  //     return res.status(400).send(`Webhook Error: ${err.message}`)
+  //   }
+
+  //   // Successfully constructed event
+  //   console.log('✅ Success:', event.id)
+  //   console.log(event.data.object)
+
+  //   // Return a response to acknowledge receipt of the event
+  //   res.json({ received: true })
+  // }
+)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -58,6 +90,7 @@ app.use(async (req, res, next) => {
 })
 const authRoutes = require('./routes/auth/authRoutes')
 const sellerRoutes = require('./routes/seller/sellerRoutes')
+const stripeRoutes = require('./routes/stripe/stripeRoutes')
 
 app.use(mongoSanitize())
 
@@ -74,10 +107,11 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 
 app.use('/api/seller', sellerRoutes)
+app.use('/api/stripe', stripeRoutes)
 
 app.use(Errors)
 
-const PORT = process.env.PORT || 5000
+const PORT = 5000
 app.listen(
   PORT,
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)

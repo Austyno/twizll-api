@@ -10,6 +10,36 @@ const userSchema = new Schema(
       trim: true,
       required: [true, 'Please tell us your first name!'],
     },
+    stripe_customer_id: {
+      type: String,
+      default: '',
+    },
+    free_trial: {
+      status: {
+        type: String,
+        enum: ['active', 'completed'],
+      },
+      end_date: {
+        type: Date,
+      },
+    },
+    plan: {
+      status: {
+        type: String,
+        // enum: ['active', 'expired'],
+      },
+      type: {
+        type: String,
+        // enum: ['monthly', 'yearly', 'none'],
+        default: 'none',
+      },
+      end_date: {
+        type: Date,
+      },
+      start_date:{
+        type:Date
+      }
+    },
     googleUserId: {
       type: String,
     },

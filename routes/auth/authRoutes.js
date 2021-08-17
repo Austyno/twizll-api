@@ -4,11 +4,11 @@ const signUp = require('../../controllers/auth/signUpController')
 const verifyEmail = require('../../controllers/auth/verifyEmailController')
 const login = require('../../controllers/auth/loginController')
 const forgotPassword = require('../../controllers/auth/forgotPasswordController')
-const logOut = require('../../controllers/auth/logOutController')
+const logOut = require('../../controllers/auth/logoutController')
 const {
   resetPassWordForm,
   resetPassword,
-} = require('../../controllers/auth/resetPassWordController')
+} = require('../../controllers/auth/resetPasswordController')
 
 const googleAuth = require('../../controllers/auth/googleLogin')
 const showLogin = require('../../controllers/auth/testGoogle')
