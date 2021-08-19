@@ -23,15 +23,33 @@ const login = async (req, res, next) => {
     loggedInUser.emailCodeTimeExpiry = undefined
     loggedInUser.emailVerificationCode = undefined
 
-    return createAuthToken(
-      loggedInUser,
-      'user logged in successfully',
-      200,
-      res
-    )
+    // if (loggedInUser.free_trial.status === 'active'){
+    //     if(loggedInUser.free_trial.end_date < Date.now){
+    //       return next(new Error('Your free trial period of 30 days has expired',403))
+    //     }
+    // }
+      // get subscription end date from db and comapre to today if today > end date; subscription has expired. deny login
+
+      return createAuthToken(
+        loggedInUser,
+        'user logged in successfully',
+        200,
+        res
+      )
   } catch (e) {
     return next(new Error(e.message, 500))
   }
 }
 
 module.exports = login
+/**
+ * external_account:{
+ * type:bank_account,
+ * country:"USA",
+ * currency: USD,
+ * account_holder_name: Austin Alozie
+ * account_holder_type: individual or company,
+ * routing_number: 12345,
+ * account_number:1234567890
+ * }
+ */

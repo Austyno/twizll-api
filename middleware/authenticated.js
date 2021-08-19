@@ -29,13 +29,22 @@ const authenticated = async (req, res, next) => {
     req.user = await User.findById(decoded.id)
 
     if (req.user.role === 'seller') {
-      //locate user store and add to request object
+      //locate seller store and add to request object
       req.store = await Store.findOne({ owner: decoded.id })
     }
 
     next()
   } catch (e) {
-    return next(new Error(e.message, 401))
+    if (
+      e.name === 'TokenExpiredError' ||
+      e.message === 'jwt malformed' ||
+      e.message === 'jwt must be provided'
+    ) {
+      return next(
+        new Error('Your session has expired. Please log in again.', 403)
+      )
+    }
+    return next(new Error(e.message, 403))
   }
 }
 module.exports = authenticated

@@ -39,11 +39,7 @@ class StripeUtil {
         key = process.env.STRIPE_WEBHOOK_SECRET
       }
       try {
-        const event = await Stripe.webhooks.constructEvent(
-          rawBody,
-          sig,
-          key
-        )
+        const event = await Stripe.webhooks.constructEvent(rawBody, sig, key)
         resolve(event)
       } catch (e) {
         reject(e)
@@ -51,13 +47,14 @@ class StripeUtil {
     })
   }
 
-  createSubscriptionSession(customerID, price) {
+  createSubscriptionSession(customerID, price,email) {
     return new Promise(async (resolve, reject) => {
       try {
         const session = await Stripe.checkout.sessions.create({
           mode: 'subscription',
           payment_method_types: ['card'],
           customer: customerID,
+          customer_email:email,
           line_items: [
             {
               price,

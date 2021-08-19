@@ -1,27 +1,30 @@
 const User = require('../../models/userModel')
 const Error = require('../../utils/errorResponse')
+const path = require('path')
 
 //TODO:create beautifull ejs pages for error and thank you pages
 
 //this verifys email when a user clicks on the email verification link in email
-const verifyEmail = async (req,res,next) => {
-  const {code} = req.params
+const verifyEmail = async (req, res, next) => {
+  const { code } = req.params
 
   const user = await User.find({
-      $and:[
-        {emailVerificationCode:code},
-      {emailCodeTimeExpiry: {$gt: Date.now()}}
-      ]
+    $and: [
+      { emailVerificationCode: code },
+      { emailCodeTimeExpiry: { $gt: Date.now() } },
+    ],
+  })
+
+  if (!user) {
+    //Render ejs page showing error
+    res.render('error', {
+      message: 'the verification code does not exist or has expired',
     })
+  }
 
-    if(!user){
-      //Render ejs page showing error
-      res.render('error',{message:'the verification code does not exist or has expired'})
-    }
-
-  try{
+  try {
     //get user with this code and update db
-    const verifyUser = await User.findOne({emailVerificationCode:code})
+    const verifyUser = await User.findOne({ emailVerificationCode: code })
 
     verifyUser.emailVerificationCode = ''
     verifyUser.emailCodeTimeExpiry = ''
@@ -30,14 +33,13 @@ const verifyEmail = async (req,res,next) => {
     await verifyUser.save()
 
     //render thank you page after updating db
-    res.render('thank-you.ejs',{message:"thank you, your email has been verified"})
-
-
-  }catch(e){
-    console.log(e)
-    return res.render('error.ejs',{message:e.message})
+    const template = path.join(__dirname, '../../public/views', 'thank-you.ejs')
+    res.render(template, { message: 'thank you, your email has been verified' })
+  } catch (e) {
+    return res.render(path.join(__dirname, '../../public/views', 'error.ejs'), {
+      message: e.message,
+    })
   }
-
 }
 
 module.exports = verifyEmail

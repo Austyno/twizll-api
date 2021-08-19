@@ -1,3 +1,4 @@
+const path = require('path')
 const User = require('../../models/userModel')
 const Error = require('../../utils/errorResponse')
 const crypto = require('crypto')
@@ -14,13 +15,20 @@ exports.resetPassWordForm = async (req, res, next) => {
   })
 
   if (!user) {
-    return res.render('reset-error', {
-      message: 'the link your provided either does not exist or has expired',
-    })
+    return res.render(
+      path.join(__dirname, '../../public/views', 'reset-error.ejs'),
+      {
+        message: 'the link your provided either does not exist or has expired',
+      }
+    )
   }
-  const url = `${req.protocol + '://' + req.get('host') + req.originalUrl}`
 
-  res.render('reset-password', { url: url, message: '' })
+  const url = `${process.env.PROD_ADDRESS + '/' + req.originalUrl}`
+
+  res.render(path.join(__dirname, '../../public/views', 'reset-password.ejs'), {
+    url: url,
+    message: '',
+  })
 }
 
 //reset/change the password

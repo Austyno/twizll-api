@@ -30,7 +30,7 @@ const userSchema = new Schema(
       },
       type: {
         type: String,
-        // enum: ['monthly', 'yearly', 'none'],
+        enum: ['month', 'year', 'none'],
         default: 'none',
       },
       end_date: {

@@ -40,11 +40,10 @@ const signUp = async (req, res, next) => {
     user.free_trial = freeTrial
 
     //create email verification link
-    const verificationLink = `${
-      req.protocol + '://' + process.env.PROD_ADDRESS + req.originalUrl
-    }/verifyemail/${verificationCode}`
+    const verificationLink = `${process.env.PROD_ADDRESS + req.originalUrl}/verifyemail/${verificationCode}`
 
-    await user.save()
+    // http://147.182.245.180/+req.originalUrl/verifyemail/${verificationCode}
+     await user.save()
 
     //send verification mail
     await sendMail.withTemplate(
