@@ -5,48 +5,30 @@ const cartItemSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Product',
   },
-  quantity: {
+  qty: {
     type: Number,
     required: true,
     min: [1, 'Quantity can not be less than 1.'],
   },
   totalPrice: { type: Schema.Types.Decimal128, default: '0.00' },
-  discountedPrice: { type: Schema.Types.Decimal128, default: '0.00' },
-})
-
-cartItemSchema.methods.toJSON = function () {
-  const cartItemObject = this.toObject()
-  delete cartItemObject.__v
-  cartItemObject.totalPrice = Number(String(cartItemObject.totalPrice))
-  cartItemObject.discountedPrice = Number(
-    String(cartItemObject.discountedPrice)
-  )
-  return cartItemObject
-}
-
-cartItemSchema.set('toObject', {
-  transform: function (doc, ret, opt) {
-    ret['totalPrice'] = Number(String(ret['totalPrice']))
-    ret['discountedPrice'] = Number(String(ret['discountedPrice']))
-    delete ret['__v']
-  },
+  // discountedPrice: { type: Schema.Types.Decimal128, default: '0.00' },
 })
 
 const cartSchema = new Schema(
   {
-    _owner: {
-      ref: 'Customer',
+    owner: {
+      ref: 'User',
       type: Schema.Types.ObjectId,
       index: true,
       unique: true,
       sparse: true,
     },
     cartItems: [cartItemSchema],
-    totalPrice: {
+    cartTotalPrice: {
       type: Schema.Types.Decimal128,
       default: 0,
     },
-    discountedPrice: {
+    cartDiscountedPrice: {
       type: Schema.Types.Decimal128,
       default: 0,
     },
@@ -59,21 +41,5 @@ const cartSchema = new Schema(
     timestamps: true,
   }
 )
-
-cartSchema.methods.toJSON = function () {
-  const cartObject = this.toObject()
-  delete cartObject.__v
-  cartObject['totalPrice'] = Number(String(cartObject['totalPrice']))
-  cartObject['discountedPrice'] = Number(String(cartObject['discountedPrice']))
-  return cartObject
-}
-
-cartSchema.set('toObject', {
-  transform: function (doc, ret, opt) {
-    ret['totalPrice'] = Number(String(ret['totalPrice']))
-    ret['discountedPrice'] = Number(String(ret['discountedPrice']))
-    delete ret['__v']
-  },
-})
 
 module.exports = model('Cart', cartSchema)

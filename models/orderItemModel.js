@@ -36,6 +36,6 @@ const orderItemSchema = new Schema(
   }
 )
 
-orderItemSchema.index({ orderID: 1, productID: 1 })
+orderItemSchema.index({ orderID: 1, productID: 1 },{unique:true})
 
 module.exports = model('OrderItem', orderItemSchema)

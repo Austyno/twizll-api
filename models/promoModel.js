@@ -14,11 +14,11 @@ const promoSchema = new Schema(
       required: [true, 'Expiry date not provided.'],
       type: Date,
     },
-    discount_type: {
-      enum: ['PERCENT', 'GROSS'],
-      default: 'PERCENT',
-      type: String,
-    },
+    // discount_type: {
+    //   enum: ['PERCENT', 'GROSS'],
+    //   default: 'PERCENT',
+    //   type: String,
+    // },
     discount: {
       required: [true, 'Discount not provided.'],
       type: Number,

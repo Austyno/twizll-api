@@ -1,21 +1,66 @@
-/**
- * 1. get product id and qty from req.body
- * 2. make sure qty and prduct are passed or return an error
- * 3. locate product from products using product id passed
- * 4. get cart for this user using session id for not logged in user and user id for logged in user
- * 5. check if the product in the cart is <= 0, remove if true
- * 6. if product is found in the cart and qty is > 0, update the product with new qty
- * 7. compute cartItems total price ( qty * unit price of product)
- * 8. if cart has promo code, compute discounted price and subtract from total price
- * 9. compute cart total price by reducing cartItems total price
- * 10. compute cart discounted price by reducing cartitems discounted price
- * 11. if product is not found in current cart and qty > 0, push new item into cartItems
- */
 const Cart = require('../../models/cartModel')
+const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
-const addToCart = () => {
-  const {productId,qty} = req.body
 
+const addToCart = async (req, res, next) => {
+  let { productId, qty } = req.body
+  qty = Number(qty)
 
+  if (!productId || !qty) {
+    return next(new Error('one or more required parameters are missing', 400))
+  }
+
+  const productDetails = await Product.findById({ _id: productId })
+
+  if (!productDetails) {
+    return next(new Error('no product exist with this product ID', 400))
+  }
+
+  if (qty === 0) {
+    return next(new Error('Quantity to be added cannot be 0.', 400))
+  }
+
+  let cart = await Cart.findOne({ _id: req.session.cartId })
+
+  const productExistInCart = cart.cartItems.findIndex(
+    item => item.product == productId
+  )
+
+  if (productExistInCart !== -1) {
+    cart.cartItems[productExistInCart].qty =
+      Number(cart.cartItems[productExistInCart].qty) + Number(qty)
+    cart.cartItems[productExistInCart].totalPrice =
+      Number(productDetails.unitPrice) *
+      Number(cart.cartItems[productExistInCart].qty)
+
+    cart.cartTotalPrice = cart.cartItems
+      .map(item => Number(item.totalPrice))
+      .reduce((a, b) => a + b)
+  } else if (productExistInCart === -1) {
+    cart.cartItems.push({
+      product: productId,
+      qty: qty,
+      totalPrice: Number(qty * productDetails.unitPrice),
+    })
+    cart.totalPrice = cart.cartItems
+      .map(item => Number(item.totalPrice))
+      .reduce((a, b) => a + b)
+  }
+  if (cart.cartItems.length == 1) {
+    cart.totalPrice = cart.cartItems.totalPrice
+  }
+
+  await cart.save({ validateBeforeSave: false, new: true })
+
+  const newCart = await Cart.findOne({ _id: req.session.cartId }).populate(
+    'cartItems.product'
+  )
+
+  res.status(200).json({
+    status: 'success',
+    items_in_cart: cart.cartItems.length,
+    message: 'product added to cart successfully',
+    // data:newCart
+  })
 }
 module.exports = addToCart
