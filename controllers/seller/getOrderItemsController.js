@@ -1,8 +1,7 @@
 const Order = require('../../models/orderModel')
 const Error = require('../../utils/errorResponse')
 
-//TODO:refactor to make only one query instead of 2 (use advanced populate)
-const singleOrder = async (req, res, next) => {
+const singleOrderItems = async (req, res, next) => {
   const { orderId } = req.params
   const seller = req.user
   const sellerStore = req.store
@@ -14,16 +13,19 @@ const singleOrder = async (req, res, next) => {
   }
 
   try {
-    const order = await Order.find({
+    const order = await Order.findOne({
       $and: [{ store: sellerStore.id }, { _id: orderId }],
     })
+
+
     res.status(200).json({
       status: 'success',
-      message: 'order retrieved successfully',
-      data: order,
+      count:order.orderItems.length,
+      message: 'order items retrieved successfully',
+      data: order.orderItems,
     })
   } catch (e) {
     return next(new Error(e.message, 500))
   }
 }
-module.exports = singleOrder
+module.exports = singleOrderItems

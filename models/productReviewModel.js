@@ -8,6 +8,14 @@ const productReviewSchema = new Schema(
       required: [true, 'Please provide the id of the product for this review'],
       ref: 'Product',
     },
+    title:{
+      type:String,
+      required:true
+    },
+    text:{
+      type:String,
+      required:true 
+    },
     rating: {
       required: true,
       type: Number,
@@ -18,18 +26,41 @@ const productReviewSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Please provide the id of the user for this review'],
-    },
-    text: String,
+    }
   },
   { timestamps: true }
 )
 
-productReviewSchema.index({ user: 1, rating: 1, product: 1 })
+productReviewSchema.index({ user: 1, rating: 1, product: 1 },{unique:true})
 
-productReviewSchema.pre('save', async function (next) {
-  let product = await Product.findOne({ _id: this.product })
-  await product.calculateAverageRating(this.rating)
-  next()
+productReviewSchema.statics.calculateRatingAverage = async function(productId){
+  const obj = await this.aggregate([
+    {
+      $match: { product: productId },
+    },
+    {
+      $group: {
+        _id: '$productId',
+        ratingAvg:'$rating'
+      },
+    },
+  ])
+
+  try{
+    await this.model('Product').findByIdAndUpdate(productId, {
+      ratingAvg: obj[0].ratingAvg,
+    })
+  }catch(e){
+    console.log(e)
+  }
+}
+
+productReviewSchema.pre('save', async function () {
+  this.constructor.calculateRatingAverage(this.product)
+})
+
+productReviewSchema.pre('remove', async function () {
+  this.constructor.calculateRatingAverage(this.product)
 })
 
 module.exports = model('ProductReview', productReviewSchema)

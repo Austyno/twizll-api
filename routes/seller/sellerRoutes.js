@@ -21,11 +21,15 @@ const singleOrder = require('../../controllers/seller/getSingleOrderController')
 const addBankDetails = require('../../controllers/seller/addBankDetailsController')
 const uploadDocs = require('../../controllers/seller/uploadVerificationDocsController')
 const profile = require('../../controllers/seller/getSellerProfileController')
+const orderItems = require('../../controllers/seller/getOrderItemsController')
 
 router
   .route('/orders/:orderId')
   .put(authenticated, authRole('seller'), updateOrder)
   .get(authenticated, authRole('seller'), singleOrder)
+router
+  .route('/orders/:orderId/items')
+  .get(authenticated, authRole('seller'), orderItems)
 router
   .route('/products/:catId')
   .get(authenticated, authRole('seller'), getAllProductsByCat)
@@ -62,9 +66,11 @@ router.route('/profile').get(authenticated, authRole('seller'), profile)
 router
   .route('/create-order')
   .post(authenticated, authRole('seller'), async (req, res) => {
-    const OrderItem = require('../../models/orderItemModel')
+    const Order = require('../../models/orderModel')
+    req.body.store = req.store.id,
+    req.body.buyer = req.user.id
 
-    const order = await OrderItem.create(req.body)
+    const order = await Order.create(req.body)
 
     res.status(201).json({
       status: 'success',

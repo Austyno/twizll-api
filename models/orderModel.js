@@ -1,5 +1,6 @@
 const { model, Schema } = require('mongoose')
 
+
 const OrderSchema = new Schema(
   {
     store: {
@@ -24,6 +25,9 @@ const OrderSchema = new Schema(
       enum: ['new', 'shipped', 'delivered'],
       default: 'new',
     },
+    orderItems:{
+      type:Array
+    },
     shippingAddress: {
       type: String,
     },
@@ -40,18 +44,11 @@ const OrderSchema = new Schema(
   },
   { timestamps: true }
 )
-OrderSchema.index({ trackingId: 1, buyer: 1, store: 1 })
+OrderSchema.index({ trackingId: 1, buyer: 1, store: 1 },{unique:true})
 
 OrderSchema.pre('save', function () {
   //tracking id will be given by shipping company. this is temp for now
   this.trackingId = this._id
-})
-
-OrderSchema.virtual('orderItems', {
-  ref: 'OrderItem',
-  localField: '_id',
-  foreignField: 'orderId',
-  justOne: false,
 })
 
 module.exports = model('Order', OrderSchema)
