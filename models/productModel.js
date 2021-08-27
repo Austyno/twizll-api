@@ -70,38 +70,50 @@ const productSchema = new Schema({
     min: 0,
     max: 5,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+})
+
+
+productSchema.virtual('reviews', {
+  ref: 'ProductReview',
+  localField: '_id',
+  foreignField: 'product',
+  justOne:false
 })
 
 // productSchema.index({ name: 1, mainPhoto: 1, unitPrice: 1 })
 // productSchema.index({ name: 1, category: 1 })
 
-// productSchema.set('toObject', { virtuals: true })
-// productSchema.set('toJSON', { virtuals: true })
+productSchema.set('toObject', { virtuals: true })
+productSchema.set('toJSON', { virtuals: true })
 
 productSchema.pre('save', function () {
   this.unitPrice = this.unitPrice + 20
 })
 
-productSchema.methods.calculateAverageRating = async function (defaultRating) {
-  let productReviewsAvg = await ProductReview.db
-    .model('ProductReview')
-    .aggregate([
-      { $match: { product: this._id } },
-      {
-        $group: {
-          _id: null,
-          ratingAvg: { $avg: '$rating' },
-        },
-      },
-    ])
+// productSchema.methods.calculateAverageRating = async function (defaultRating) {
+//   let productReviewsAvg = await ProductReview.db
+//     .model('ProductReview')
+//     .aggregate([
+//       { $match: { product: this._id } },
+//       {
+//         $group: {
+//           _id: null,
+//           ratingAvg: { $avg: '$rating' },
+//         },
+//       },
+//     ])
 
-  if (productReviewsAvg.length === 0) {
-    this.ratingAvg = defaultRating
-    await this.save()
-  } else {
-    this.ratingAvg = productReviewsAvg[0].ratingAvg
-    await this.save()
-  }
-}
+//   if (productReviewsAvg.length === 0) {
+//     this.ratingAvg = defaultRating
+//     await this.save()
+//   } else {
+//     this.ratingAvg = productReviewsAvg[0].ratingAvg
+//     await this.save()
+//   }
+// }
 
 module.exports = model('Product', productSchema)

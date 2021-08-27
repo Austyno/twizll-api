@@ -34,18 +34,23 @@ const productReviewSchema = new Schema(
 productReviewSchema.index({ user: 1, rating: 1, product: 1 },{unique:true})
 
 productReviewSchema.statics.calculateRatingAverage = async function(productId){
+  console.log('calculating avarage')
   const obj = await this.aggregate([
     {
-      $match: { product: productId },
+      $match: {
+        product: productId,
+      },
     },
     {
       $group: {
-        _id: '$productId',
-        ratingAvg:'$rating'
+        _id: '$product',
+        ratingAvg: {
+          $avg: '$rating',
+        },
       },
     },
   ])
-
+      console.log(obj[0].ratingAvg)
   try{
     await this.model('Product').findByIdAndUpdate(productId, {
       ratingAvg: obj[0].ratingAvg,
