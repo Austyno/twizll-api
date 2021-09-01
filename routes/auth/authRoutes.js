@@ -1,10 +1,12 @@
 const router = require('express').Router()
+const authenticated = require('../../middleware/authenticated')
 
 const signUp = require('../../controllers/auth/signUpController')
 const verifyEmail = require('../../controllers/auth/verifyEmailController')
 const login = require('../../controllers/auth/loginController')
 const forgotPassword = require('../../controllers/auth/forgotPasswordController')
 const logOut = require('../../controllers/auth/logoutController')
+
 const {
   resetPassWordForm,
   resetPassword,
@@ -27,6 +29,6 @@ router.route('/google').get(googleAuth)
 router.route('/me').get(userInfo)
 router.route('/test').get(showLogin)
 
-router.route('/logout').post(logOut)
+router.route('/logout').post(authenticated,logOut)
 
 module.exports = router

@@ -36,9 +36,9 @@ const userSchema = new Schema(
       end_date: {
         type: Date,
       },
-      start_date:{
-        type:Date
-      }
+      start_date: {
+        type: Date,
+      },
     },
     googleUserId: {
       type: String,
@@ -83,12 +83,15 @@ const userSchema = new Schema(
     role: {
       type: String,
       lowercase: true,
-      enum: ['buyer', 'admin', 'seller', 'stylist'],
+      enum: ['admin', 'buyer', 'seller', 'stylist'],
       default: 'user',
     },
     emailVerified: {
       type: Boolean,
       default: false,
+    },
+    token: {
+      type: String,
     },
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,

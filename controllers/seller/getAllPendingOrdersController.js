@@ -15,7 +15,7 @@ const allOrders = async (req, res, next) => {
   try {
     //get orders by store
     const orders = await Order.find({
-      $and: [{ store: sellerStore.id }, { orderStatus: 'pending' }],
+      $and: [{ store: sellerStore.id }, { orderStatus: 'new' }],
     }).populate('buyer', 'fullName address email phone')
 
     res.status(200).json({

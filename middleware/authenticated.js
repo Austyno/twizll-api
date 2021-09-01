@@ -22,29 +22,35 @@ const authenticated = async (req, res, next) => {
     return next(new Error('You need to sign in', 403))
   }
 
+  //ensure token  is in the db
+  const userToken = await User.findOne({ token })
+  if (!userToken) {
+    return next(new Error('you are logged out, please login to continue', 400))
+  }
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     req.user = await User.findById(decoded.id)
 
-    if (req.user.role === 'seller') {
+    if (req.user.role !== null && req.user.role === 'seller') {
       //locate seller store and add to request object
       req.store = await Store.findOne({ owner: decoded.id })
     }
 
     next()
   } catch (e) {
-    if (
-      e.name === 'TokenExpiredError' ||
-      e.message === 'jwt malformed' ||
-      e.message === 'jwt must be provided'
-    ) {
+    if (e.name === 'TokenExpiredError') {
       return next(
         new Error('Your session has expired. Please log in again.', 403)
       )
     }
-    return next(new Error(e.message, 403))
+    if (e.message === 'jwt malformed') {
+      return next(new Error('Invalid token. Please log in again.', 403))
+    }
+    if (e.message === 'jwt must be provided') {
+      return next(new Error('You need to login to access this resource', 403))
+    }
   }
 }
 module.exports = authenticated

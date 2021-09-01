@@ -43,5 +43,8 @@
     "stripe": "^8.169.0",
     "validator": "^13.6.0",
     "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "rewire": "^5.0.0"
   }
 }

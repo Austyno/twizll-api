@@ -1,13 +1,24 @@
 //frontend
 //1.user clicks on "activate plan"
-//2.make an async post request to /subscribe endpoint with {price:price_1JPJ8RDPf3hBisiJtwxWIWsC}
-//3.in the ".then" the  billing session id is returned, use it to immediately make a checkout request to stripe for payment
+//2.make an async post request to /subscribe endpoint with {price:price_1JPJ8RDPf3hBisiJtwxWIWsC} to get Seeion Id
+//3.in the ".then" the  billing session id is returned, use it to immediately make a request to stripe for payment (stripe.redirectToCheckout({ sessionId })))
 
 //backend
 //get price code from req.body,locate client and get stripe id
 //make a call to stripe and create billing session(this will pre populate the checkout form with customer info)
 //send billing session id to the frontend
 //listen for webhook info and update db
+/**
+ * external_account:{
+ * type:bank_account,
+ * country:"USA",
+ * currency: USD,
+ * account_holder_name: Austin Alozie
+ * account_holder_type: individual or company,
+ * routing_number: 12345,
+ * account_number:1234567890
+ * }
+ */
 
 const Error = require('../../utils/errorResponse')
 const stripeUtil = require('../../utils/stripe/Stripe')
