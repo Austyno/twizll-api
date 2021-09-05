@@ -121,7 +121,7 @@ userSchema.methods.isValidPassword = async function (
   return await bcrypt.compare(userEnteredPassword, userSavedPassword)
 }
 
-userSchema.virtual('stores', {
+userSchema.virtual('store', {
   ref: 'Store',
   localField: '_id',
   foreignField: 'owner',

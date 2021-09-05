@@ -9,7 +9,7 @@ const dashboardProducts = async(req,res,next) => {
   const sellerStore = req.store
 
   if(!seller){
-    return next(new Error('You need to sign in to view this page',401))
+    return next(new Error('You need to sign in to view this page',403))
   }
   if (!sellerStore) {
     return next(new Error('Only store owners can perform this action', 403))

@@ -51,6 +51,7 @@ const uploadDocs = async (req, res, next) => {
           //add doc to db
           await VerificationDoc.create({
             proofOfAddress: `../../upload/${newName}`,
+            store: sellerStore.id
           })
           res.status(201).json({
             status: 'success',
