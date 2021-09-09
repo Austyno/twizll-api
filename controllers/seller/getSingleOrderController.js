@@ -16,7 +16,9 @@ const singleOrder = async (req, res, next) => {
   try {
     const order = await Order.find({
       $and: [{ store: sellerStore.id }, { _id: orderId }],
-    })
+    }).populate('buyer','email fullName address')
+
+
     res.status(200).json({
       status: 'success',
       message: 'order retrieved successfully',

@@ -78,7 +78,26 @@ router.route('/profile').get(authenticated, authRole('seller'), profile)
 //     req.body.store = req.store.id,
 //     req.body.buyer = req.user.id
 
-//     const order = await Order.create(req.body)
+
+//     const order = await Order.create({
+//       store:req.store.id,
+// buyer:req.user.id,
+// orderTotal: 5678,
+// orderItems:[
+//   {
+//       "productId": "60f571e3cbfbe5c4de6f24b1",
+//       "qty": 10
+//   },
+//   {
+//       "productId": "60f57459cbfbe5c4de6f24ba",
+//       "qty": 5
+//   },
+//   {
+//       "productId": "60f57475cbfbe5c4de6f24bb",
+//       "qty": 9
+//   }
+// ]
+//    })
 
 //     res.status(201).json({
 //       status: 'success',
