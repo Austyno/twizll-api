@@ -17,7 +17,7 @@ const verifyEmail = async (req, res, next) => {
 
   if (!user) {
     //Render ejs page showing error
-    res.render('error', {
+    res.render(path.join(__dirname, '../../public/views', 'error.ejs'), {
       message: 'the verification code does not exist or has expired',
     })
   }

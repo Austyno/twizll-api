@@ -16,7 +16,7 @@ const trackOrder = async (req, res, next) => {
   const trackingIdExist = await Order.findOne({ trackingId })
 
   if (!trackingIdExist) {
-    return next(new Error('this tracking id does not exist', 404))
+    return next(new Error('This tracking id does not exist', 404))
   }
 
   try {

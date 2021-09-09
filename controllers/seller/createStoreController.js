@@ -16,16 +16,7 @@ const createStore = async (req, res, next) => {
   let newStore
 
   try {
-     newStore = await Store.create(
-      [
-        {
-          storeName,
-          storeAddress,
-          owner: seller._id,
-        },
-      ],
-      { session }
-    )
+     newStore = await Store.create([{storeName, storeAddress, owner: seller._id, },],{ session })
 
     await newStore[0].save({ session })
 

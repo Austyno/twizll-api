@@ -1,5 +1,7 @@
 const stripe = require('stripe')
-const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
+const Stripe = stripe(
+  'sk_test_51H0RkNDPf3hBisiJlkGknCCyzzDhqymjc84C3pi8lBX0Ab4FzVccAx6Nzw2FDKFkqyozjuZqGqXF3nHx84wTUFWa00bQbyx23N'
+)
 
 class StripeUtil {
   //create new customer
@@ -47,14 +49,14 @@ class StripeUtil {
     })
   }
 
-  createSubscriptionSession(customerID, price,email) {
+  createSubscriptionSession(customerID, price, email) {
     return new Promise(async (resolve, reject) => {
       try {
         const session = await Stripe.checkout.sessions.create({
           mode: 'subscription',
           payment_method_types: ['card'],
           customer: customerID,
-          customer_email:email,
+          customer_email: email,
           line_items: [
             {
               price,
