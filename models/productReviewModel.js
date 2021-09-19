@@ -8,13 +8,13 @@ const productReviewSchema = new Schema(
       required: [true, 'Please provide the id of the product for this review'],
       ref: 'Product',
     },
-    title:{
-      type:String,
-      required:true
+    title: {
+      type: String,
+      required: true,
     },
-    text:{
-      type:String,
-      required:true 
+    text: {
+      type: String,
+      required: true,
     },
     rating: {
       required: true,
@@ -26,14 +26,16 @@ const productReviewSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Please provide the id of the user for this review'],
-    }
+    },
   },
   { timestamps: true }
 )
 
-productReviewSchema.index({ user: 1, rating: 1, product: 1 },{unique:true})
+productReviewSchema.index({ user: 1, rating: 1, product: 1 }, { unique: true })
 
-productReviewSchema.statics.calculateRatingAverage = async function(productId){
+productReviewSchema.statics.calculateRatingAverage = async function (
+  productId
+) {
   console.log('calculating avarage')
   const obj = await this.aggregate([
     {
@@ -50,12 +52,12 @@ productReviewSchema.statics.calculateRatingAverage = async function(productId){
       },
     },
   ])
-      console.log(obj[0].ratingAvg)
-  try{
+  console.log(obj)
+  try {
     await this.model('Product').findByIdAndUpdate(productId, {
       ratingAvg: obj[0].ratingAvg,
     })
-  }catch(e){
+  } catch (e) {
     console.log(e)
   }
 }

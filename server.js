@@ -12,6 +12,7 @@ const Errors = require('./middleware/error')
 const fileUpload = require('express-fileupload')
 const app = express()
 const stripe = require('stripe')
+const morgan = require('morgan')
 
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
 const webHook = require('./controllers/stripe/webHooksController')
@@ -70,12 +71,23 @@ const sellerRoutes = require('./routes/seller/sellerRoutes')
 const stripeRoutes = require('./routes/stripe/stripeRoutes')
 const cartRoutes = require('./routes/cart/cartRoutes')
 const reviewsRoutes = require('./routes/reviews/reviewRoutes')
+const buyerRoutes = require('./routes/buyer/buyerRoutes')
 
 app.use(mongoSanitize())
 
-// Set security headers
-app.use(helmet())
+// Set security headers ( fix issue with blocking stripe url in ejs)
+// app.use(
+//   helmet.contentSecurityPolicy({
+//       directives: {
+//         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+//         'script-src': ['self', 'https://js.stripe.com/v3/'],
+//       },
+//     })
+// )
 
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'))
+}
 // Prevent XSS attacks
 app.use(xss())
 
@@ -89,6 +101,7 @@ app.use('/api/seller', sellerRoutes)
 app.use('/api/stripe', stripeRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api/reviews', reviewsRoutes)
+app.use('/api/buyer', buyerRoutes)
 
 app.use(Errors)
 

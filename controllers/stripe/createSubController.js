@@ -1,14 +1,4 @@
-//frontend
-//1.user clicks on "activate plan"
-//2.make an async post request to /subscribe endpoint with {price:price_1JPJ8RDPf3hBisiJtwxWIWsC} to get Seeion Id
-//3.in the ".then" the  billing session id is returned, use it to immediately make a request to stripe for payment (stripe.redirectToCheckout({ sessionId })))
-
-//backend
-//get price code from req.body,locate client and get stripe id
-//make a call to stripe and create billing session(this will pre populate the checkout form with customer info)
-//send billing session id to the frontend
-//listen for webhook info and update db
-/**
+/*
  * external_account:{
  * type:bank_account,
  * country:"USA",
@@ -24,27 +14,64 @@ const Error = require('../../utils/errorResponse')
 const stripeUtil = require('../../utils/stripe/Stripe')
 const User = require('../../models/userModel')
 const moment = require('moment')
+const jwt = require('jsonwebtoken')
+const path = require('path')
+const url = require('url')
+const child = require('child_process')
+const ejs = require('ejs')
+const open = require('open')
 
 const createSubscription = async (req, res, next) => {
-  const {price} = req.body
-  const user = req.user
+  const { price, token } = req.body
 
-  try{
-    const subSession = await stripeUtil.createSubscriptionSession(
-      user.stripe_customer_id,
-      price,
-      user.email
-    )
+  const verify = jwt.verify(token, process.env.JWT_SECRET)
 
-    res.status(200).json({
-      status: 'success',
-      sessionId: subSession.id,
-    })
-  }catch(e){
-    return next(new Error(e.message,500))
+  if (!verify) {
+    return next(new Error('token is invalid', 400))
   }
 
+  const user = await User.findOne({ token })
 
+  try {
+    const subscription = await stripeUtil.createSubscriptionSession(
+      user.stripe_customer_id,
+      price
+    )
+    const uri = url.format({
+      pathname: `http://localhost:5000/api/stripe/subscribe`,
+      query: {
+        subscriptionId: subscription.id,
+        clientSecrete: subscription.latest_invoice.payment_intent.client_secret,
+      },
+    })
+
+    const start =
+      process.platform == 'darwin'
+        ? 'open'
+        : process.platform == 'win32'
+        ? 'start'
+        : 'xdg-open'
+
+    // child.exec(start + ' ' + uri)
+    open(uri)
+  } catch (e) {
+    return next(new Error(e.message, 500))
+  }
 }
 
-module.exports = createSubscription
+const showSubpage = (req, res, next) => {
+  const { subscriptionId, clientSecrete } = req.query
+  res.render(path.join(__dirname, '../../public/views', 'subscribe.ejs'), {
+    fullName: 'austyno',
+    subscriptionId,
+    clientSecrete,
+  })
+}
+
+const pubKey = (req, res, next) => {
+  res.send({
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+  })
+}
+
+module.exports = { createSubscription, showSubpage, pubKey }

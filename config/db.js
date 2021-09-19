@@ -10,7 +10,7 @@ module.exports = async () => {
     }
 
     try {
-      const connectDB = await connect(process.env.MONGODB_DEV_URL, {
+      const connectDB = await connect(url, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,

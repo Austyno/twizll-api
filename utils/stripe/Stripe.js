@@ -1,4 +1,5 @@
 const stripe = require('stripe')
+const path = require('path')
 const Stripe = stripe(
   'sk_test_51H0RkNDPf3hBisiJlkGknCCyzzDhqymjc84C3pi8lBX0Ab4FzVccAx6Nzw2FDKFkqyozjuZqGqXF3nHx84wTUFWa00bQbyx23N'
 )
@@ -51,22 +52,23 @@ class StripeUtil {
 
   createSubscriptionSession(customerID, price, email) {
     return new Promise(async (resolve, reject) => {
+      const domain =
+        process.env.NODE_ENV === 'production'
+          ? process.env.PROD_ADDRESS
+          : process.env.DEV_ADDRESS
+      const succesPath = path.join(__dirname,'../../public/success.ejs')
       try {
-        const session = await Stripe.checkout.sessions.create({
-          mode: 'subscription',
-          payment_method_types: ['card'],
+        const subscription = await Stripe.subscriptions.create({
           customer: customerID,
-          customer_email: email,
-          line_items: [
+          items: [
             {
               price,
-              quantity: 1,
             },
           ],
-          success_url: `${process.env.DEV_DOMAIN}?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${process.env.DEV_DOMAIN}`,
+          payment_behavior: 'default_incomplete',
+          expand: ['latest_invoice.payment_intent'],
         })
-        resolve(session)
+        resolve(subscription)
       } catch (e) {
         reject(e)
       }

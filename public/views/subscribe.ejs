@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Subscribe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' https://js.stripe.com/v3/ 'unsafe-inline' 'unsafe-eval';"
+    />
+  </head>
+  <style>
+    .product {
+      width: 500px;
+      padding: 10px;
+      height: 300px;
+      background-color: white;
+      border-radius: 5px;
+      /* border: 1px solid black; */
+      box-shadow: 4px 4px 20px 0px #0000003d;
+    }
+    .container {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn {
+      box-shadow: 4px 4px 20px 0px #eee7e73d;
+      border: thin;
+      padding: 8px;
+      margin-left: 20px;
+      background-color: tomato;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .card {
+      margin: 100px;
+    }
+  </style>
+  <body>
+    <main class="text-center">
+      <div class="container">
+        <!-- <h2>Suscription</h2> -->
+        <div class="product">
+          <form id="subscribe-form" class="">
+            <label
+              style="
+                font-size: x-large;
+                font-weight: 900;
+                margin-bottom: 50px;
+                margin-left: 40%;
+              "
+              class="text-center"
+            >
+              <%= fullName %>
+            </label>
+            <input type="hidden" value="<%= fullName %>" id="name" />
+            <input
+              type="hidden"
+              value="<%= subscriptionId %>"
+              id="subscriptionId"
+            />
+            <input
+              type="hidden"
+              value="<%= clientSecrete %>"
+              id="clientSecret"
+            />
+
+            <div id="card-element" class="card">
+              <!-- the card element will be mounted here -->
+            </div>
+            <div class="">
+              <button class="btn" type="submit">Subscribe !</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      const setMessage = message => {
+        const messageDiv = document.querySelector('#messages')
+        messageDiv.innerHTML += '<br>' + message
+      }
+      const params = new URLSearchParams(window.location.search)
+      const subscriptionId = params.get('subscriptionId')
+      const clientSecret = params.get('clientSecret')
+
+      // console.log(clientSecret)
+
+      fetch('/api/stripe/config')
+        .then(resp => resp.json())
+        .then(resp => {
+          stripe = Stripe(resp.publishableKey)
+          const elements = stripe.elements()
+          cardElement = elements.create('card')
+          cardElement.mount('#card-element')
+        })
+
+      const form = document.querySelector('#subscribe-form')
+      const secret = document.querySelector('#clientSecret').value
+      console.log(secret)
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault()
+        const nameInput = document.getElementById('name')
+
+        // Create payment method and confirm payment intent.
+        stripe
+          .confirmCardPayment(secret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                name: nameInput.value,
+              },
+            },
+          })
+          .then(result => {
+            if (result.error) {
+              setMessage(`Payment failed: ${result.error.message}`)
+            } else {
+              // Redirect the customer to success page
+              setMessage('Success! Redirecting.')
+              window.location.href =
+                'http://localhost:5000/api/stripe/subscribe/success'
+            }
+          })
+      })
+    </script>
+  </body>
+</html>
