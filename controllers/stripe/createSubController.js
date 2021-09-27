@@ -1,15 +1,3 @@
-/*
- * external_account:{
- * type:bank_account,
- * country:"USA",
- * currency: USD,
- * account_holder_name: Austin Alozie
- * account_holder_type: individual or company,
- * routing_number: 12345,
- * account_number:1234567890
- * }
- */
-
 const Error = require('../../utils/errorResponse')
 const stripeUtil = require('../../utils/stripe/Stripe')
 const User = require('../../models/userModel')
@@ -37,35 +25,25 @@ const createSubscription = async (req, res, next) => {
       user.stripe_customer_id,
       price
     )
-    const uri = url.format({
-      pathname: `http://localhost:5000/api/stripe/subscribe`,
-      query: {
-        subscriptionId: subscription.id,
-        clientSecrete: subscription.latest_invoice.payment_intent.client_secret,
-      },
+    const data = {
+      subscriptionId: subscription.id,
+      clientSecrete: subscription.latest_invoice.payment_intent.client_secret,
+      amount: subscription.latest_invoice.payment_intent.amount,
+      currency: subscription.latest_invoice.currency,
+      fullName: user.fullName,
+    }
+    res.status(200).json({
+      status: 'success',
+      message: 'subscription started',
+      data,
     })
-
-    const start =
-      process.platform == 'darwin'
-        ? 'open'
-        : process.platform == 'win32'
-        ? 'start'
-        : 'xdg-open'
-
-    // child.exec(start + ' ' + uri)
-    open(uri)
   } catch (e) {
     return next(new Error(e.message, 500))
   }
 }
 
 const showSubpage = (req, res, next) => {
-  const { subscriptionId, clientSecrete } = req.query
-  res.render(path.join(__dirname, '../../public/views', 'subscribe.ejs'), {
-    fullName: 'austyno',
-    subscriptionId,
-    clientSecrete,
-  })
+  res.render(path.join(__dirname, '../../public/views', 'paySub.ejs'))
 }
 
 const pubKey = (req, res, next) => {

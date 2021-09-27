@@ -74,6 +74,44 @@ class StripeUtil {
       }
     })
   }
+
+  createAccount(country){
+    return new Promise(async (resolve, reject) => {
+      try{
+        const account = await Stripe.accounts.create({
+          type:'custom',
+          country,
+          requested_capabilities:['card_payments','transfers']
+        })
+        resolve(account.id)
+      }catch(e){
+        reject(e)
+      }
+    })
+  }
+
+  createAccountLink(accountId){
+    return new Promise(async (resolve,reject) => {
+      try{
+        const accountLink = await Stripe.accountLinks.create({
+          account: accountId,
+          type: 'custom_account_verification',
+          collect: 'eventually_due',
+          success_url:
+            process.env.NODE_ENV === 'developement'
+              ? `${process.env.DEV_ADDRESS}/?success`
+              : `${process.env.PROD_ADDRESS}/?success`,
+          failure_url:
+            process.env.NODE_ENV === 'developement'
+              ? `${process.env.DEV_ADDRESS}/?failed`
+              : `${process.env.PROD_ADDRESS}/?failed`,
+        })
+        resolve(accountLink)
+      }catch(e){
+        reject(e)
+      }
+    })
+  }
 }
 
 module.exports = new StripeUtil()

@@ -6,15 +6,22 @@ const StoreSchema = new Schema({
     required: [true, 'Please provide the id of the owner of this store'],
     ref: 'User',
   },
-
+  stripeAccountId: { type: String },
+  stripeSupported: {
+    type: Boolean,
+    default: false,
+  },
+  country: {
+    type: String,
+  },
   storeName: {
     type: String,
     trim: true,
     required: [true, 'Please tell us your store name!'],
   },
-  storeAddress:{
-    type:String,
-    required:[true,'Your store address is required']
+  storeAddress: {
+    type: String,
+    required: [true, 'Your store address is required'],
   },
   storeVisits: {
     type: Number,

@@ -25,9 +25,10 @@ const OrderSchema = new Schema(
       enum: ['new', 'shipped', 'delivered'],
       default: 'new',
     },
-    orderItems:{
-      type:Array
-    },
+    // orderItems:{
+    //   type:Array
+    // },
+    orderItem: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     shippingAddress: {
       type: String,
     },

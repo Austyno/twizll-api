@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscription</title>
+    <style>
+      .product {
+        width: 500px;
+        padding: 10px;
+        height: 300px;
+        background-color: white;
+        border-radius: 5px;
+        /* border: 1px solid black; */
+        box-shadow: 4px 4px 20px 0px #0000003d;
+      }
+      .container {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .btn {
+        box-shadow: 4px 4px 20px 0px #eee7e73d;
+        border: thin;
+        padding: 10px;
+        background-color: tomato;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 20px;
+        
+      }
+      .card {
+        margin: 100px;
+      }
+
+      .center {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* background: #000; */
+      }
+      .wave {
+        width: 5px;
+        height: 100px;
+        background: linear-gradient(45deg, rgb(6, 6, 6), #fff);
+        margin: 10px;
+        animation: wave 1s linear infinite;
+        border-radius: 20px;
+      }
+      .wave:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .wave:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .wave:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+      .wave:nth-child(5) {
+        animation-delay: 0.4s;
+      }
+      .wave:nth-child(6) {
+        animation-delay: 0.5s;
+      }
+      .wave:nth-child(7) {
+        animation-delay: 0.6s;
+      }
+      .wave:nth-child(8) {
+        animation-delay: 0.7s;
+      }
+      .wave:nth-child(9) {
+        animation-delay: 0.8s;
+      }
+      .wave:nth-child(10) {
+        animation-delay: 0.9s;
+      }
+
+      @keyframes wave {
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+
+      .loader {
+        border: 5px solid #f3f3f3; /* Light grey */
+        border-top: 5px solid tomato; /* Blue */
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <main class="text-center">
+    <div class="container">
+      <!-- <h2>Suscription</h2> -->
+
+      <div class="product">
+        <!--show loader when page first loads the form when we recieve response from server-->
+
+        <div class="center" id="spinner">
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+        </div>
+
+        <form id="subscribe-form" class="">
+          <label
+            style="
+              font-size: x-large;
+              font-weight: 900;
+              margin-bottom: 50px;
+              margin-left: 40%;
+            "
+            class="text-center"
+            id="name"
+          ></label>
+
+          <div id="card-element" class="card">
+            <!-- the card element will be mounted here -->
+          </div>
+          <div class="">
+            <button class="btn" id="btn" type="submit"></button>
+          </div>
+        </form>
+      </div>
+      <div id="messages"></div>
+    </div>
+  </main>
+  <body>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      const setMessage = message => {
+        const messageDiv = document.querySelector('#messages')
+        messageDiv.innerHTML += '<br>' + message
+      }
+      const params = new URLSearchParams(window.location.search)
+      const token = params.get('token')
+      const price = params.get('price')
+      const spinner = document.getElementById('spinner')
+      const subForm = document.getElementById('subscribe-form')
+      const name = document.getElementById('name')
+      const btn = document.getElementById('btn')
+
+      let submitName
+      let secret
+
+      subForm.style.display = 'none'
+
+      //get publishable key and show stripe form
+      fetch('/api/stripe/config')
+        .then(resp => resp.json())
+        .then(resp => {
+          stripe = Stripe(resp.publishableKey)
+          const elements = stripe.elements()
+          cardElement = elements.create('card')
+          cardElement.mount('#card-element')
+        })
+
+      //get subscription id and client secret from backend
+      fetch('/api/stripe/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          price,
+          token,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          secret = data.data.clientSecrete
+          submitName = data.data.fullName
+          name.innerHTML = data.data.fullName
+          btn.innerHTML = `Pay ${data.data.amount} ${data.data.currency}`
+          subForm.style.display = 'block'
+          spinner.style.display = 'none'
+        })
+
+      //submit the payment
+      subForm.addEventListener('submit', async e => {
+        e.preventDefault()
+        btn.innerHTML = `<div class="loader" id="loader"></div>`
+
+        // Create payment method and confirm payment intent.
+        stripe
+          .confirmCardPayment(secret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: {
+                name: submitName,
+              },
+            },
+          })
+          .then(result => {
+            if (result.error) {
+              setMessage(`Payment failed: ${result.error.message}`)
+            } else {
+              // Redirect the customer to success page
+              setMessage('Success! Redirecting.')
+              window.location.href =
+                'http://localhost:5000/api/stripe/subscribe/success'
+            }
+          })
+      })
+    </script>
+  </body>
+</html>

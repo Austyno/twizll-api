@@ -7,7 +7,7 @@ const createAuthToken = require('../../utils/createAuthToken')
 const moment = require('moment')
 
 const signUp = async (req, res, next) => {
-  const { email, phone, password, fullName, role } = req.body
+  const { email, phone, password, fullName, role,country } = req.body
 
   const userExist = await User.findOne({ email })
 
@@ -58,6 +58,8 @@ const signUp = async (req, res, next) => {
         password,
         role,
       })
+      // send mail to admin
+      // await sendMail.withTemplate()
 
       //return token to client
       return createAuthToken(

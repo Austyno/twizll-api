@@ -13,7 +13,7 @@ const editProduct = require('../../controllers/seller/editProductController')
 const updateProduct = require('../../controllers/seller/updateProductController')
 const deleteProduct = require('../../controllers/seller/deleteProductController')
 const getAllCategory = require('../../controllers/seller/getAllCategoryController')
-const allOrders = require('../../controllers/seller/getAllPendingOrdersController')
+const allPendingOrders = require('../../controllers/seller/getAllPendingOrdersController')
 const order = require('../../controllers/seller/getOrderByTrackingIdController')
 const updateOrder = require('../../controllers/seller/updateOrderStatusController')
 const completedOrders = require('../../controllers/seller/getCompletedOrdersController')
@@ -22,6 +22,7 @@ const addBankDetails = require('../../controllers/seller/addBankDetailsControlle
 const uploadDocs = require('../../controllers/seller/uploadVerificationDocsController')
 const profile = require('../../controllers/seller/getSellerProfileController')
 const orderItems = require('../../controllers/seller/getOrderItemsController')
+const allOrders = require('../../controllers/seller/getAllOrdersController')
 
 router
   .route('/products/:catId')
@@ -50,7 +51,10 @@ router
     .route('/order/:trackingId')
     .get(authenticated, authRole('seller'), order)
 
-router.route('/orders/new').get(authenticated, authRole('seller'), allOrders)
+    router.route('/orders').get(authenticated, authRole('seller'),allOrders)
+router
+  .route('/orders/new')
+  .get(authenticated, authRole('seller'), allPendingOrders)
 router
   .route('/orders/completed')
   .get(authenticated, authRole('seller'), completedOrders)

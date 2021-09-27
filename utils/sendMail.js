@@ -23,7 +23,7 @@ class SendEmail {
             return reject(err)
           } else {
             var mainOptions = {
-              from: '"twizll" <austin@twizll.com>',
+              from: '"twizll" <info@twizll.com>',
               to: email,
               subject,
               html: data,
