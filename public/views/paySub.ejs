@@ -34,7 +34,7 @@
         cursor: pointer;
         width: 100%;
         font-size: 20px;
-        
+
       }
       .card {
         margin: 100px;
@@ -165,7 +165,7 @@
         messageDiv.innerHTML += '<br>' + message
       }
       const params = new URLSearchParams(window.location.search)
-      const token = params.get('token')
+      const stripeid = params.get('stripeid')
       const price = params.get('price')
       const spinner = document.getElementById('spinner')
       const subForm = document.getElementById('subscribe-form')
@@ -195,7 +195,7 @@
         },
         body: JSON.stringify({
           price,
-          token,
+          stripeid,
         }),
       })
         .then(response => response.json())
@@ -238,3 +238,4 @@
     </script>
   </body>
 </html>
+<!-- 'http://147.182.245.180/api/stripe/subscribe/success' -->

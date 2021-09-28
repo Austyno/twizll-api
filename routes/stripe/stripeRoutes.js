@@ -9,10 +9,9 @@ const {
   showSubpage,
   pubKey,
 } = require('../../controllers/stripe/createSubController')
-const stripe = require('stripe')
+const startSub = require('../../controllers/stripe/startSub')
 
-const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
-
+router.route('/start-sub').post(authenticated, startSub)
 router.route('/subscribe').post(createSubscription)
 router.route('/pay-sub').get(showSubpage)
 router.route('/config').get(pubKey)

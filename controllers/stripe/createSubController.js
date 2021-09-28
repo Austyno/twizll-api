@@ -4,25 +4,21 @@ const User = require('../../models/userModel')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const path = require('path')
-const url = require('url')
-const child = require('child_process')
-const ejs = require('ejs')
-const open = require('open')
 
 const createSubscription = async (req, res, next) => {
-  const { price, token } = req.body
+  const { price, stripeid } = req.body
 
-  const verify = jwt.verify(token, process.env.JWT_SECRET)
+  // const verify = jwt.verify(token, process.env.JWT_SECRET)
 
-  if (!verify) {
-    return next(new Error('token is invalid', 400))
-  }
+  // if (!verify) {
+  //   return next(new Error('token is invalid', 400))
+  // }
 
-  const user = await User.findOne({ token })
+  const user = await User.findOne({ stripe_customer_id: stripeid })
 
   try {
     const subscription = await stripeUtil.createSubscriptionSession(
-      user.stripe_customer_id,
+      stripeid,
       price
     )
     const data = {

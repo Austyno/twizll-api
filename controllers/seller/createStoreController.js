@@ -27,15 +27,31 @@ const createStore = async (req, res, next) => {
 
     await newStore[0].save({ session })
 
-    //check if store is in a stripe supported country
+    //check if store is in a stripe supported country for on boarding
     const isValidCountry = checkCountry(country)
+
     //send to stripe onboarding if true
     if (isValidCountry !== false) {
       const accountId = await Stripe.createAccount(country)
 
       const accountLink = await Stripe.createAccountLink(accountId)
 
-      return open(accountLink)
+      await session.commitTransaction()
+      session.endSession()
+
+      const data = {
+        newStore,
+        onBoardingLink: accountLink,
+      }
+
+      res.status(201).json({
+        status: 'success',
+        message:
+          'Store created successfully. You neeed to verify your store by uploading supporting documents. Also follow the link and provide all required info to enable us easily pay you',
+        data
+      })
+
+
     } else {
       //create a wallet if false
       const storeWallet = await Wallet.create(
@@ -47,17 +63,18 @@ const createStore = async (req, res, next) => {
         { session }
       )
       storeWallet[0].save({ session })
+
+      await session.commitTransaction()
+      session.endSession()
+
+      res.status(200).json({
+        status: 'Success',
+        message:
+          'Store created successfully. You neeed to verify your store by uploading supporting documents.',
+        data: newStore
+      })
     }
-
-    await session.commitTransaction()
-    session.endSession()
-
-    res.status(201).json({
-      status: 'success',
-      message:
-        'Store created successfully. You neeed to verify your store by uploading supporting documents',
-      data: newStore,
-    })
+     
   } catch (e) {
     await session.abortTransaction()
     session.endSession()
