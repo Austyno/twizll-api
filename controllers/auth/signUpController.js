@@ -7,7 +7,7 @@ const createAuthToken = require('../../utils/createAuthToken')
 const moment = require('moment')
 
 const signUp = async (req, res, next) => {
-  const { email, phone, password, fullName, role,country } = req.body
+  const { email, phone, password, fullName, role, country } = req.body
 
   const userExist = await User.findOne({ email })
 
@@ -28,7 +28,10 @@ const signUp = async (req, res, next) => {
       freeTrial.end_date = moment().add(30, 'days')
     }
 
-    const url = process.env.NODE_ENV === 'production' ? proces.env.PROD_ADDRESS : process.env.DEV_ADDRESS
+    const url =
+      process.env.NODE_ENV === 'production'
+        ? proces.env.PROD_ADDRESS
+        : process.env.DEV_ADDRESS
 
     const verificationCode = crypto.randomBytes(20).toString('hex')
     //create email verification link
@@ -43,6 +46,7 @@ const signUp = async (req, res, next) => {
       '/verify.ejs',
       'Please verify your email'
     )
+
     if (
       verificationMail &&
       (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined)
@@ -59,7 +63,14 @@ const signUp = async (req, res, next) => {
         role,
       })
       // send mail to admin
-      // await sendMail.withTemplate()
+      const userData = {
+        email,
+        phone,
+        fullName,
+        role,
+        country,
+      }
+      await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
 
       //return token to client
       return createAuthToken(

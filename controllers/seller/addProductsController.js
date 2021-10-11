@@ -4,6 +4,8 @@ const Store = require('../../models/storeModel')
 const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
 const cloudStorage = require('../../utils/uploadToCloudinary')
+const convert = require('../../utils/convertCurrentcy')
+
 
 require('../../models/productModel')
 require('../../models/productCategoryModel')
@@ -31,10 +33,12 @@ const addProduct = async (req, res, next) => {
     weight,
     unitPrice,
     discount,
+    currency
   } = req.body
 
   const photos = req.files.photos
-  const mainPhoto = req.files.mainPhoto
+
+  const converted = await convert(currency, 'GBP', unitPrice)
 
   if (Array.isArray(photos))
     if (photos.length < 1) {
@@ -46,7 +50,7 @@ const addProduct = async (req, res, next) => {
     cloudStorage(photo.tempFilePath)
       .then(result => {
         uploadedPhotos.push(result.secure_url)
-        console.log(result)
+
         const tmpFilePath = path.join(__dirname, '../../tmp/')
         fs.unlink(`${tmpFilePath + result.original_filename}`, (err, reslt) => {
           if (!err) {
@@ -69,7 +73,7 @@ const addProduct = async (req, res, next) => {
         attributes,
         totalNoOfUnits,
         weight,
-        unitPrice,
+        unitPrice: converted + 20,
         mainPhoto: result.secure_url,
         photos: uploadedPhotos,
         discount,

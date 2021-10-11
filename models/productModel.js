@@ -90,9 +90,6 @@ productSchema.virtual('reviews', {
 productSchema.set('toObject', { virtuals: true })
 productSchema.set('toJSON', { virtuals: true })
 
-productSchema.pre('save', function () {
-  this.unitPrice = this.unitPrice + 20
-})
 
 // productSchema.methods.calculateAverageRating = async function (defaultRating) {
 //   let productReviewsAvg = await ProductReview.db
