@@ -8,7 +8,7 @@ const convert = require('../../utils/convertCurrentcy')
 
 
 require('../../models/productModel')
-require('../../models/productCategoryModel')
+require('../../models/categoryModel')
 
 //TODO: refactor using transactions to prevent photos from being uploaded if there is an error
 

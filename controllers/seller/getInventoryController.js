@@ -2,7 +2,7 @@ const Store = require('../../models/storeModel')
 const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
 require('../../models/productModel')
-require('../../models/productCategoryModel')
+require('../../models/categoryModel')
 
 const inventory = async (req, res, next) => {
   const seller = req.user

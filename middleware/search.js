@@ -36,10 +36,20 @@ const search = (model, populate) => async (req, res, next) => {
   query = query.skip(startIndex).limit(limit)
 
   if (populate) {
-    query = query.populate(populate)
+    if (Array.isArray(populate)) {
+      for (let i = 0; i < populate.length; i++) {
+        query = query.populate(populate[i])
+      }
+    }
   }
+  let verifiedProducts
+  await query.then(res => {
+   verifiedProducts = res.filter(
+     item => item.store.storeVerified == true && item.store.docsUploaded == true
+   )
+  })
 
-  const results = await query
+  
 
   const pagination = {}
 
@@ -59,8 +69,8 @@ const search = (model, populate) => async (req, res, next) => {
   req.search = {
     status: 'success',
     pagination,
-    count: results.length,
-    data: results,
+    count: verifiedProducts.length,
+    data: verifiedProducts,
   }
   next()
 }

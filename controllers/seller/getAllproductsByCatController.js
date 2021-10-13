@@ -2,7 +2,7 @@ const Store = require('../../models/storeModel')
 const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
 require('../../models/productModel')
-require('../../models/productCategoryModel')
+require('../../models/categoryModel')
 
 //get the logged in seller products only
 const getAllProductsByCat = async (req, res, next) => {

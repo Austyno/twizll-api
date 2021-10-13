@@ -7,7 +7,7 @@ const search = require('../../middleware/search')
 const Product = require('../../models/productModel')
 
 router.route('/products/:productId').get(viewProduct)
-router.route('/products').get(search(Product,'category'),getAllProducts)
+router.route('/products').get(search(Product,['category','store']),getAllProducts)
 
 
 

@@ -1,6 +1,6 @@
 const Error = require('../../utils/errorResponse')
 const Product = require('../../models/productModel')
-const Category = require('../../models/productCategoryModel')
+const Category = require('../../models/categoryModel')
 
 const viewProduct = async (req, res, next) => {
   const { productId } = req.params
