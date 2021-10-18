@@ -13,7 +13,7 @@ const uploadDocs = async (req, res, next) => {
 
     if (!allowedMediaTypes.includes(doc.mimetype.split('/')[1])) {
       return next(
-        new ErrorResponse(
+        new Error(
           `Media type ${
             doc.mimetype.split('/')[1]
           } is not allowed. Allowed doc types ${allowedMediaTypes}`,
@@ -24,7 +24,7 @@ const uploadDocs = async (req, res, next) => {
 
     if (doc.size > 1000000) {
       return next(
-        new ErrorResponse(
+        new Error(
           `Upload file size is too large. Upload a file less than 1mb`,
           400
         )
@@ -51,8 +51,13 @@ const uploadDocs = async (req, res, next) => {
           //add doc to db
           await VerificationDoc.create({
             proofOfAddress: `../../upload/${newName}`,
-            store: sellerStore.id
+            store: sellerStore.id,
           })
+
+          //update store
+          sellerStore.storeVerified = 'awaiting approval'
+          sellerStore.save()
+
           res.status(201).json({
             status: 'success',
             message: 'Proof of Address uploaded successfully',
@@ -75,6 +80,11 @@ const uploadDocs = async (req, res, next) => {
               proofOfAddress: `../../upload/${newName}`,
             }
           )
+
+          //update store
+          sellerStore.storeVerified = 'awaiting approval'
+          sellerStore.save()
+
           res.status(201).json({
             status: 'success',
             message: 'Proof of Address uploaded successfully',
@@ -95,7 +105,7 @@ const uploadDocs = async (req, res, next) => {
 
     if (!allowedMediaTypes.includes(doc.mimetype.split('/')[1])) {
       return next(
-        new ErrorResponse(
+        new Error(
           `Media type ${
             doc.mimetype.split('/')[1]
           } is not allowed. Allowed doc types ${allowedMediaTypes}`,
@@ -106,7 +116,7 @@ const uploadDocs = async (req, res, next) => {
 
     if (doc.size > 1000000) {
       return next(
-        new ErrorResponse(
+        new Error(
           `Upload file size is too large. Upload a file les than 1mb`,
           400
         )
@@ -135,6 +145,11 @@ const uploadDocs = async (req, res, next) => {
             store: sellerStore._id,
             proofOfId: `../../upload/${newName}`,
           })
+
+          //update store
+          sellerStore.storeVerified = 'awaiting approval'
+          sellerStore.save()
+
           res.status(201).json({
             status: 'success',
             message: 'Proof of ID uploaded successfully',
@@ -156,6 +171,10 @@ const uploadDocs = async (req, res, next) => {
               proofOfId: `../../upload/${newName}`,
             }
           )
+
+          //update store
+          sellerStore.storeVerified = 'awaiting approval'
+          sellerStore.save()
 
           res.status(201).json({
             status: 'success',

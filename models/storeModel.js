@@ -44,8 +44,15 @@ const StoreSchema = new Schema({
     default: false,
   },
   storeVerified: {
-    type: Boolean,
-    default: false,
+    type: String,
+    enum: [
+      'verified',
+      'unverified',
+      'awaiting approval',
+      'docs rejected',
+      'upload docs',
+    ],
+    default: 'upload docs',
   },
   createdAt: {
     type: Date,
