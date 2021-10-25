@@ -40,14 +40,13 @@ const userSchema = new Schema(
         type: Date,
       },
     },
-    googleUserId: {
-      type: String,
-    },
-    facebookUserId: {
-      type: String,
-    },
-    appleUserId: {
-      type: String,
+    social: {
+      provider: {
+        type: String,
+      },
+      id: {
+        type: String,
+      },
     },
     email: {
       type: String,
@@ -84,7 +83,7 @@ const userSchema = new Schema(
       type: String,
       lowercase: true,
       enum: ['admin', 'buyer', 'seller', 'stylist'],
-      default: 'user',
+      default: 'buyer',
     },
     emailVerified: {
       type: Boolean,
