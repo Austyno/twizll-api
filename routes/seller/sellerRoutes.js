@@ -33,7 +33,6 @@ router
   .put(authenticated, authRole('seller'), updateProduct)
   .delete(authenticated, authRole('seller'), deleteProduct)
 
-
 router.route('/dashboard').get(authenticated, authRole('seller'), dashboard)
 router
   .route('/mostviewed/:categoryId?')
@@ -42,37 +41,32 @@ router.route('/bestselling').get(authenticated, authRole('seller'), bestSelling)
 router.route('/inventory').get(authenticated, authRole('seller'), inventory)
 router.route('/new-store').post(authenticated, authRole('seller'), createStore)
 router.route('/new-product').post(authenticated, authRole('seller'), addProduct)
-router
-  .route('/categories')
-  .get(authenticated, authRole('seller'), getAllCategory)
+router.route('/categories').get(getAllCategory)
 
-  //orders
-  router
-    .route('/order/:trackingId')
-    .get(authenticated, authRole('seller'), order)
+//orders
+router.route('/order/:trackingId').get(authenticated, authRole('seller'), order)
 
-    router.route('/orders').get(authenticated, authRole('seller'),allOrders)
+router.route('/orders').get(authenticated, authRole('seller'), allOrders)
 router
   .route('/orders/new')
   .get(authenticated, authRole('seller'), allPendingOrders)
 router
   .route('/orders/completed')
   .get(authenticated, authRole('seller'), completedOrders)
-  router
-    .route('/orders/:orderId/items')
-    .get(authenticated, authRole('seller'), orderItems)
+router
+  .route('/orders/:orderId/items')
+  .get(authenticated, authRole('seller'), orderItems)
 
-    router
-      .route('/orders/:orderId')
-      .put(authenticated, authRole('seller'), updateOrder)
-      .get(authenticated, authRole('seller'), singleOrder)
-
+router
+  .route('/orders/:orderId')
+  .put(authenticated, authRole('seller'), updateOrder)
+  .get(authenticated, authRole('seller'), singleOrder)
 
 router
   .route('/bankdetails')
   .post(authenticated, authRole('seller'), addBankDetails)
 
-  //profile
+//profile
 router.route('/upload').post(authenticated, authRole('seller'), uploadDocs)
 router.route('/profile').get(authenticated, authRole('seller'), profile)
 // router
@@ -81,7 +75,6 @@ router.route('/profile').get(authenticated, authRole('seller'), profile)
 //     const Order = require('../../models/orderModel')
 //     req.body.store = req.store.id,
 //     req.body.buyer = req.user.id
-
 
 //     const order = await Order.create({
 //       store:req.store.id,

@@ -11,6 +11,10 @@ const productSchema = new Schema({
     ref: 'Category',
     required: [true, 'Please provide a category for this product'],
   },
+  twizll_collection: {
+    type: Schema.Types.ObjectId,
+    ref: 'Collection',
+  },
   name: {
     required: [true, 'Product name not provided'],
     type: String,
@@ -27,6 +31,20 @@ const productSchema = new Schema({
   weight: {
     type: Number,
     required: [true, 'please tell us the weight of this item'],
+  },
+  dimension: {
+    height: {
+      type: Number,
+      required: true,
+    },
+    weight: {
+      type: Number,
+      required: true,
+    },
+    length: {
+      type: Number,
+      required: true,
+    },
   },
   brand: {
     type: String,
@@ -47,7 +65,7 @@ const productSchema = new Schema({
     type: Number,
     default: 0,
   },
-  totalNoOfUnits: {
+  availableQty: {
     required: [true, 'Product total Number Of Units not provided'],
     type: Number,
   },
@@ -76,12 +94,11 @@ const productSchema = new Schema({
   },
 })
 
-
 productSchema.virtual('reviews', {
   ref: 'ProductReview',
   localField: '_id',
   foreignField: 'product',
-  justOne:false
+  justOne: false,
 })
 
 // productSchema.index({ name: 1, mainPhoto: 1, unitPrice: 1 })
@@ -89,7 +106,6 @@ productSchema.virtual('reviews', {
 
 productSchema.set('toObject', { virtuals: true })
 productSchema.set('toJSON', { virtuals: true })
-
 
 // productSchema.methods.calculateAverageRating = async function (defaultRating) {
 //   let productReviewsAvg = await ProductReview.db

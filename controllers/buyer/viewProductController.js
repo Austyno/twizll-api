@@ -16,6 +16,11 @@ const viewProduct = async (req, res, next) => {
     const similarProducts = await Category.findById(product.category).populate(
       'products'
     )
+    const productCategory = await Category.findById(product.category)
+
+    //update ctegory views
+    productCategory.views = Number(productCategory.views) + 1
+    productCategory.save({ validateBeforeSave: false })
 
     const youMayAlsoLike = similarProducts.products.filter(
       item => item._id != productId
