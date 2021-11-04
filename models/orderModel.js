@@ -22,13 +22,10 @@ const OrderSchema = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['new', 'shipped', 'delivered'],
+      enum: ['new', 'shipped', 'delivered', 'cancelled', 'confirmed'],
       default: 'new',
     },
-    // orderItems:{
-    //   type:Array
-    // },
-    orderItem: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+    orderItems: [{ ref: 'OrderItem', type: Schema.Types.ObjectId }],
     shippingAddress: {
       type: String,
     },

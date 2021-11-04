@@ -23,52 +23,80 @@ const uploadDocs = require('../../controllers/seller/uploadVerificationDocsContr
 const profile = require('../../controllers/seller/getSellerProfileController')
 const orderItems = require('../../controllers/seller/getOrderItemsController')
 const allOrders = require('../../controllers/seller/getAllOrdersController')
+const bankDetails = require('../../controllers/seller/getBankDetailsController')
+const updateProfile = require('../../controllers/seller/updateSellerProfile')
+const updateProfileImage = require( '../../controllers/seller/updateProfileImage' )
 
 router
   .route('/products/:catId')
-  .get(authenticated, authRole('seller'), getAllProductsByCat)
+  .get(authenticated('seller'), authRole('seller'), getAllProductsByCat)
 router
   .route('/edit/:productId')
-  .get(authenticated, authRole('seller'), editProduct)
-  .put(authenticated, authRole('seller'), updateProduct)
-  .delete(authenticated, authRole('seller'), deleteProduct)
+  .get(authenticated('seller'), authRole('seller'), editProduct)
+  .put(authenticated('seller'), authRole('seller'), updateProduct)
+  .delete(authenticated('seller'), authRole('seller'), deleteProduct)
 
-router.route('/dashboard').get(authenticated, authRole('seller'), dashboard)
+router
+  .route('/dashboard')
+  .get(authenticated('seller'), authRole('seller'), dashboard)
 router
   .route('/mostviewed/:categoryId?')
-  .get(authenticated, authRole('seller'), mostViewed)
-router.route('/bestselling').get(authenticated, authRole('seller'), bestSelling)
-router.route('/inventory').get(authenticated, authRole('seller'), inventory)
-router.route('/new-store').post(authenticated, authRole('seller'), createStore)
-router.route('/new-product').post(authenticated, authRole('seller'), addProduct)
+  .get(authenticated('seller'), authRole('seller'), mostViewed)
+router
+  .route('/bestselling')
+  .get(authenticated('seller'), authRole('seller'), bestSelling)
+router
+  .route('/inventory')
+  .get(authenticated('seller'), authRole('seller'), inventory)
+router
+  .route('/new-store')
+  .post(authenticated('seller'), authRole('seller'), createStore)
+router
+  .route('/new-product')
+  .post(authenticated('seller'), authRole('seller'), addProduct)
 router.route('/categories').get(getAllCategory)
 
 //orders
-router.route('/order/:trackingId').get(authenticated, authRole('seller'), order)
+router
+  .route('/order/:trackingId')
+  .get(authenticated('seller'), authRole('seller'), order)
 
-router.route('/orders').get(authenticated, authRole('seller'), allOrders)
+router
+  .route('/orders')
+  .get(authenticated('seller'), authRole('seller'), allOrders)
 router
   .route('/orders/new')
-  .get(authenticated, authRole('seller'), allPendingOrders)
+  .get(authenticated('seller'), authRole('seller'), allPendingOrders)
 router
   .route('/orders/completed')
-  .get(authenticated, authRole('seller'), completedOrders)
+  .get(authenticated('seller'), authRole('seller'), completedOrders)
 router
   .route('/orders/:orderId/items')
-  .get(authenticated, authRole('seller'), orderItems)
+  .get(authenticated('seller'), authRole('seller'), orderItems)
 
 router
   .route('/orders/:orderId')
-  .put(authenticated, authRole('seller'), updateOrder)
-  .get(authenticated, authRole('seller'), singleOrder)
+  .put(authenticated('seller'), authRole('seller'), updateOrder)
+  .get(authenticated('seller'), authRole('seller'), singleOrder)
 
 router
   .route('/bankdetails')
-  .post(authenticated, authRole('seller'), addBankDetails)
+  .post(authenticated('seller'), authRole('seller'), addBankDetails)
 
 //profile
-router.route('/upload').post(authenticated, authRole('seller'), uploadDocs)
-router.route('/profile').get(authenticated, authRole('seller'), profile)
+router
+  .route('/upload')
+  .post(authenticated('seller'), authRole('seller'), uploadDocs)
+router
+  .route('/profile')
+  .get(authenticated('seller'), authRole('seller'), profile)
+  .put(authenticated('seller'),updateProfile)
+router.route('/profile/image').put(authenticated('seller'),updateProfileImage)
+
+//bank
+router
+  .route('/bank-details')
+  .get(authenticated('seller'), authRole('seller'), bankDetails)
 // router
 //   .route('/create-order')
 //   .post(authenticated, authRole('seller'), async (req, res) => {

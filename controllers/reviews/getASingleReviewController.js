@@ -17,6 +17,7 @@ const singleReview = async (req, res, next) => {
       'product',
       'name briefDesc mainPhoto ratingAvg'
     )
+    //Todo : return product seperate from review
     res.status(200).json({
       status: 'success',
       message: 'review retrieved successfully',

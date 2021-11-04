@@ -1,4 +1,4 @@
-const User = require('../../models/userModel')
+const Seller = require('../../models/sellerModel')
 const Error = require('../../utils/errorResponse')
 
 const profile = async (req, res, next) => {
@@ -13,10 +13,11 @@ const profile = async (req, res, next) => {
   }
 
   try{
-    const user = await User.findById(req.user._id).populate('store','storeVisits totalSales totalOrders totalReturns docsUploaded storeVerified storeName')
+    const user = await Seller.findById(req.user._id).populate('store','storeVisits totalSales totalOrders totalReturns docsUploaded storeVerified storeName')
     user.stripe_customer_id = undefined
     user.token= undefined
     user.__v = undefined
+    
     res.status(200).json({
       status: 'success',
       message: 'Seller profile retrieved successfuly',
