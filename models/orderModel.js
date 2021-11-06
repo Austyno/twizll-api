@@ -3,18 +3,13 @@ const { model, Schema } = require('mongoose')
 
 const OrderSchema = new Schema(
   {
-    store: {
+    buyer: {
       type: Schema.Types.ObjectId,
-      ref: 'Store',
-      required: [true, 'Please provide the store this order belongs to'],
+      ref: 'Buyer',
+      required: [true, 'the buyer id is required'],
     },
     trackingId: {
       type: String,
-    },
-    buyer: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: [true, 'the buyer id is required'],
     },
     orderTotal: {
       type: Number,
@@ -38,6 +33,7 @@ const OrderSchema = new Schema(
     deliveryType: {
       type: String,
       enum: ['express', 'regular'],
+      default:'regular'
     },
   },
   { timestamps: true }

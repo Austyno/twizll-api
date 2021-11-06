@@ -20,13 +20,11 @@ const productCategorySchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-})
-
-productCategorySchema.virtual('products', {
-  ref: 'Product',
-  localField: '_id',
-  foreignField: 'category',
-  justOne: false,
+  mainCategory: {
+    type: Schema.Types.ObjectId,
+    ref: 'MainCategory',
+    required:[true, 'a main category is required']
+  },
 })
 
 productCategorySchema.set('toObject', { virtuals: true })

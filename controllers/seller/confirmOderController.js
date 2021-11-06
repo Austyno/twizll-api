@@ -16,9 +16,10 @@ const confirmOder = (req,res,next) => {
     return next(new Error('Only store owners can perform this action', 403))
   }
 
-
-
   try{
+    // go to order items and get all items with order id{this will contain the products and their ids}
+    // use product id and get products from product db {this will contain the store id}
+    // filter products using store id and return to frontend
     const 
   }catch(e){
     return next(new Error(e.message))

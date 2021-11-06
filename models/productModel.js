@@ -6,10 +6,10 @@ const productSchema = new Schema({
     required: [true, 'Please provide the id of the seller of this product'],
     ref: 'Store',
   },
-  category: {
+  sub_category: {
     type: Schema.Types.ObjectId,
-    ref: 'Category',
-    required: [true, 'Please provide a category for this product'],
+    ref: 'SubCategory',
+    required: [true, 'Please provide a subcategory for this product'],
   },
   twizll_collection: {
     type: Schema.Types.ObjectId,
@@ -28,10 +28,6 @@ const productSchema = new Schema({
   briefDesc: {
     type: String,
   },
-  weight: {
-    type: Number,
-    required: [true, 'please tell us the weight of this item'],
-  },
   dimension: {
     height: {
       type: Number,
@@ -42,6 +38,10 @@ const productSchema = new Schema({
       required: true,
     },
     length: {
+      type: Number,
+      required: true,
+    },
+    width: {
       type: Number,
       required: true,
     },
@@ -70,7 +70,8 @@ const productSchema = new Schema({
     type: Number,
   },
   attributes: {
-    type: Array,
+    color: [String],
+    size: [String],
   },
   returnPolicy: {
     type: String,

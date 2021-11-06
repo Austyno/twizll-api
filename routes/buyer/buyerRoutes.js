@@ -11,6 +11,7 @@ const getCollections = require('../../controllers/buyer/getCollectionsController
 const topDeals = require('../../controllers/buyer/topDealsController')
 const recommendedProducts = require( '../../controllers/buyer/getRecommendedProductsController' )
 
+
 router.route('/products/:productId').get(viewProduct)
 router
   .route('/products')
@@ -20,4 +21,5 @@ router.route('/categories/most-viewed').get(mostViewedCategory)
 router.route('/collections').get(getCollections)
 router.route('/top-deals').get(topDeals)
 router.route('/recommended-products').get(recommendedProducts)
+
 module.exports = router

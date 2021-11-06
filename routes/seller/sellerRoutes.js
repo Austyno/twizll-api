@@ -101,14 +101,8 @@ router
 //   .route('/create-order')
 //   .post(authenticated, authRole('seller'), async (req, res) => {
 //     const Order = require('../../models/orderModel')
-//     req.body.store = req.store.id,
 //     req.body.buyer = req.user.id
-
-//     const order = await Order.create({
-//       store:req.store.id,
-// buyer:req.user.id,
-// orderTotal: 5678,
-// orderItems:[
+  //  orderItems:[
 //   {
 //       "productId": "60f571e3cbfbe5c4de6f24b1",
 //       "qty": 10
@@ -122,6 +116,12 @@ router
 //       "qty": 9
 //   }
 // ]
+
+//     const order = await Order.create({
+//       store:req.store.id,
+//        buyer:req.user.id,
+//        orderTotal: 5678,
+//      
 //    })
 
 //     res.status(201).json({

@@ -73,6 +73,7 @@ const stripeRoutes = require('./routes/stripe/stripeRoutes')
 const cartRoutes = require('./routes/cart/cartRoutes')
 const reviewsRoutes = require('./routes/reviews/reviewRoutes')
 const buyerRoutes = require('./routes/buyer/buyerRoutes')
+const categoryRoutes = require('./routes/category/categoryRoutes')
 
 app.use(mongoSanitize())
 
@@ -103,6 +104,7 @@ app.use('/api/stripe', stripeRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api/reviews', reviewsRoutes)
 app.use('/api/buyer', buyerRoutes)
+app.use('/api/categories', categoryRoutes)
 
 app.use(Errors)
 

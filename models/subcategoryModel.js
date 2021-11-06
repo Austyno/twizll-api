@@ -6,9 +6,9 @@ const subCategorySchema = new Schema({
     type: String,
     unique: true,
   },
-  parentCategory:{
+  parentCategory: {
     type: Schema.Types.ObjectId,
-    ref:'Category'
+    ref: 'Category',
   },
   briefDesc: {
     type: String,
@@ -21,4 +21,12 @@ const subCategorySchema = new Schema({
     default: Date.now(),
   },
 })
-module.exports = model('Subcategory', subCategorySchema)
+
+subCategorySchema.virtual('products', {
+  ref: 'Product',
+  localField: '_id',
+  foreignField: 'sub_category',
+  justOne: false,
+})
+
+module.exports = model('SubCategory', subCategorySchema)
