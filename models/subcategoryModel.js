@@ -16,6 +16,10 @@ const subCategorySchema = new Schema({
   photo: {
     type: String,
   },
+  views: {
+    type: Number,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

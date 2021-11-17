@@ -45,7 +45,12 @@ const socialRegister = async (req, res, next) => {
           role: 'buyer',
           phone: phone ? phone : null,
         }
-        await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
+        await sendMail.notifyAdmin(
+          'info@twizll.com',
+          'New User',
+          userData,
+          'newUser'
+        )
 
         res.status(201).json({
           status: 'success',
@@ -96,7 +101,12 @@ const socialRegister = async (req, res, next) => {
             role:'seller',
             phone: phone ? phone : null,
           }
-          await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
+          await sendMail.notifyAdmin(
+            'info@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           res.status(201).json({
             status: 'success',
@@ -154,7 +164,12 @@ const socialRegister = async (req, res, next) => {
             role:'stylist',
             phone: phone ? phone : null,
           }
-          await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
+          await sendMail.notifyAdmin(
+            'info@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           res.status(201).json({
             status: 'success',

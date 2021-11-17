@@ -28,23 +28,21 @@ const productSchema = new Schema({
   briefDesc: {
     type: String,
   },
-  dimension: {
-    height: {
-      type: Number,
-      required: true,
-    },
-    weight: {
-      type: Number,
-      required: true,
-    },
-    length: {
-      type: Number,
-      required: true,
-    },
-    width: {
-      type: Number,
-      required: true,
-    },
+  height: {
+    type: Number,
+    required: true,
+  },
+  weight: {
+    type: Number,
+    required: true,
+  },
+  length: {
+    type: Number,
+    required: true,
+  },
+  width: {
+    type: Number,
+    required: true,
   },
   brand: {
     type: String,
@@ -70,18 +68,22 @@ const productSchema = new Schema({
     type: Number,
   },
   attributes: {
-    color: [String],
-    size: [String],
+    colors: [String],
+    sizes: [String],
   },
   returnPolicy: {
     type: String,
     required: true,
   },
-  availableUnits: {
-    type: Number,
-  },
+  // availableUnits: {
+  //   type: Number,
+  // },
   sourceOfMaterial: {
     type: String,
+  },
+  percentageDiscount: {
+    type: String,
+    default: '0%',
   },
   ratingAvg: {
     type: Number,

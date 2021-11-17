@@ -41,10 +41,10 @@ class SendEmail {
       )
     })
   }
-  notifyAdmin = async (emailAddress, subject, dataObject) => {
+  notifyAdmin = async (emailAddress, subject, dataObject,template) => {
     return new Promise((resolve, reject) => {
       ejs.renderFile(
-        path.join(__dirname, '../public/views/newUser.ejs'),
+        path.join(__dirname, `../public/views/${template}.ejs`),
         dataObject,
         (err, data) => {
           if (err) {

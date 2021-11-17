@@ -4,10 +4,11 @@ const Order = require('../../models/orderModel')
 const OrderItem = require('../../models/orderItem')
 const Product = require('../../models/productModel')
 
-const orderItems = async (req, res, next) => {
+const confirmOder = async (req, res, next) => {
   const seller = req.user
   const sellerStore = req.store
 
+  const { productId, status } = req.body
   const { orderId } = req.params
 
   if (!seller) {
@@ -24,32 +25,21 @@ const orderItems = async (req, res, next) => {
   }
 
   try {
-    const products = []
-    const orderItems = await OrderItem.find({
-      $and: [{ orderId }, { status: 'new' }],
-    })
-
-    for (let i = 0; i < orderItems.length; i++) {
-      const getProduct = await Product.findById(orderItems[i].product)
-
-      products.push(getProduct)
-    }
-
-    const loggedInUserProducts = products.filter(
-      item => {
-        if(item != null){
-          return item.store == sellerStore.id
-        }
-      }
+    // const products = []
+    const orderItem = await OrderItem.findOneAndUpdate(
+      {
+        $and: [{ orderId }, { product:productId }],
+      },
+      { status }
     )
 
     res.status(200).json({
       status: 'success',
-      message: 'order items retrieved',
-      data: loggedInUserProducts,
+      message: 'order item updated successfully',
+      data: '',
     })
   } catch (e) {
     return next(new Error(e.message))
   }
 }
-module.exports = orderItems
+module.exports = confirmOder

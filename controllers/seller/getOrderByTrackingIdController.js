@@ -1,8 +1,9 @@
 const Order = require('../../models/orderModel')
+const OrderItem = require('../../models/orderItem')
 const Error = require('../../utils/errorResponse')
 
 const trackOrder = async (req, res, next) => {
-  // 
+  //
   const { trackingId } = req.params
   const seller = req.user
   const sellerStore = req.store
@@ -21,14 +22,25 @@ const trackOrder = async (req, res, next) => {
   }
 
   try {
-    const order = await Order.find({
-      $and: [{ store: sellerStore.id }, { trackingId }],
-    }).populate('buyer', 'fullName address email phone')
+    const order = await Order.findOne({ trackingId }).populate(
+      'buyer',
+      'fullName address email phone'
+    )
+
+    const orderItems = await OrderItem.find({orderId:order._id}).populate('product')
+
+    const sellerItems = orderItems.filter(item => {
+      if(item != null){
+        return item.product.store == sellerStore.id
+      }
+    })
+
+
 
     res.status(200).json({
       status: 'success',
       message: 'this is your order',
-      data: order,
+      data: sellerItems,
     })
   } catch (e) {
     return next(new Error(e.message, 500))

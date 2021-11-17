@@ -13,13 +13,12 @@ const OrderSchema = new Schema(
     },
     orderTotal: {
       type: Number,
-      required: [true, 'please provide the order total'],
     },
-    orderStatus: {
-      type: String,
-      enum: ['new', 'shipped', 'delivered', 'cancelled', 'confirmed'],
-      default: 'new',
-    },
+    // orderStatus: {
+    //   type: String,
+    //   enum: ['processing','pending','shipped'],
+    //   default: 'new',
+    // },
     orderItems: [{ ref: 'OrderItem', type: Schema.Types.ObjectId }],
     shippingAddress: {
       type: String,
@@ -38,7 +37,7 @@ const OrderSchema = new Schema(
   },
   { timestamps: true }
 )
-OrderSchema.index({ trackingId: 1, buyer: 1, store: 1 },{unique:true})
+OrderSchema.index({ trackingId: 1 },{unique:true})
 
 OrderSchema.pre('save', function () {
   //tracking id will be given by shipping company. this is temp for now

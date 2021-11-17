@@ -2,12 +2,12 @@ const { Schema, model } = require('mongoose')
 
 const orderItemSchema = new Schema(
   {
-    orderID: {
+    orderId: {
       required: true,
       type: Schema.Types.ObjectId,
       ref: 'Order',
     },
-    productID: {
+    product: {
       required: true,
       type: Schema.Types.ObjectId,
       ref: 'Product',
@@ -24,11 +24,11 @@ const orderItemSchema = new Schema(
       required: true,
       type: Number,
     },
-    status:{
-      type:String,
-      enum:['new','confirmed','cancelled'],
-      default:'new'
-    }
+    status: {
+      type: String,
+      enum: ['new', 'confirmed', 'cancelled', 'completed'],
+      default: 'new',
+    },
   },
   {
     timestamps: true,
@@ -36,6 +36,5 @@ const orderItemSchema = new Schema(
 )
 
 orderItemSchema.index({ orderID: 1, productID: 1 })
-
 
 module.exports = model('OrderItem', orderItemSchema)

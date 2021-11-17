@@ -1,5 +1,6 @@
 const Error = require('../../utils/errorResponse')
 const Product = require('../../models/productModel')
+const SubCategory = require('../../models/subcategoryModel')
 const Category = require('../../models/categoryModel')
 
 const viewProduct = async (req, res, next) => {
@@ -11,12 +12,12 @@ const viewProduct = async (req, res, next) => {
   }
 
   try {
-    const product = await Product.findById(productId).populate('category')
+    const product = await Product.findById(productId).populate('subcategory')
 
-    const similarProducts = await Category.findById(product.category).populate(
+    const similarProducts = await SubCategory.findById(product.sub_category).populate(
       'products'
     )
-    const productCategory = await Category.findById(product.category)
+    const productCategory = await SubCategory.findById(product.sub_category)
 
     //update ctegory views
     productCategory.views = Number(productCategory.views) + 1

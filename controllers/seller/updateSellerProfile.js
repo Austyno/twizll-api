@@ -22,7 +22,7 @@ const updateProfile = async (req, res, next) => {
       },
       { new: true }
     )
-
+update.token = undefined
     res.status(201).json({
       status: 'success',
       message: 'seller profile updated successfully',

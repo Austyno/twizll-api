@@ -7,6 +7,10 @@ const createAuthToken = require('../../utils/createAuthToken')
 const login = async (req, res, next) => {
   const { email, password, role } = req.body
 
+  if(role === undefined){
+    return next(new Error('Role is required',400))
+  }
+
   switch (role) {
     //seller
     case 'seller':

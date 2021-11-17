@@ -12,7 +12,7 @@ const deleteProduct = async (req, res, next) => {
     return next(new Error('You need to sign in to perform this action', 403))
   }
 
-  if (sellerStore === null) {
+  if (!sellerStore) {
     return next(new Error('Only store owners can perform this action', 403))
   }
 
@@ -23,21 +23,23 @@ const deleteProduct = async (req, res, next) => {
   }
 
   try {
-    if(prod.photos !== null){
+    if (prod.photos !== null) {
       prod.photos.forEach(photo => {
         deleteFromCloudinary(photo)
       })
     }
 
-  deleteFromCloudinary(prod.mainPhoto)
-
-    await Product.findByIdAndDelete(productId)
-
-    res.status(200).json({
-      status: 'success',
-      message: 'product deleted successfully',
-      data: {},
-    })
+    deleteFromCloudinary(prod.mainPhoto)
+    if (prod.store === sellerStore.id) {
+      await Product.findByIdAndDelete(productId)
+      res.status(200).json({
+        status: 'success',
+        message: 'product deleted successfully',
+        data: '',
+      })
+    } else {
+      return next(new Error('You cannot delete this product', 403))
+    }
   } catch (e) {
     return next(new Error(e.message, 500))
   }

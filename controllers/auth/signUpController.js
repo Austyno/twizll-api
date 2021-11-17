@@ -13,6 +13,10 @@ const signUp = async (req, res, next) => {
   // switch
   const { email, phone, password, fullName, role } = req.body
 
+  if (role === undefined) {
+    return next(new Error('Role is required', 400))
+  }
+
   switch (role) {
     case 'seller':
       const sellerExist = await Seller.findOne({ email })
@@ -68,7 +72,12 @@ const signUp = async (req, res, next) => {
             fullName,
             role: 'seller',
           }
-          await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
+          await sendMail.notifyAdmin(
+            'info@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           res.status(201).json({
             status: 'success',
@@ -131,7 +140,12 @@ const signUp = async (req, res, next) => {
             fullName,
             role: 'buyer',
           }
-          await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
+          await sendMail.notifyAdmin(
+            'info@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           res.status(201).json({
             status: 'success',
@@ -204,7 +218,12 @@ const signUp = async (req, res, next) => {
             fullName,
             role: 'stylist',
           }
-          await sendMail.notifyAdmin('info@twizll.com', 'New User', userData)
+          await sendMail.notifyAdmin(
+            'info@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           res.status(201).json({
             status: 'success',

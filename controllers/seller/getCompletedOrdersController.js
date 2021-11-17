@@ -1,4 +1,8 @@
 const Order = require('../../models/orderModel')
+const Product = require('../../models/productModel')
+const OrderItem = require('../../models/orderItem')
+
+
 const Error = require('../../utils/errorResponse')
 
 const completedOrders = async (req, res, next) => {
@@ -12,13 +16,22 @@ const completedOrders = async (req, res, next) => {
     return next(new Error('Only store owners can perform this action', 403))
   }
   try {
-    const orders = await Order.find({
-      $and: [{ store: sellerStore._id }, { orderStatus: 'delivered' }],
-    })
+
+    const products = []
+    const orderItems = await OrderItem.find({ status: 'completed' })
+
+    for (let i = 0; i < orderItems.length; i++) {
+      const getProduct = await Product.findById(orderItems[i].product)
+
+      products.push(getProduct)
+    }
+
+    const loggedInUserProducts = products.filter(item => item.store == sellerStore.id)
+
     res.status(200).json({
       status: 'success',
       message: 'completed orders retrieved',
-      data: orders,
+      data: loggedInUserProducts,
     })
   } catch (e) {
     return next(new Error(e.message, 500))

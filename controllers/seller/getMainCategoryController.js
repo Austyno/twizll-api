@@ -1,4 +1,4 @@
-const Category = require('../../models/categoryModel')
+const MainCategory = require('../../models/mainCategoryModel')
 
 const getAllCategory = async (req, res, next) => {
   // const seller = req.user
@@ -13,10 +13,10 @@ const getAllCategory = async (req, res, next) => {
   // }
 
   try {
-    const cat = await Category.find()
+    const cat = await MainCategory.find()
     res.status(200).json({
       status: 'success',
-      message: 'All product categories',
+      message: 'Main categories retrieved',
       data: cat,
     })
   } catch (e) {

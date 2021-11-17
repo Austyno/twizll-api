@@ -14,10 +14,6 @@ const {
   resetPassword,
 } = require('../../controllers/auth/resetPasswordController')
 
-// const googleAuth = require('../../controllers/auth/googleLogin')
-// const showLogin = require('../../controllers/auth/testGoogle')
-// const userInfo = require('../../controllers/auth/userInfo')
-
 router.route('/signup').post(signUp)
 router.route('/signup/social').post(socialReg)
 router.route('/login').post(login)

@@ -12,10 +12,10 @@ const addProduct = require('../../controllers/seller/addProductsController')
 const editProduct = require('../../controllers/seller/editProductController')
 const updateProduct = require('../../controllers/seller/updateProductController')
 const deleteProduct = require('../../controllers/seller/deleteProductController')
-const getAllCategory = require('../../controllers/seller/getAllCategoryController')
+const getMainCategory = require('../../controllers/seller/getMainCategoryController')
 const allPendingOrders = require('../../controllers/seller/getAllPendingOrdersController')
 const order = require('../../controllers/seller/getOrderByTrackingIdController')
-const updateOrder = require('../../controllers/seller/updateOrderStatusController')
+const updateOrder = require('../../controllers/seller/confirmOrderController')
 const completedOrders = require('../../controllers/seller/getCompletedOrdersController')
 const singleOrder = require('../../controllers/seller/getSingleOrderController')
 const addBankDetails = require('../../controllers/seller/addBankDetailsController')
@@ -25,7 +25,8 @@ const orderItems = require('../../controllers/seller/getOrderItemsController')
 const allOrders = require('../../controllers/seller/getAllOrdersController')
 const bankDetails = require('../../controllers/seller/getBankDetailsController')
 const updateProfile = require('../../controllers/seller/updateSellerProfile')
-const updateProfileImage = require( '../../controllers/seller/updateProfileImage' )
+const updateProfileImage = require('../../controllers/seller/updateProfileImage')
+const contactUs = require('../../controllers/seller/contactUsController')
 
 router
   .route('/products/:catId')
@@ -54,7 +55,7 @@ router
 router
   .route('/new-product')
   .post(authenticated('seller'), authRole('seller'), addProduct)
-router.route('/categories').get(getAllCategory)
+router.route('/categories/main').get(getMainCategory)
 
 //orders
 router
@@ -90,8 +91,10 @@ router
 router
   .route('/profile')
   .get(authenticated('seller'), authRole('seller'), profile)
-  .put(authenticated('seller'),updateProfile)
-router.route('/profile/image').put(authenticated('seller'),updateProfileImage)
+  .put(authenticated('seller'), updateProfile)
+router.route('/profile/image').put(authenticated('seller'), updateProfileImage)
+
+router.route('/contact-us').post(contactUs)
 
 //bank
 router
@@ -99,35 +102,54 @@ router
   .get(authenticated('seller'), authRole('seller'), bankDetails)
 // router
 //   .route('/create-order')
-//   .post(authenticated, authRole('seller'), async (req, res) => {
+//   .post(authenticated('seller'), authRole('seller'), async (req, res) => {
 //     const Order = require('../../models/orderModel')
+//     const OrderItem = require('../../models/orderItems')
 //     req.body.buyer = req.user.id
-  //  orderItems:[
-//   {
-//       "productId": "60f571e3cbfbe5c4de6f24b1",
-//       "qty": 10
-//   },
-//   {
-//       "productId": "60f57459cbfbe5c4de6f24ba",
-//       "qty": 5
-//   },
-//   {
-//       "productId": "60f57475cbfbe5c4de6f24bb",
-//       "qty": 9
-//   }
-// ]
-
+//     const items = [
+//       {
+//         productId: '60f571e3cbfbe5c4de6f24b1',
+//         qty: 10,
+//         unitPrice: 25,
+//       },
+//       {
+//         productId: '60f57459cbfbe5c4de6f24ba',
+//         qty: 5,
+//         unitPrice: 9,
+//       },
+//     ]
+//     // orderID
+//     // productID
+//     // totalPrice
+//     // discountedPrice
+//     // quantity
+//     // status
 //     const order = await Order.create({
-//       store:req.store.id,
-//        buyer:req.user.id,
-//        orderTotal: 5678,
-//      
-//    })
+//       buyer: req.user.id,
+//     })
+//     let itemArr = []
+//     let orderTotal = 0
+
+//     for (let i = 0; i < items.length; i++) {
+//       const newItem = await OrderItem.create({
+//         orderId: order.id,
+//         productId: items[i].productId,
+//         totalPrice: items[i].qty * items[i].unitPrice,
+//         quantity: items[i].qty,
+//       })
+//       itemArr.push(newItem.id)
+//       orderTotal += Number(newItem.totalPrice)
+//     }
+//     order.orderItems = itemArr
+//     order.orderTotal = orderTotal
+//     order.save({ validateBeforeSave: false })
 
 //     res.status(201).json({
-//       status: 'success',
-//       data: order,
+//       status:"success",
+//       message:"order crested successfully",
+//       data:order
 //     })
+
 //   })
 
 module.exports = router

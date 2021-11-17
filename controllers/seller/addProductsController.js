@@ -6,7 +6,6 @@ const Error = require('../../utils/errorResponse')
 const cloudStorage = require('../../utils/uploadToCloudinary')
 const convert = require('../../utils/convertCurrentcy')
 
-
 require('../../models/productModel')
 require('../../models/categoryModel')
 
@@ -22,33 +21,38 @@ const addProduct = async (req, res, next) => {
   const sellerStore = req.store
 
   const {
-    category,
+    subcategory,
     name,
     description,
     returnPolicy,
     brand,
     sourceOfMaterial,
     attributes,
-    totalNoOfUnits,
-    weight,
+    availableQty,
     unitPrice,
     discount,
-    currency
+    currency,
+    height,
+    width,
+    weight,
+    length,
   } = req.body
 
   const photos = req.files.photos
 
   const converted = await convert(currency, 'GBP', unitPrice)
+  const parsed = JSON.parse(attributes)
 
   if (Array.isArray(photos))
     if (photos.length < 1) {
       return next(new Error('please upload at least one image in photos', 400))
     }
-  const uploadedPhotos = []
+  
 
   photos.forEach(photo => {
     cloudStorage(photo.tempFilePath)
       .then(result => {
+
         uploadedPhotos.push(result.secure_url)
 
         const tmpFilePath = path.join(__dirname, '../../tmp/')
@@ -61,22 +65,32 @@ const addProduct = async (req, res, next) => {
       .catch(e => console.log(e))
   })
 
+  const uploadedPhotos = []
+  console.log(uploadedPhotos)
+
   cloudStorage(req.files.mainPhoto.tempFilePath)
     .then(async result => {
       const product = await Product.create({
-        category,
+        sub_category: subcategory,
         name,
         description,
         returnPolicy,
         brand,
         sourceOfMaterial,
-        attributes,
-        totalNoOfUnits,
+        attributes:{
+          colors:parsed.colors,
+          sizes:parsed.sizes
+        },
+        availableQty,
         weight,
         unitPrice: converted + 20,
         mainPhoto: result.secure_url,
         photos: uploadedPhotos,
         discount,
+        height,
+        width,
+        weight,
+        length,
         store: sellerStore.id,
       })
       const tmpFilePath = path.join(__dirname, '../../tmp/')
