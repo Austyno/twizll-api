@@ -2,7 +2,7 @@ const { model, Schema } = require('mongoose')
 
 const productCategorySchema = new Schema({
   name: {
-    required: [true, 'Product Category name not provided'],
+    required: [true, 'Category name not provided'],
     type: String,
     unique: true,
   },

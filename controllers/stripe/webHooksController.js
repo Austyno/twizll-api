@@ -1,6 +1,6 @@
 const Error = require('../../utils/errorResponse')
 const stripUtil = require('../../utils/stripe/Stripe')
-const User = require('../../models/userModel')
+const Seller = require('../../models/sellerModel')
 const moment = require('moment')
 
 const webHooks = async (req, res, next) => {
@@ -15,7 +15,7 @@ const webHooks = async (req, res, next) => {
     switch (event.type) {
       case 'customer.subscription.created':
         //locate user and update info based on returned info from stripe after subscription
-        const user = await User.findOne({ stripe_customer_id: data.customer })
+        const user = await Seller.findOne({ stripe_customer_id: data.customer })
 
         user.free_trial.status = 'completed'
         user.plan.status = data.status

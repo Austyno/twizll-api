@@ -43,6 +43,7 @@ const login = async (req, res, next) => {
             // prompt user to subscribe to a plan
           }
           // get subscription end date from db and comapre to today if today > end date; subscription has expired. deny login
+          //TODO:Update store active subscription to reflect current subscription status
         } else if (loggedInUser.plan.status === 'active') {
           if (loggedInUser.plan.end_date < Date.now()) {
             loggedInUser.plan.status = 'expired'

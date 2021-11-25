@@ -4,12 +4,16 @@ const StoreSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     required: [true, 'Please provide the id of the owner of this store'],
-    ref: 'User',
+    ref: 'Seller',
   },
   stripeAccountId: { type: String },
   stripeSupported: {
     type: Boolean,
     default: false,
+  },
+  activeSubscription:{
+    type:Boolean,
+    default:false
   },
   country: {
     type: String,
@@ -51,6 +55,7 @@ const StoreSchema = new Schema({
       'awaiting approval',
       'docs rejected',
       'upload docs',
+      'docs uploaded'
     ],
     default: 'upload docs',
   },

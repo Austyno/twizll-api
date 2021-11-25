@@ -8,6 +8,9 @@ const OrderSchema = new Schema(
       ref: 'Buyer',
       required: [true, 'the buyer id is required'],
     },
+     shippingAddress:{
+      type:String
+    },
     trackingId: {
       type: String,
     },

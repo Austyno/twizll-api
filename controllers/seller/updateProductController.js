@@ -94,6 +94,7 @@ const updateProduct = async (req, res, next) => {
           description: description ? description : proToUpdate.description,
           mainPhoto: updateMainPhoto ? updateMainPhoto : proToUpdate.mainPhoto,
           availableQty: availableQty ? availableQty : proToUpdate.availableQty,
+          briefDesc: briefDesc ? briefDesc :proToUpdate.briefDesc,
           attributes: attributes
             ? {
                 colors: parsed.colors,

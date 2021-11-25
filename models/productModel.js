@@ -64,7 +64,7 @@ const productSchema = new Schema({
     default: 0,
   },
   availableQty: {
-    required: [true, 'Product total Number Of Units not provided'],
+    required: [true, 'Product total Number available for sale'],
     type: Number,
   },
   attributes: {

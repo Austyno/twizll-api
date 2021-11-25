@@ -17,7 +17,7 @@ const cartItemSchema = new Schema({
 const cartSchema = new Schema(
   {
     owner: {
-      ref: 'User',
+      ref: 'Buyer',
       type: Schema.Types.ObjectId,
       index: true,
       unique: true,

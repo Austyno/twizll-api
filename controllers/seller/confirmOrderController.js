@@ -30,7 +30,7 @@ const confirmOder = async (req, res, next) => {
       {
         $and: [{ orderId }, { product:productId }],
       },
-      { status }
+      {$set: { status }}
     )
 
     res.status(200).json({

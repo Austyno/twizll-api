@@ -1,5 +1,6 @@
 const Store = require('../../models/storeModel')
 const Product = require('../../models/productModel')
+SubCategory = require('../../models/subcategoryModel')
 const Error = require('../../utils/errorResponse')
 require('../../models/productModel')
 require('../../models/categoryModel')
@@ -23,19 +24,34 @@ const getAllProductsByCat = async (req, res, next) => {
     )
   }
 
-  try {
-    //locate all products by the seller store where category id = catId
-    const catProducts = await Product.find({
-      $and: [{ store: sellerStore._id }, { category: catId }],
-    }).populate('store', 'storeName')
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Products retrieved successfully',
-      data: catProducts,
-    })
+  try {
+    //get all sub category with catId as parent id
+    const subcat = await SubCategory.find({ parentCategory: catId })
+
+    //find all products that belong to each sub category
+    if (subcat.length > 0) {
+      let products = []
+
+      for (let i = 0; i < subcat.length; i++) {
+        const product = await Product.find({
+          $and:[{sub_category:subcat[i].id},{store:sellerStore.id}]
+        })
+        products.push(product)
+      }
+      
+      //flatten the products array
+      const pro = [].concat.apply([], products)
+
+      res.status(200).json({
+        status: 'success',
+        message: 'products retrieved',
+        data: pro,
+      })
+    }
   } catch (e) {
     return next(new Error(e.message, 500))
   }
 }
 module.exports = getAllProductsByCat
+// h111

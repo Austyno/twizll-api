@@ -45,7 +45,8 @@ const search = (model, populate) => async (req, res, next) => {
   let verifiedProducts
   await query.then(res => {
     verifiedProducts = res.filter(
-      item => item.store.storeVerified == 'verified'
+      item =>
+        item.store.storeVerified == 'verified' && item.store.activeSubscription == true
     )
   })
 
