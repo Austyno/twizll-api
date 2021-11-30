@@ -14,7 +14,7 @@ const checkOut = async (req, res, next) => {
   //calculate total amout for each store and deduct service charge (20%)
   //check if store has an account id from stripe
   //No. attacch twizll accountId against store name
-  //check if buyer has 100 loyality points or more
+  //check if buyer has 100 loyality points or more every 100 points = 2 pounds
   //ask buyer if they would like to use loyalty points
   //yes. deduct amount from amount payable
   //send buyer to stripe for payment
@@ -68,9 +68,7 @@ const checkOut = async (req, res, next) => {
   //calculate store total
   let gTotal = []
   for (let x = 0; x < result.length; x++) {
-
     for (let j = 0; j < result[x].products.length; j++) {
-
       if (result[x].store.id == result[x].products[j].store.id) {
         console.log(result[x].products[j].total)
       }

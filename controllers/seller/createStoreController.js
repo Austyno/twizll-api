@@ -14,10 +14,15 @@ const createStore = async (req, res, next) => {
     return next(new Error('You need to sign in to create a store', 403))
   }
 
+  const storeExist = await Store.findOne({ owner: seller.id })
+
+  if (storeExist) {
+    return next(new Error('You already have a store created', 400))
+  }
+
   const session = await Store.startSession()
   session.startTransaction()
   let newStore
-
 
   try {
     newStore = await Store.create(
@@ -48,10 +53,8 @@ const createStore = async (req, res, next) => {
         status: 'success',
         message:
           'Store created successfully. You neeed to verify your store by uploading supporting documents. Also follow the link and provide all required info to enable us easily pay you',
-        data
+        data,
       })
-
-
     } else {
       //create a wallet if false
       const storeWallet = await Wallet.create(
@@ -71,10 +74,9 @@ const createStore = async (req, res, next) => {
         status: 'Success',
         message:
           'Store created successfully. You neeed to verify your store by uploading supporting documents.',
-        data: newStore
+        data: newStore,
       })
     }
-     
   } catch (e) {
     await session.abortTransaction()
     session.endSession()

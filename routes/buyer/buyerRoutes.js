@@ -18,6 +18,7 @@ const singleOrder = require('../../controllers/buyer/getSingleOrderController')
 const profile = require('../../controllers/buyer/getUserProfileController')
 const updateProfile = require('../../controllers/buyer/updateProfileController')
 const updateProfileImage = require('../../controllers/buyer/updateProfileImageController')
+const points = require('../../controllers/buyer/getLoyalityPointsController')
 
 router.route('/products/:productId').get(viewProduct)
 router
@@ -44,5 +45,7 @@ router
   .put(authenticated('buyer'), authRole('buyer'),updateProfile)
 
   router.route('/profile-image').put(authenticated('buyer'), authRole('buyer'),updateProfileImage)
+
+  router.route('/loyality-points').get(authenticated('buyer'), authRole('buyer'), points)
 
 module.exports = router

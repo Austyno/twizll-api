@@ -39,7 +39,7 @@ const getAllProductsByCat = async (req, res, next) => {
         })
         products.push(product)
       }
-      
+
       //flatten the products array
       const pro = [].concat.apply([], products)
 
