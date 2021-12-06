@@ -7,6 +7,7 @@ const dashboard = require('../../controllers/seller/getDashboard')
 const mostViewed = require('../../controllers/seller/mostViewedProducts')
 const bestSelling = require('../../controllers/seller/bestSellingProducts')
 const inventory = require('../../controllers/seller/getInventoryController')
+const updateInventory = require('../../controllers/seller/updateInventoryController')
 const createStore = require('../../controllers/seller/createStoreController')
 const addProduct = require('../../controllers/seller/addProductsController')
 const editProduct = require('../../controllers/seller/editProductController')
@@ -27,6 +28,7 @@ const bankDetails = require('../../controllers/seller/getBankDetailsController')
 const updateProfile = require('../../controllers/seller/updateSellerProfile')
 const updateProfileImage = require('../../controllers/seller/updateProfileImage')
 const contactUs = require('../../controllers/seller/contactUsController')
+const updateStore = require('../../controllers/seller/updateStoreController')
 
 router
   .route('/products/:catId')
@@ -47,15 +49,20 @@ router
   .route('/bestselling')
   .get(authenticated('seller'), authRole('seller'), bestSelling)
 router
-  .route('/inventory')
+  .route('/inventory/:productId?')
   .get(authenticated('seller'), authRole('seller'), inventory)
-router
-  .route('/new-store')
-  .post(authenticated('seller'), authRole('seller'), createStore)
+  .put(authenticated('seller'), authRole('seller'), updateInventory)
+
 router
   .route('/new-product')
   .post(authenticated('seller'), authRole('seller'), addProduct)
 router.route('/categories/main').get(getMainCategory)
+
+//store
+router
+  .route('/new-store')
+  .post(authenticated('seller'), authRole('seller'), createStore)
+  .put(authenticated('seller'), authRole('seller'),updateStore)
 
 //orders
 router

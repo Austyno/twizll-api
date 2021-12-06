@@ -5,8 +5,8 @@ const ProductReviewModel = require('../../models/productReviewModel')
 
 const addProductReview = async (req, res, next) => {
   const { title, rating, text, product } = req.body
-  const user = req.user
-  req.body.user = user.id
+  const buyer = req.user
+  req.body.buyer = buyer.id
 
   const productToReview = await Product.findById(product)
 
@@ -17,8 +17,8 @@ const addProductReview = async (req, res, next) => {
   //check if user has bought this product
   const userHasBoughtProduct = await Order.find({
     $and: [
-      { buyer: user.id },
-      { orderItems: { $elemMatch: { productId: product } } },
+      { buyer: buyer.id },
+      { orderItems: { $elemMatch: { product } } },
     ],
   })
 
@@ -32,7 +32,7 @@ const addProductReview = async (req, res, next) => {
   }
   //check if user has reviewed product before
   const hasReviedBefor = await ProductReviewModel.findOne({
-    $and: [{ product: product }, { user: user.id }],
+    $and: [{ product: product }, { buyer: buyer.id }],
   })
 
   if (hasReviedBefor !== null) {
@@ -50,4 +50,3 @@ const addProductReview = async (req, res, next) => {
   }
 }
 module.exports = addProductReview
-

@@ -82,8 +82,8 @@ const productSchema = new Schema({
     type: String,
   },
   percentageDiscount: {
-    type: String,
-    default: '0%',
+    type: Number,
+    default: 0,
   },
   ratingAvg: {
     type: Number,

@@ -17,14 +17,14 @@ const productReviewSchema = new Schema(
       required: true,
     },
     rating: {
-      required: true,
       type: Number,
+      required: true,
       min: 1,
       max: 5,
     },
-    user: {
+    buyer: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Buyer',
       required: [true, 'Please provide the id of the user for this review'],
     },
   },
@@ -55,7 +55,7 @@ productReviewSchema.statics.calculateRatingAverage = async function (
   console.log(obj)
   try {
     await this.model('Product').findByIdAndUpdate(productId, {
-      ratingAvg: obj[0].ratingAvg,
+     $set: {ratingAvg: obj[0].ratingAvg}
     })
   } catch (e) {
     console.log(e)

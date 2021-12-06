@@ -19,6 +19,7 @@ const profile = require('../../controllers/buyer/getUserProfileController')
 const updateProfile = require('../../controllers/buyer/updateProfileController')
 const updateProfileImage = require('../../controllers/buyer/updateProfileImageController')
 const points = require('../../controllers/buyer/getLoyalityPointsController')
+const shipping = require('../../controllers/buyer/addShippingAddressController')
 
 router.route('/products/:productId').get(viewProduct)
 router
@@ -46,6 +47,12 @@ router
 
   router.route('/profile-image').put(authenticated('buyer'), authRole('buyer'),updateProfileImage)
 
+  // loyality
   router.route('/loyality-points').get(authenticated('buyer'), authRole('buyer'), points)
+
+  // shipping address
+  router
+    .route('/shipping-address')
+    .post(authenticated('buyer'), authRole('buyer'),shipping)
 
 module.exports = router

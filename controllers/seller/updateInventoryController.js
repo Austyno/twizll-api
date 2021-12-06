@@ -1,4 +1,4 @@
-const Product = require('../models/productModel')
+const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
 
 const updateInventory = async (req,res,next) => {
@@ -13,7 +13,7 @@ const updateInventory = async (req,res,next) => {
     return next(new Error('Only store owners can perform this action', 403))
   }
 
-  const inventoryToUpdate = await Product.find({
+  const inventoryToUpdate = await Product.findOne({
     $and: [{ store: sellerStore.id }, {_id:productId  }],
   })
   
@@ -23,7 +23,7 @@ const updateInventory = async (req,res,next) => {
   }
 
   try{
-    inventoryToUpdate.availableUnits = qty
+    inventoryToUpdate.availableQty = qty
 
     inventoryToUpdate.save({validateBeforeSave: false})
 

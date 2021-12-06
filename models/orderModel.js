@@ -26,9 +26,9 @@ const OrderSchema = new Schema(
     shippingAddress: {
       type: String,
     },
-    shippedDate: {
-      type: Date,
-    },
+    // shippedDate: {
+    //   type: Date,
+    // },
     paymentRef: {
       type: String,
     },

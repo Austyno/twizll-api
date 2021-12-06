@@ -20,13 +20,12 @@ const updateProduct = async (req, res, next) => {
     brand,
     description,
     mainPhoto,
-    // numberSold,
-    // views,
     availableQty,
     attributes,
     returnPolicy,
     sourceOfMaterial,
     percentageDiscount,
+    currency
   } = req.body
 
   const seller = req.user
@@ -42,83 +41,113 @@ const updateProduct = async (req, res, next) => {
   }
 
   const proToUpdate = await Product.findById(productId)
-  let updatedPhotos = []
 
-  if (req.files && req.files.photos) {
-    photos.forEach(photo => {
-      cloudStorage(photo.tempFilePath)
-        .then(result => {
-          updatedPhotos.push(result.secure_url)
-          console.log(result)
-          const tmpFilePath = path.join(__dirname, '../../tmp/')
-          fs.unlink(
-            `${tmpFilePath + result.original_filename}`,
-            (err, reslt) => {
-              if (!err) {
-                console.log('file deleted')
+  if (proToUpdate.store == sellerStore.id) {
+    let updatedPhotos = []
+
+    if (req.files && req.files.photos) {
+      photos.forEach(photo => {
+        cloudStorage(photo.tempFilePath)
+          .then(result => {
+            updatedPhotos.push(result.secure_url)
+            console.log(result)
+            const tmpFilePath = path.join(__dirname, '../../tmp/')
+            fs.unlink(
+              `${tmpFilePath + result.original_filename}`,
+              (err, reslt) => {
+                if (!err) {
+                  console.log('file deleted')
+                }
               }
-            }
-          )
-        })
-        .catch(e => console.log(e))
-    })
-  }
-  let updateMainPhoto
-  if (req.files && req.files.mainPhoto) {
-    cloudStorage(req.files.mainPhoto.tempFilePath).then(async result => {
-      updateMainPhoto = result.secure_url
-    })
-  }
+            )
+          })
+          .catch(e => console.log(e))
+      })
+    }
+    let updateMainPhoto
+    if (req.files && req.files.mainPhoto) {
+      cloudStorage(req.files.mainPhoto.tempFilePath).then(async result => {
+        updateMainPhoto = result.secure_url
+      })
+    }
+    let converted
+    if (unitPrice) {
+        converted = await convert(currency, 'GBP', unitPrice)
+    }
 
-  if (unitPrice) {
-    const converted = await convert(currency, 'GBP', unitPrice)
-  }
+    let parsedAttributes
 
-  if (attributes) {
-    const parsed = JSON.parse(attributes)
-  }
+    if (attributes) {
+      parsedAttributes = JSON.parse(attributes)
+    }
 
-  try {
-    const updateProduct = await Product.updateOne(
-      { _id: productId },
-      {
-        $set: {
-          name: name ? name : proToUpdate.name,
-          unitPrice: unitPrice ? converted : proToUpdate.unitPrice,
-          photos: updatedPhotos.length > 0 ? updatedPhotos : proToUpdate.photos,
-          weight: weight ? weight : proToUpdate.weight,
-          length: length ? length : proToUpdate.length,
-          height: height ? height : proToUpdate.height,
-          width: width ? width : proToUpdate.width,
-          brand: brand ? brand : proToUpdate.brand,
-          description: description ? description : proToUpdate.description,
-          mainPhoto: updateMainPhoto ? updateMainPhoto : proToUpdate.mainPhoto,
-          availableQty: availableQty ? availableQty : proToUpdate.availableQty,
-          briefDesc: briefDesc ? briefDesc :proToUpdate.briefDesc,
-          attributes: attributes
-            ? {
-                colors: parsed.colors,
-                sizes: parsed.sizes,
-              }
-            : proToUpdate.attributes,
-          returnPolicy: returnPolicy ? returnPolicy : proToUpdate.returnPolicy,
-          sourceOfMaterial: sourceOfMaterial
-            ? sourceOfMaterial
-            : proToUpdate.sourceOfMaterial,
-          percentageDiscount: percentageDiscount
-            ? percentageDiscount
-            : proToUpdate.percentageDiscount,
+    try {
+      const updateProduct = await Product.findOneAndUpdate(
+        { _id: productId },
+        {
+          $set: {
+            name: name ? name : proToUpdate.name,
+            unitPrice: unitPrice ? Number(converted) : proToUpdate.unitPrice,
+            photos:
+              updatedPhotos.length > 0 ? updatedPhotos : proToUpdate.photos,
+            weight: Number(weight) ? Number(weight) : proToUpdate.weight,
+            length: Number(length) ? Number(length) : proToUpdate.length,
+            height: Number(height) ? Number(height) : proToUpdate.height,
+            width: Number(width) ? Number(width) : proToUpdate.width,
+            brand: brand ? brand : proToUpdate.brand,
+            description: description ? description : proToUpdate.description,
+            mainPhoto: updateMainPhoto
+              ? updateMainPhoto
+              : proToUpdate.mainPhoto,
+            availableQty: Number(availableQty)
+              ? Number(availableQty)
+              : proToUpdate.availableQty,
+            briefDesc: briefDesc ? briefDesc : proToUpdate.briefDesc,
+            attributes: attributes
+              ? {
+                  colors: parsedAttributes.colors,
+                  sizes: parsedAttributes.sizes,
+                }
+              : proToUpdate.attributes,
+            returnPolicy: returnPolicy
+              ? returnPolicy
+              : proToUpdate.returnPolicy,
+            sourceOfMaterial: sourceOfMaterial
+              ? sourceOfMaterial
+              : proToUpdate.sourceOfMaterial,
+            percentageDiscount: Number(percentageDiscount)
+              ? Number(percentageDiscount)
+              : proToUpdate.percentageDiscount,
+          },
         },
-      },
-      { new: true }
+        { new: true }
+      )
+      res.status(201).json({
+        status: 'success',
+        message: 'product updated successfully',
+        data: updateProduct,
+      })
+    } catch (e) {
+      return next(new Error(e.message, 500))
+    }
+  } else {
+    return next(
+      new Error('you can only update products that belong to your store', 400)
     )
-    res.status(201).json({
-      status: 'success',
-      message: 'product updated successfully',
-      data: updateProduct,
-    })
-  } catch (e) {
-    return next(new Error(e.message, 500))
   }
 }
 module.exports = updateProduct
+// name: Rauf Nrok,
+// brand: gi,
+// weight: 20,
+// height: 20,
+// unitPrice: 140,
+// percentageDiscount: 10,
+// attributes: {"colors":["FF0000", "000000"], "sizes":["M", "S"]},
+// currency: NGN,
+// description: beautiful designer T-shirt for all ocassions ,
+// briefDesc: beautiful designer T-shirt for all ocassions ,
+// sourceOfMaterial: fo, returnPolicy: gals retrrrrn,
+// availableQty: 410,
+// width: 50,
+// length: 20

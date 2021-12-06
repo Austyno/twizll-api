@@ -82,3 +82,17 @@ const checkOut = async (req, res, next) => {
   })
 }
 module.exports = checkOut
+
+//1. Create a PaymentIntent - server side ( create payment intent, get client secrete and sent to the frontend)
+    // get payload, inspect payload, attach requisite info to the stripe object and send to stripe to create payment intent. get client screte and send to the frontend.
+//2. Collect a payment method - frontend (make call to collect payment end point for buyer to pay, get updated payment intent and hold)
+//3. Process the payment - front end (make a call to process payment with the update payment intent, get result.paymentIntent.id and send to server)
+//4. Capture the payment - server side (make a call to capture payment using the payment intent id returned from step 3. this completes the process)
+    //create order
+    // create transaction
+    // group order items according to store
+    // claculate 20% service charge
+    // update store wallet with amount earned 
+    // make a call to DHL and get the label for each item (note would be better if we could group the items and create one label)
+    // send mail to seller with items sold,amount earned and label for items, 
+    // send mail to buyer with items bought, and tracking id returned from dhl

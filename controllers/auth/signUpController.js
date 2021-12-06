@@ -7,6 +7,7 @@ const sendMail = require('../../utils/sendMail')
 const stripe = require('../../utils/stripe/Stripe')
 const createAuthToken = require('../../utils/createAuthToken')
 const moment = require('moment')
+const jwt = require('jsonwebtoken')
 
 const signUp = async (req, res, next) => {
   // seller,stylist,user
@@ -36,7 +37,12 @@ const signUp = async (req, res, next) => {
             ? process.env.PROD_ADDRESS
             : process.env.DEV_ADDRESS
 
-        const verificationCode = crypto.randomBytes(20).toString('hex')
+        // const verificationCode = crypto.randomBytes(20).toString('hex')
+
+        const verificationCode = jwt.sign(
+          { role: 'seller' },
+          process.env.JWT_SECRET
+        )
         //create email verification link
         const verificationLink = `${
           url + req.originalUrl
@@ -109,7 +115,12 @@ const signUp = async (req, res, next) => {
             ? process.env.PROD_ADDRESS
             : process.env.DEV_ADDRESS
 
-        const verificationCode = crypto.randomBytes(20).toString('hex')
+        // const verificationCode = crypto.randomBytes(20).toString('hex')
+        const verificationCode = jwt.sign(
+          { role: 'buyer' },
+          process.env.JWT_SECRET
+        )
+
         //create email verification link
         const verificationLink = `${
           url + req.originalUrl
@@ -164,8 +175,8 @@ const signUp = async (req, res, next) => {
         return next(new Error(e.message, 500))
       }
 
-      case 'stylist':
-        const stylistExist = await Stylist.findOne({ email })
+    case 'stylist':
+      const stylistExist = await Stylist.findOne({ email })
       if (stylistExist) {
         return next(new Error('A stylist with this email already exist', 400))
       }
@@ -182,7 +193,12 @@ const signUp = async (req, res, next) => {
             ? process.env.PROD_ADDRESS
             : process.env.DEV_ADDRESS
 
-        const verificationCode = crypto.randomBytes(20).toString('hex')
+        // const verificationCode = crypto.randomBytes(20).toString('hex')
+        const verificationCode = jwt.sign(
+          { role: 'stylist' },
+          process.env.JWT_SECRET
+        )
+
         //create email verification link
         const verificationLink = `${
           url + req.originalUrl
@@ -242,7 +258,6 @@ const signUp = async (req, res, next) => {
         return next(new Error(e.message, 500))
       }
       break
-
   }
 }
 

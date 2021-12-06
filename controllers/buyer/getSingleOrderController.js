@@ -2,7 +2,7 @@ const Order = require('../../models/orderModel')
 const OrderItem = require('../../models/orderItem')
 const Error = require('../../utils/errorResponse')
 const Product = require('../../models/productModel')
-
+// add order details to here to buyer info
 const singleOrder = async (req, res, next) => {
   const { orderId } = req.params
   const buyer = req.user

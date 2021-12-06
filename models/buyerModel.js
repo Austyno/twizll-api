@@ -62,7 +62,6 @@ const buyerSchema = new Schema(
       type: String,
     },
     shippingAddress: String,
-    shippedAddress: String,
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,
     passwordResetToken: String,
