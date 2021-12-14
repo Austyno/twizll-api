@@ -10,9 +10,11 @@ const {
   pubKey,
 } = require('../../controllers/stripe/createSubController')
 const startSub = require('../../controllers/stripe/startSub')
-const checkOut = require('../../controllers/stripe/checkOutController')
+const checkOut = require('../../controllers/stripe/checkoutController')
 
-router.route('/start-sub').post(authenticated, startSub)
+router
+  .route('/start-sub')
+  .post(authenticated('buyer'), authRole('buyer'), startSub)
 router.route('/subscribe').post(createSubscription)
 router.route('/pay-sub').get(showSubpage)
 router.route('/config').get(pubKey)
