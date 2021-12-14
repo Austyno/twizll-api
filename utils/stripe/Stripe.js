@@ -56,7 +56,7 @@ class StripeUtil {
         process.env.NODE_ENV === 'production'
           ? process.env.PROD_ADDRESS
           : process.env.DEV_ADDRESS
-      const succesPath = path.join(__dirname,'../../public/success.ejs')
+      const succesPath = path.join(__dirname, '../../public/success.ejs')
       try {
         const subscription = await Stripe.subscriptions.create({
           customer: customerID,
@@ -75,24 +75,24 @@ class StripeUtil {
     })
   }
 
-  createAccount(country){
+  createAccount(country) {
     return new Promise(async (resolve, reject) => {
-      try{
+      try {
         const account = await Stripe.accounts.create({
-          type:'custom',
+          type: 'custom',
           country,
-          requested_capabilities:['card_payments','transfers']
+          requested_capabilities: ['card_payments', 'transfers'],
         })
         resolve(account.id)
-      }catch(e){
+      } catch (e) {
         reject(e)
       }
     })
   }
 
-  createAccountLink(accountId){
-    return new Promise(async (resolve,reject) => {
-      try{
+  createAccountLink(accountId) {
+    return new Promise(async (resolve, reject) => {
+      try {
         const accountLink = await Stripe.accountLinks.create({
           account: accountId,
           type: 'custom_account_verification',
@@ -107,7 +107,38 @@ class StripeUtil {
               : `${process.env.PROD_ADDRESS}/?failed`,
         })
         resolve(accountLink)
-      }catch(e){
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  paymentIntent(amount, description, email) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const intent = await Stripe.paymentIntents.create({
+          amount,
+          currency: 'gbp',
+          payment_method_types: ['card_present'],
+          capture_method: 'manual',
+          description,
+          receipt_email: email,
+        })
+        resolve(intent.client_secret)
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  capturePayment(intentId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const capture = await Stripe.paymentIntents.capture(
+          intentId
+        )
+        resolve(capture)
+      } catch (e) {
         reject(e)
       }
     })
