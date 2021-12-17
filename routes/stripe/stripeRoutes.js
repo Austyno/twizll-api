@@ -11,13 +11,18 @@ const {
 } = require('../../controllers/stripe/createSubController')
 const startSub = require('../../controllers/stripe/startSub')
 const checkOut = require('../../controllers/stripe/checkoutController')
+const updateSubStatus = require('../../controllers/stripe/updateSubStatusController')
 
+//subscription
 router
   .route('/start-sub')
-  .post(authenticated('buyer'), authRole('buyer'), startSub)
+  .post(authenticated('seller'), authRole('seller'), startSub)
 router.route('/subscribe').post(createSubscription)
 router.route('/pay-sub').get(showSubpage)
 router.route('/config').get(pubKey)
+router.route('/updateSubStatus').post(updateSubStatus)
+
+//checkout
 router
   .route('/checkout')
   .post(authenticated('buyer'), authRole('buyer'), checkOut)

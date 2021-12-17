@@ -119,10 +119,11 @@ class StripeUtil {
         const intent = await Stripe.paymentIntents.create({
           amount,
           currency: 'gbp',
-          payment_method_types: ['card_present'],
-          capture_method: 'manual',
           description,
           receipt_email: email,
+          automatic_payment_methods: {
+            enabled: true,
+          },
         })
         resolve(intent.client_secret)
       } catch (e) {
@@ -134,11 +135,68 @@ class StripeUtil {
   capturePayment(intentId) {
     return new Promise(async (resolve, reject) => {
       try {
-        const capture = await Stripe.paymentIntents.capture(
-          intentId
-        )
+        const capture = await Stripe.paymentIntents.capture(intentId)
         resolve(capture)
       } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  createCheckoutSession(email,items) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const session = await Stripe.checkout.sessions.create({
+          success_url: 'https://example.com/success',
+          cancel_url: 'https://example.com/cancel',
+          customer_email: email,
+
+          line_items: items,
+          mode: 'payment',
+
+          // line_items: [
+          //   {
+          //     price_data: {
+          //       currency: 'gbp',
+          //       unit_amount: 2000,
+          //       product_data: { name: 'test' },
+          //     },
+          //     quantity: 1,
+          //   },
+          //   {
+          //     price_data: {
+          //       currency: 'gbp',
+          //       unit_amount: 1000,
+          //       product_data: {
+          //         name: 'test1',
+          //       },
+          //     },
+          //     quantity: 1,
+          //   },
+          // ],
+          // line_items: [
+          //   {
+          //     price_data: [
+          //       {
+          //         // currency: 'gbp',
+          //         // unit_amount: 1000,
+          //         // product_data: [
+          //         //   {
+          //         //     name: 'shirt',
+          //         //     description: 'summer T-shirts',
+          //         //     images:
+          //         //       'https://res.cloudinary.com/dq59gbro3/image/upload/v1626971227/twizll/v1gqxjxjo8mrvjxvwgib.jpg',
+          //         //   },
+          //         // ],
+          //       },
+          //     ],
+          //   },
+          // ],
+        })
+        resolve(session.url)
+        console.log(session)
+      } catch (e) {
+        console.log(e)
         reject(e)
       }
     })

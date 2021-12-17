@@ -7,12 +7,16 @@ const startSub = async (req, res, next) => {
 
   try {
     //format url with user stripe customer id and return
-    const urlPath = process.env.NODE_ENV == 'production' ? process.env.PROD_ADDRESS : process.env.DEV_ADDRESS
+    const urlPath =
+      process.env.NODE_ENV == 'production'
+        ? process.env.PROD_ADDRESS
+        : process.env.DEV_ADDRESS
     const urlLink = url.format({
       pathname: `${urlPath}/api/stripe/pay-sub`,
       query: {
         stripeid: user.stripe_customer_id,
         price: price,
+        email: user.email,
       },
     })
 

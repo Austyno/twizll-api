@@ -34,7 +34,6 @@
         cursor: pointer;
         width: 100%;
         font-size: 20px;
-
       }
       .card {
         margin: 100px;
@@ -47,6 +46,7 @@
         align-items: center;
         /* background: #000; */
       }
+      /* wave spinner */
       .wave {
         width: 5px;
         height: 100px;
@@ -228,10 +228,22 @@
             if (result.error) {
               setMessage(`Payment failed: ${result.error.message}`)
             } else {
+              // update seller subscription status
+              fetch('/api/stripe/updateSubStatus', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  result
+                }),
+              }).then(res =>res.JSON())
+                .then(d => console.log(d))
+                const url = '<%- process.env.NODE_ENV %>' === 'production' ? 'http://147.182.245.180/api/stripe/subscribe/success' : 'http://localhost:5000/api/stripe/subscribe/success'  
               // Redirect the customer to success page
               setMessage('Success! Redirecting.')
-              window.location.href =
-                'http://localhost:5000/api/stripe/subscribe/success'
+              window.location.href = url
+                
             }
           })
       })

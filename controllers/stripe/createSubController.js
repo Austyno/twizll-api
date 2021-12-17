@@ -1,8 +1,6 @@
 const Error = require('../../utils/errorResponse')
 const stripeUtil = require('../../utils/stripe/Stripe')
 const Seller = require('../../models/sellerModel')
-const moment = require('moment')
-const jwt = require('jsonwebtoken')
 const path = require('path')
 
 const createSubscription = async (req, res, next) => {
@@ -21,6 +19,7 @@ const createSubscription = async (req, res, next) => {
       amount: subscription.latest_invoice.payment_intent.amount,
       currency: subscription.latest_invoice.currency,
       fullName: user.fullName,
+      email:user.email
     }
     res.status(200).json({
       status: 'success',

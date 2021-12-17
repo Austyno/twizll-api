@@ -104,8 +104,6 @@
 
       const form = document.querySelector('#subscribe-form')
       const secret = document.querySelector('#clientSecret').value
-      
-      console.log(secret)
 
       form.addEventListener('submit', async e => {
         e.preventDefault()
@@ -126,6 +124,14 @@
               setMessage(`Payment failed: ${result.error.message}`)
             } else {
               // Redirect the customer to success page
+              fetch('/api/stripe/updateSubStatus', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(result),
+              })
+              
               setMessage('Success! Redirecting.')
               window.location.href =
                 'http://localhost:5000/api/stripe/subscribe/success'
