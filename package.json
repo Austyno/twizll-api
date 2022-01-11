@@ -45,6 +45,7 @@
     "query-string": "^7.0.1",
     "run-rs": "^0.7.5",
     "stripe": "^8.169.0",
+    "uuid": "^8.3.2",
     "validator": "^13.6.0",
     "xss-clean": "^0.1.1"
   },

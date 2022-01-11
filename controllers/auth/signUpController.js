@@ -14,6 +14,17 @@ const signUp = async (req, res, next) => {
   // switch
   const { email, phone, password, fullName, role } = req.body
 
+  const passCheck =
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/
+
+  if (!password.match(passCheck)) {
+    return next(
+      new Error(
+        'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and special characters',
+        400
+      )
+    )
+  }
   if (role === undefined) {
     return next(new Error('Role is required', 400))
   }

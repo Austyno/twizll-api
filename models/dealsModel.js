@@ -12,8 +12,13 @@ const dealsSchema = new Schema(
       required: [true, 'please enter a percentage discount for this deal'],
     },
     products: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+    image: {
+      type: String,
+      required: [true, 'please provide an image representing this deal'],
+    },
   },
-  { timestamps:true }
+
+  { timestamps: true }
 )
 
 dealsSchema.index({ products: 1 }, { unique: true })

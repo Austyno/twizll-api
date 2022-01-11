@@ -91,6 +91,14 @@ const sellerSchema = new Schema(
     token: {
       type: String,
     },
+    refreshToken: {
+      _token: {
+        type: String,
+      },
+      expiryDate: {
+        type: Date,
+      },
+    },
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,
     passwordResetToken: String,

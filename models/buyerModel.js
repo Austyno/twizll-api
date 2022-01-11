@@ -34,6 +34,8 @@ const buyerSchema = new Schema(
       validate(value) {
         if (value.toLowerCase().includes('password')) {
           throw new Error('Password can not contain "password"')
+        } else if (value.toLowerCase().includes('12345678')) {
+          throw new Error('Password can not contain "1235678"')
         }
       },
       select: false,
@@ -60,6 +62,14 @@ const buyerSchema = new Schema(
     },
     token: {
       type: String,
+    },
+    refreshToken: {
+      _token: {
+        type: String,
+      },
+      expiryDate: {
+        type: Date,
+      },
     },
     shippingAddress: String,
     emailVerificationCode: String,
@@ -89,6 +99,5 @@ buyerSchema.methods.isValidPassword = async function (
 ) {
   return await bcrypt.compare(userEnteredPassword, userSavedPassword)
 }
-
 
 module.exports = mongoose.models.Buyer || model('Buyer', buyerSchema)

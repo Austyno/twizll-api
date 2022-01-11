@@ -8,6 +8,7 @@ const login = require('../../controllers/auth/loginController')
 const forgotPassword = require('../../controllers/auth/forgotPasswordController')
 const logOut = require('../../controllers/auth/logoutController')
 const socialLogin = require('../../controllers/auth/socialLoginController')
+const refreshAccess = require('../../controllers/auth/refreshAccessToken')
 
 const {
   resetPassWordForm,
@@ -24,6 +25,8 @@ router
   .route('/forgotpassword/:resetCode')
   .get(resetPassWordForm)
   .post(resetPassword)
+
+router.route('/refresh-access').post(refreshAccess)
 
 // router.route('/google').get(googleAuth)
 // router.route('/me').get(userInfo)

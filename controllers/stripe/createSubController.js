@@ -38,6 +38,7 @@ const showSubpage = (req, res, next) => {
 const pubKey = (req, res, next) => {
   res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    secretKey: process.env.STRIPE_SECRET_KEY,
   })
 }
 

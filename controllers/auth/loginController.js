@@ -47,7 +47,7 @@ const login = async (req, res, next) => {
         } else if (loggedInUser.plan.status === 'active') {
           if (loggedInUser.plan.end_date < Date.now()) {
             loggedInUser.plan.status = 'expired'
-            loggedInUser.save({ validateBeforeSave })
+            loggedInUser.save({ validateBeforeSave:false })
             return next(new Error('Your subscription plan has expired', 403))
           }
         }
