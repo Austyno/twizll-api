@@ -132,72 +132,70 @@ class StripeUtil {
     })
   }
 
-  capturePayment(intentId) {
+  // capturePayment(intentId) {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const capture = await Stripe.paymentIntents.capture(intentId)
+  //       resolve(capture)
+  //     } catch (e) {
+  //       reject(e)
+  //     }
+  //   })
+  // }
+
+  createPrice(unit_price, name) {
     return new Promise(async (resolve, reject) => {
       try {
-        const capture = await Stripe.paymentIntents.capture(intentId)
-        resolve(capture)
+        const price = await Stripe.prices.create({
+          unit_amount_decimal: unit_price,
+          currency: 'gbp',
+          product_data: {
+            name,
+          },
+        })
+        resolve(price)
       } catch (e) {
         reject(e)
       }
     })
   }
 
-  createCheckoutSession(email,items) {
+  createCheckoutSession(email, items) {
     return new Promise(async (resolve, reject) => {
       try {
         const session = await Stripe.checkout.sessions.create({
-          success_url: 'https://example.com/success',
-          cancel_url: 'https://example.com/cancel',
           customer_email: email,
-
           line_items: items,
           mode: 'payment',
+          success_url:
+            process.env.NODE_ENV === 'development'
+              ? `${process.env.DEV_ADDRESS}/success`
+              : `${process.env.PROD_ADDRESS}/success`,
 
-          // line_items: [
-          //   {
-          //     price_data: {
-          //       currency: 'gbp',
-          //       unit_amount: 2000,
-          //       product_data: { name: 'test' },
-          //     },
-          //     quantity: 1,
-          //   },
-          //   {
-          //     price_data: {
-          //       currency: 'gbp',
-          //       unit_amount: 1000,
-          //       product_data: {
-          //         name: 'test1',
-          //       },
-          //     },
-          //     quantity: 1,
-          //   },
-          // ],
-          // line_items: [
-          //   {
-          //     price_data: [
-          //       {
-          //         // currency: 'gbp',
-          //         // unit_amount: 1000,
-          //         // product_data: [
-          //         //   {
-          //         //     name: 'shirt',
-          //         //     description: 'summer T-shirts',
-          //         //     images:
-          //         //       'https://res.cloudinary.com/dq59gbro3/image/upload/v1626971227/twizll/v1gqxjxjo8mrvjxvwgib.jpg',
-          //         //   },
-          //         // ],
-          //       },
-          //     ],
-          //   },
-          // ],
+          cancel_url:
+            process.env.NODE_ENV === 'development'
+              ? `${process.env.DEV_ADDRESS}/cancel`
+              : `${process.env.PROD_ADDRESS}/cancel`,
         })
-        resolve(session.url)
-        console.log(session)
+        // resolve(session.url)
+
+        resolve(session)
       } catch (e) {
-        console.log(e)
-        reject(e)
+        reject(e.message)
+      }
+    })
+  }
+
+  getLineItems(sessionId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const session = await Stripe.checkout.sessions.retrieve(sessionId, {
+          expand: ['line_items'],
+        })
+
+        resolve(session.line_items)
+      } catch (e) {
+        reject(e.message)
       }
     })
   }

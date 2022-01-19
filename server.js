@@ -14,15 +14,20 @@ const app = express()
 const stripe = require('stripe')
 const morgan = require('morgan')
 
+const url =
+  process.env.NODE_ENV === 'development'
+    ? process.env.MONGODB_DEV_URL
+    : process.env.MONGODB_URL
+
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
-const webHook = require('./controllers/stripe/webHooksController')
+const { webHooks } = require('./controllers/stripe/webHooksController')
 
 dotenv.config({ path: './config/config.env' })
 connectToDb()
 app.post(
   '/api/stripe/webhook',
   express.raw({ type: 'application/json' }),
-  webHook
+  webHooks
 )
 
 app.use(express.json())

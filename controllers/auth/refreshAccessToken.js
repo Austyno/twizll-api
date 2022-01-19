@@ -30,7 +30,7 @@ refreshAccessToken = async (req, res, next) => {
       try {
         return createAuthToken(
           tokenExist,
-          'user logged in successfully',
+          'Access token refreshed successfully',
           200,
           res
         )

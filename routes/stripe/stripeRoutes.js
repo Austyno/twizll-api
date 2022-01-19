@@ -12,6 +12,8 @@ const {
 const startSub = require('../../controllers/stripe/startSub')
 const checkOut = require('../../controllers/stripe/checkoutController')
 const updateSubStatus = require('../../controllers/stripe/updateSubStatusController')
+const setSession = require('../../middleware/setSession')
+
 
 //subscription
 router
@@ -23,9 +25,12 @@ router.route('/config').get(pubKey)
 router.route('/updateSubStatus').post(updateSubStatus)
 
 //checkout
-router
-  .route('/checkout')
-  .post(authenticated('buyer'), authRole('buyer'), checkOut)
+// router
+//   .route('/checkout')
+//   .post(authenticated('buyer'), authRole('buyer'), checkOut)
+  router
+    .route('/checkout')
+    .post(authenticated('buyer'), authRole('buyer'), webHooks.checkoutSession)
 
 router.get('/subscribe/success', (req, res) => {
   res.render(path.join(__dirname, '../../public/views', 'success.ejs'))

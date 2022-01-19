@@ -6,6 +6,8 @@ const convert = require('../../utils/convertCurrentcy')
 
 //TODO:refactor to only upload images if they were changed and not the same with what was there b4
 // also abort if there is an error -- use transactions
+
+// ******** currency converter API key expired, using price without conversion
 const updateProduct = async (req, res, next) => {
   const { productId } = req.params
   const {
@@ -25,7 +27,7 @@ const updateProduct = async (req, res, next) => {
     returnPolicy,
     sourceOfMaterial,
     percentageDiscount,
-    currency
+    currency,
   } = req.body
 
   const seller = req.user
@@ -70,9 +72,9 @@ const updateProduct = async (req, res, next) => {
         updateMainPhoto = result.secure_url
       })
     }
-    let converted
+    let priceToGBP
     if (unitPrice) {
-        converted = await convert(currency, 'GBP', unitPrice)
+      priceToGBP = await convert(currency, 'GBP', unitPrice)
     }
 
     let parsedAttributes
@@ -87,7 +89,8 @@ const updateProduct = async (req, res, next) => {
         {
           $set: {
             name: name ? name : proToUpdate.name,
-            unitPrice: unitPrice ? Number(converted) : proToUpdate.unitPrice,
+            // unitPrice: unitPrice ? Number(priceToGBP + 20) : proToUpdate.unitPrice,
+            unitPrice: unitPrice,
             photos:
               updatedPhotos.length > 0 ? updatedPhotos : proToUpdate.photos,
             weight: Number(weight) ? Number(weight) : proToUpdate.weight,

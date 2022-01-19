@@ -75,9 +75,9 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
-  // availableUnits: {
-  //   type: Number,
-  // },
+  price_id: {
+    type: String,
+  },
   sourceOfMaterial: {
     type: String,
   },

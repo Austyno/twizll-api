@@ -5,6 +5,7 @@ const Product = require('../../models/productModel')
 const Error = require('../../utils/errorResponse')
 const cloudStorage = require('../../utils/uploadToCloudinary')
 const convert = require('../../utils/convertCurrentcy')
+const stripeUtil = require('../../utils/stripe/Stripe')
 
 require('../../models/productModel')
 require('../../models/categoryModel')
@@ -40,19 +41,22 @@ const addProduct = async (req, res, next) => {
 
   const photos = req.files.photos
 
-  const converted = await convert(currency, 'GBP', unitPrice)
+  //convert price to pounds
+  // const priceToGBP = await convert(currency, 'GBP', unitPrice)
+
+  //parse attributes
   const parsed = JSON.parse(attributes)
 
+  //check if more than one photo is uploaded
   if (Array.isArray(photos))
     if (photos.length < 1) {
       return next(new Error('please upload at least one image in photos', 400))
     }
-  
 
+  //upload photos to cloudinary
   photos.forEach(photo => {
     cloudStorage(photo.tempFilePath)
       .then(result => {
-
         uploadedPhotos.push(result.secure_url)
 
         const tmpFilePath = path.join(__dirname, '../../tmp/')
@@ -68,6 +72,13 @@ const addProduct = async (req, res, next) => {
   const uploadedPhotos = []
   console.log(uploadedPhotos)
 
+  // console.log('price', priceToGBP)
+
+  //get price id from stripe
+  const price_id = await stripeUtil.createPrice(unitPrice, name)
+
+
+  //upload main photo then create product
   cloudStorage(req.files.mainPhoto.tempFilePath)
     .then(async result => {
       const product = await Product.create({
@@ -77,13 +88,14 @@ const addProduct = async (req, res, next) => {
         returnPolicy,
         brand,
         sourceOfMaterial,
-        attributes:{
-          colors:parsed.colors,
-          sizes:parsed.sizes
+        attributes: {
+          colors: parsed.colors,
+          sizes: parsed.sizes,
         },
         availableQty,
         weight,
-        unitPrice: converted + 20,
+        // unitPrice: priceToGBP + 20,
+        unitPrice: unitPrice + 20,
         mainPhoto: result.secure_url,
         photos: uploadedPhotos,
         discount,
@@ -92,6 +104,7 @@ const addProduct = async (req, res, next) => {
         weight,
         length,
         store: sellerStore.id,
+        price_id: price_id.id,
       })
       const tmpFilePath = path.join(__dirname, '../../tmp/')
       fs.unlink(`${tmpFilePath + result.original_filename}`, (err, reslt) => {
