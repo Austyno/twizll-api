@@ -1,6 +1,5 @@
 const { model, Schema } = require('mongoose')
 
-
 const OrderSchema = new Schema(
   {
     buyer: {
@@ -8,12 +7,18 @@ const OrderSchema = new Schema(
       ref: 'Buyer',
       required: [true, 'the buyer id is required'],
     },
-     shippingAddress:{
-      type:String
+    shippingAddress: {
+      address: { type: String },
+      country: { type: String },
+      contactPerson: { type: String },
+      postalCode: { type: Number },
+      city: { type: String },
+      countryCode: { type: String },
     },
-    trackingId: {
-      type: String,
-    },
+    // trackingId: {
+    //   type: String,
+    // },
+    trackingId: [String],
     orderTotal: {
       type: Number,
     },
@@ -23,28 +28,22 @@ const OrderSchema = new Schema(
     //   default: 'new',
     // },
     orderItems: [{ ref: 'OrderItem', type: Schema.Types.ObjectId }],
-    shippingAddress: {
-      type: String,
-    },
-    // shippedDate: {
-    //   type: Date,
+    // paymentRef: {
+    //   type: String,
     // },
-    paymentRef: {
-      type: String,
-    },
     deliveryType: {
       type: String,
-      enum: ['express', 'regular'],
-      default:'regular'
+      enum: ['express', 'standard'],
+      default: 'regular',
     },
   },
   { timestamps: true }
 )
-OrderSchema.index({ trackingId: 1 },{unique:true})
+// OrderSchema.index({ trackingId: 1 }, { unique: true })
 
-OrderSchema.pre('save', function () {
-  //tracking id will be given by shipping company. this is temp for now
-  this.trackingId = this._id
-})
+// OrderSchema.pre('save', function () {
+//   //tracking id will be given by shipping company. this is temp for now
+//   this.trackingId = this._id
+// })
 
 module.exports = model('Order', OrderSchema)

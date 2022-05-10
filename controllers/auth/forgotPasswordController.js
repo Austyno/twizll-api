@@ -1,105 +1,46 @@
 const Seller = require('../../models/sellerModel')
 const Buyer = require('../../models/buyerModel')
 const Error = require('../../utils/errorResponse')
-const crypto = require('crypto')
-const sendMail = require('../../utils/sendMail')
+const generateOtp = require('../../utils/generateOtp')
+const moment = require('moment')
 
-const forgotPassword = async (req, res, next) => {
-  const { email, role } = req.body
 
-  if (role === undefined) {
-    return next(new Error('Role is required', 400))
+const forgotPass = async (req,res,next) =>{
+  const {email} = req.body
+
+  if(!email){
+    return next(new Error('Please enter a password',400))
   }
 
-  switch (role) {
-    case 'seller':
-      const user = await Seller.findOne({ email })
-      if (!user) {
-        return next(new Error('we could not find a user with this email', 404))
-      }
+  try{
+    let user
+    const buyer = await Buyer.findOne({email})
+    const seller = await Seller.findOne({email})
 
-      const resetToken = crypto.randomBytes(20).toString('hex')
-      const tokenExpiresIn = Date.now() + 60 * 60 * 60 - 1000
+    if(buyer != null){
+      const otp = generateOtp()
+      const mail = sendMail.withTemplate(
+        { otp },
+        email,
+        'otp.ejs',
+        'Your verification code'
+      )
 
-      const resetLink = `${
-        req.protocol +
-        '://' +
-        req.get('host') +
-        req.originalUrl +
-        '/' +
-        resetToken
-      }`
-
-      try {
-        user.passwordResetToken = resetToken
-        user.passwordResetExpires = tokenExpiresIn
-
-        await user.save()
-        await sendMail.withTemplate(
-          { resetLink, fullName: user.fullName },
-          user.email,
-          'reset.ejs',
-          'Password reset link'
-        )
+      if(mail){
+        buyer.emailVerificationCode = otp
+        buyer.passwordResetToken = otp
+        buyer.passwordResetExpires = moment().add(1, 'day')
 
         res.status(200).json({
-          status: 'success',
-          message:
-            'A reset link has been sent to your email. Please click on the link to reset your password',
-          data: '',
+          status:'success',
+          message:'We have sent you a verification code to your email',
+          data:''
         })
-      } catch (e) {
-        user.passwordResetToken = undefined
-        user.passwordResetExpires = undefined
-
-        await user.save()
-        return next(new Error(e.message, 500))
       }
 
-      break
-    case 'buyer':
-      const buyer = await Buyer.findOne({ email })
-      if (!buyer) {
-        return next(new Error('we could not find a user with this email', 404))
-      }
-
-      const buyerResetToken = crypto.randomBytes(20).toString('hex')
-      const buyerTokenExpiresIn = Date.now() + 60 * 60 * 60 - 1000
-
-      const buyeResetLink = `${
-        req.protocol +
-        '://' +
-        req.get('host') +
-        req.originalUrl +
-        '/' +
-        buyerResetToken
-      }`
-
-      try {
-        buyer.passwordResetToken = buyerResetToken
-        buyer.passwordResetExpires = buyerTokenExpiresIn
-
-        await buyer.save()
-        await sendMail.withTemplate(
-          { buyeResetLink, fullName: buyer.fullName },
-          buyer.email,
-          'reset.ejs',
-          'Password reset link'
-        )
-
-        res.status(200).json({
-          status: 'success',
-          message:
-            'A reset link has been sent to your email. Please click on the link to reset your password',
-          data: '',
-        })
-      } catch (e) {
-        buyer.passwordResetToken = undefined
-        buyer.passwordResetExpires = undefined
-
-        await buyer.save()
-        return next(new Error(e.message, 500))
-      }
+    }
+  }catch(e){
+    return next(new Error(e.message,500))
   }
 }
-module.exports = forgotPassword
+module.exports = forgotPass

@@ -15,6 +15,9 @@ const StoreSchema = new Schema({
     type:Boolean,
     default:false
   },
+  logo:{
+    type:String,
+  },
   country: {
     type: String,
   },
@@ -28,6 +31,9 @@ const StoreSchema = new Schema({
     required: [true, 'Your store address is required'],
   },
   city:{
+    type:String
+  },
+  storeLogo:{
     type:String
   },
   postalCode:{

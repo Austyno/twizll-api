@@ -201,10 +201,11 @@
         .then(response => response.json())
         .then(data => {
           console.log(data)
+          const payAmount = data.data.amount / 100
           secret = data.data.clientSecrete
           submitName = data.data.fullName
           name.innerHTML = data.data.fullName
-          btn.innerHTML = `Pay ${data.data.amount} ${data.data.currency}`
+          btn.innerHTML = `Pay £${payAmount}`
           subForm.style.display = 'block'
           spinner.style.display = 'none'
         })
@@ -235,19 +236,21 @@
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  result
+                  result,
                 }),
-              }).then(res =>res.JSON())
+              })
+                .then(res => res.JSON())
                 .then(d => console.log(d))
-                const url = '<%- process.env.NODE_ENV %>' === 'production' ? 'http://147.182.245.180/api/stripe/subscribe/success' : 'http://localhost:5000/api/stripe/subscribe/success'  
+              const url =
+                '<%- process.env.NODE_ENV %>' === 'production'
+                  ? `${process.env.PROD_ADDRESS}/api/stripe/subscribe/success`
+                  : 'http://localhost:5000/api/stripe/subscribe/success'
               // Redirect the customer to success page
               setMessage('Success! Redirecting.')
               window.location.href = url
-                
             }
           })
       })
     </script>
   </body>
 </html>
-<!-- 'http://147.182.245.180/api/stripe/subscribe/success' -->

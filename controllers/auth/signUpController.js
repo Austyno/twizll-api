@@ -8,10 +8,10 @@ const stripe = require('../../utils/stripe/Stripe')
 const createAuthToken = require('../../utils/createAuthToken')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
+const sms = require('../../utils/twillio/sms')
+const generateOtp = require('../../utils/generateOtp')
 
 const signUp = async (req, res, next) => {
-  // seller,stylist,user
-  // switch
   const { email, phone, password, fullName, role } = req.body
 
   const passCheck =
@@ -20,7 +20,7 @@ const signUp = async (req, res, next) => {
   if (!password.match(passCheck)) {
     return next(
       new Error(
-        'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and special characters',
+        'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and a special character',
         400
       )
     )
@@ -48,31 +48,30 @@ const signUp = async (req, res, next) => {
             ? process.env.PROD_ADDRESS
             : process.env.DEV_ADDRESS
 
-        // const verificationCode = crypto.randomBytes(20).toString('hex')
+        //create otp
+        const otp = generateOtp()
 
-        const verificationCode = jwt.sign(
-          { role: 'seller' },
-          process.env.JWT_SECRET
-        )
-        //create email verification link
-        const verificationLink = `${
-          url + req.originalUrl
-        }/verifyemail/${verificationCode}`
+        // const verificationCode = jwt.sign(
+        //   { role: 'seller' },
+        //   process.env.JWT_SECRET
+        // )
 
         //send verification mail
         const verificationMail = await sendMail.withTemplate(
-          { verificationLink, fullName },
+          { otp, fullName },
           email,
           '/verify.ejs',
           'Please verify your email'
         )
+
+        // const sendOtp = sms(phone,otp)
 
         if (
           verificationMail &&
           (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined)
         ) {
           const newSeller = await Seller.create({
-            emailVerificationCode: verificationCode,
+            emailVerificationCode: otp,
             emailCodeTimeExpiry: moment().add(1, 'days'),
             stripe_customer_id: stripeCustomerId.id,
             free_trial: freeTrial,
@@ -98,7 +97,8 @@ const signUp = async (req, res, next) => {
 
           res.status(201).json({
             status: 'success',
-            message: 'seller signed up successfully',
+            message:
+              'seller signed up successfully. check your mail for your verification code',
             data: newSeller,
           })
         } else {
@@ -127,19 +127,22 @@ const signUp = async (req, res, next) => {
             : process.env.DEV_ADDRESS
 
         // const verificationCode = crypto.randomBytes(20).toString('hex')
-        const verificationCode = jwt.sign(
-          { role: 'buyer' },
-          process.env.JWT_SECRET
-        )
+        // const verificationCode = jwt.sign(
+        //   { role: 'buyer' },
+        //   process.env.JWT_SECRET
+        // )
 
         //create email verification link
-        const verificationLink = `${
-          url + req.originalUrl
-        }/verifyemail/${verificationCode}`
+        // const verificationLink = `${
+        //   url + req.originalUrl
+        // }/verifyemail/${verificationCode}`
+
+        //create otp
+        const otp = generateOtp()
 
         //send verification mail
         const verificationMail = await sendMail.withTemplate(
-          { verificationLink, fullName },
+          { otp, fullName },
           email,
           '/verify.ejs',
           'Please verify your email'
@@ -147,7 +150,7 @@ const signUp = async (req, res, next) => {
 
         if (verificationMail) {
           const newBuyer = await Buyer.create({
-            emailVerificationCode: verificationCode,
+            emailVerificationCode: otp,
             emailCodeTimeExpiry: moment().add(1, 'days'),
             email,
             fullName,
@@ -171,7 +174,8 @@ const signUp = async (req, res, next) => {
 
           res.status(201).json({
             status: 'success',
-            message: 'user signed up successfully',
+            message:
+              'user signed up successfully. Please verify your email by clicking on the link in the email we sent you',
             data: newBuyer,
           })
         } else {
@@ -199,25 +203,28 @@ const signUp = async (req, res, next) => {
         freeTrial.status = 'active'
         freeTrial.end_date = moment().add(30, 'days')
 
-        const url =
-          process.env.NODE_ENV === 'production'
-            ? process.env.PROD_ADDRESS
-            : process.env.DEV_ADDRESS
+        // const url =
+        //   process.env.NODE_ENV === 'production'
+        //     ? process.env.PROD_ADDRESS
+        //     : process.env.DEV_ADDRESS
 
         // const verificationCode = crypto.randomBytes(20).toString('hex')
-        const verificationCode = jwt.sign(
-          { role: 'stylist' },
-          process.env.JWT_SECRET
-        )
+        // const verificationCode = jwt.sign(
+        //   { role: 'stylist' },
+        //   process.env.JWT_SECRET
+        // )
 
         //create email verification link
-        const verificationLink = `${
-          url + req.originalUrl
-        }/verifyemail/${verificationCode}`
+        // const verificationLink = `${
+        //   url + req.originalUrl
+        // }/verifyemail/${verificationCode}`
+
+        //create otp
+        const otp = generateOtp()
 
         //send verification mail
         const verificationMail = await sendMail.withTemplate(
-          { verificationLink, fullName },
+          { otp, fullName },
           email,
           '/verify.ejs',
           'Please verify your email'
@@ -228,7 +235,7 @@ const signUp = async (req, res, next) => {
           (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined)
         ) {
           const newStylist = await Stylist.create({
-            emailVerificationCode: verificationCode,
+            emailVerificationCode: otp,
             emailCodeTimeExpiry: moment().add(1, 'days'),
             stripe_customer_id: stripeCustomerId.id,
             free_trial: freeTrial,
@@ -254,7 +261,8 @@ const signUp = async (req, res, next) => {
 
           res.status(201).json({
             status: 'success',
-            message: 'stylist signed up successfully',
+            message:
+              'stylist signed up successfully. Please verify your email by clicking on the link in the email we sent you',
             data: newStylist,
           })
         } else {

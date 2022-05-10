@@ -19,7 +19,9 @@ const url =
     ? process.env.MONGODB_DEV_URL
     : process.env.MONGODB_URL
 
-const Stripe = stripe(process.env.STRIPE_SECRET_KEY)
+const Stripe = stripe(
+  'sk_test_51H0RkNDPf3hBisiJlkGknCCyzzDhqymjc84C3pi8lBX0Ab4FzVccAx6Nzw2FDKFkqyozjuZqGqXF3nHx84wTUFWa00bQbyx23N'
+)
 const { webHooks } = require('./controllers/stripe/webHooksController')
 
 dotenv.config({ path: './config/config.env' })

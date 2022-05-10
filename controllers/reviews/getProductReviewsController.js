@@ -12,6 +12,7 @@ const getProductReviews = async (req, res, next) => {
 
       .populate('user', 'fullName')
       .populate('product','mainPhoto rating name attributes')
+      
     res.status(200).json({
       status: 'success',
       message: 'product reviews retrieved successfully',

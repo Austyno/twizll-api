@@ -29,6 +29,7 @@ const updateProfile = require('../../controllers/seller/updateSellerProfile')
 const updateProfileImage = require('../../controllers/seller/updateProfileImage')
 const contactUs = require('../../controllers/seller/contactUsController')
 const updateStore = require('../../controllers/seller/updateStoreController')
+const uploadLogo = require('../../controllers/seller/uploadStoreLogoController')
 
 router
   .route('/products/:catId')
@@ -62,7 +63,7 @@ router.route('/categories/main').get(getMainCategory)
 router
   .route('/new-store')
   .post(authenticated('seller'), authRole('seller'), createStore)
-  .put(authenticated('seller'), authRole('seller'),updateStore)
+  .put(authenticated('seller'), authRole('seller'), updateStore)
 
 //orders
 router
@@ -107,6 +108,11 @@ router.route('/contact-us').post(contactUs)
 router
   .route('/bank-details')
   .get(authenticated('seller'), authRole('seller'), bankDetails)
+
+router
+  .route('/store-logo')
+  .post(authenticated('seller'), authRole('seller'), uploadLogo)
+  
 // router
 //   .route('/create-order')
 //   .post(authenticated('seller'), authRole('seller'), async (req, res) => {

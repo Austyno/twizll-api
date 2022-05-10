@@ -12,6 +12,10 @@ const orderItemSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Product',
     },
+    quantity: {
+      required: true,
+      type: Number,
+    },
     totalPrice: {
       required: true,
       type: Schema.Types.Decimal128,
@@ -20,13 +24,19 @@ const orderItemSchema = new Schema(
       type: Schema.Types.Decimal128,
       default: 0.0,
     },
-    quantity: {
-      required: true,
-      type: Number,
+    trackingId: {
+      type: String,
     },
     status: {
       type: String,
-      enum: ['new', 'confirmed', 'cancelled', 'completed','shipped','delivered'],
+      enum: [
+        'new',
+        'confirmed',
+        'cancelled',
+        'completed',
+        'shipped',
+        'delivered',
+      ],
       default: 'new',
     },
   },

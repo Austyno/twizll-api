@@ -3,11 +3,8 @@ const Error = require('../../utils/errorResponse')
 
 const getCollections = async (req, res, next) => {
   try {
-    const collections = await Collection.find().populate(
-      'products',
-      'name unitPrice briefDesc mainPhoto'
-    )
-
+    const collections = await Collection.find()
+      
     res.status(200).json({
       status: 'success',
       message: 'collections retrieved successfully',

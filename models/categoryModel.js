@@ -11,6 +11,7 @@ const productCategorySchema = new Schema({
   },
   mainPhoto: {
     type: String,
+    require: true,
   },
   views: {
     type: Number,
@@ -23,7 +24,7 @@ const productCategorySchema = new Schema({
   mainCategory: {
     type: Schema.Types.ObjectId,
     ref: 'MainCategory',
-    required:[true, 'a main category is required']
+    required: [true, 'a main category is required'],
   },
 })
 

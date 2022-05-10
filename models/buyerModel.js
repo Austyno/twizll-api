@@ -21,7 +21,7 @@ const buyerSchema = new Schema(
     },
     phone: {
       type: String,
-      validate: [validator.isMobilePhone, 'please enter a valid mobile phone'],
+      validate: [validator.isMobilePhone, 'please enter a valid mobile number'],
     },
     photo: {
       type: String,
@@ -77,6 +77,7 @@ const buyerSchema = new Schema(
       contactPerson: { type: String },
       postalCode: { type: Number },
       city: { type: String },
+      countryCode: { type: String },
     },
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,

@@ -20,6 +20,10 @@ const updateProfile = require('../../controllers/buyer/updateProfileController')
 const updateProfileImage = require('../../controllers/buyer/updateProfileImageController')
 const points = require('../../controllers/buyer/getLoyalityPointsController')
 const shipping = require('../../controllers/buyer/addShippingAddressController')
+const collectionCat = require('../../controllers/buyer/getCollectionCategoryController')
+const collectionCatProducts = require('../../controllers/buyer/getCollectionCategoryProductsController')
+const favourite = require('../../controllers/buyer/favouritesController')
+const getFav = require('../../controllers/buyer/getFavouritesController')
 
 router.route('/products/:productId').get(viewProduct)
 router
@@ -43,16 +47,29 @@ router
 router
   .route('/profile')
   .get(authenticated('buyer'), authRole('buyer'), profile)
-  .put(authenticated('buyer'), authRole('buyer'),updateProfile)
+  .put(authenticated('buyer'), authRole('buyer'), updateProfile)
 
-  router.route('/profile-image').put(authenticated('buyer'), authRole('buyer'),updateProfileImage)
+router
+  .route('/profile-image')
+  .put(authenticated('buyer'), authRole('buyer'), updateProfileImage)
 
-  // loyality
-  router.route('/loyality-points').get(authenticated('buyer'), authRole('buyer'), points)
+// loyality
+router
+  .route('/loyality-points')
+  .get(authenticated('buyer'), authRole('buyer'), points)
 
-  // shipping address
-  router
-    .route('/shipping-address')
-    .post(authenticated('buyer'), authRole('buyer'),shipping)
+// shipping address
+router
+  .route('/shipping-address')
+  .post(authenticated('buyer'), authRole('buyer'), shipping)
+
+router.route('/collection-cat/:collectionId').get(collectionCat)
+router.route('/collection-cat-products/:categoryId').get(collectionCatProducts)
+router.route('/favourites').post(authenticated('buyer'), authRole('buyer'),favourite)
+router
+  .route('/favourites')
+  .post(authenticated('buyer'), authRole('buyer'), favourite)
+  .get(authenticated('buyer'), authRole('buyer'),getFav)
+
 
 module.exports = router

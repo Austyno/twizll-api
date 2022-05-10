@@ -22,7 +22,7 @@ const productSchema = new Schema({
   },
   unitPrice: {
     required: [true, 'Product unitPrice not provided'],
-    type: Schema.Types.Decimal128,
+    type: Number,
   },
   photos: [String],
   briefDesc: {

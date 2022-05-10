@@ -9,7 +9,7 @@ const addProductReview = async (req, res, next) => {
   req.body.buyer = buyer.id
 
   const productToReview = await Product.findById(product)
-
+// ******** user should only be able to review products that they have bought
   if (!productToReview) {
     return next(new Error('The product no longer exist in our system', 404))
   }

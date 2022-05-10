@@ -19,7 +19,13 @@ const hook = async () => {
   const lineItems = await stripeUtil.getLineItems(
     'cs_test_b10TrDMXXn7mgIUpHlbPhoJPzQbAklESiLxWTLSLfLQx8NRl5tMuwOi1Yn'
   )
-  console.log('line items', lineItems.data[0].price)
+  let totals = []
+  for (item of lineItems.data) {
+    totals.push(item.amount_total)
+  }
+  console.log('line items', lineItems.data)
+
+  // console.log(totals.reduce((a, b) => a + b))
 }
 
 // http://127.0.0.1/api/stripe/webhook
