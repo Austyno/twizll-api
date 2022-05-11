@@ -62,16 +62,13 @@ const sendOTP = async (req, res, next) => {
         )
       }
     }
-
-
-
-    const otp = generateOtp()
-    const mail = sendMail.withTemplate(
-      { otp },
-      email,
-      'otp.ejs',
-      'Your verification code'
-    )
+    // const otp = generateOtp()
+    // const mail = sendMail.withTemplate(
+    //   { otp },
+    //   email,
+    //   'otp.ejs',
+    //   'Your verification code'
+    // )
     
   } catch (e) {
     return next(new Error(e.message, 500))
