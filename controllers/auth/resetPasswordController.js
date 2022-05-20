@@ -1,63 +1,66 @@
 const path = require('path')
-const User = require('../../models/userModel')
+const Buyer = require('../../models/buyerModel')
+const Seller = require('../../models/sellerModel')
 const Error = require('../../utils/errorResponse')
 const crypto = require('crypto')
 
-//display reset form
-exports.resetPassWordForm = async (req, res, next) => {
-  const { resetCode } = req.params
+//reset password
+const resetPassword = async (req, res, next) => {
+  const { otp, password } = req.body
 
-  const user = await User.find({
-    $and: [
-      { passwordResetToken: resetCode },
-      { passwordResetExpires: { $gt: Date.now() } },
-    ],
-  })
-
-  if (!user) {
-    return res.render(
-      path.join(__dirname, '../../public/views', 'reset-error.ejs'),
-      {
-        message: 'the link your provided either does not exist or has expired',
-      }
-    )
-  }
-
-  const url = `${process.env.PROD_ADDRESS + '/' + req.originalUrl}`
-
-  res.render(path.join(__dirname, '../../public/views', 'reset-password.ejs'), {
-    url: url,
-    message: '',
-  })
-}
-
-//reset/change the password
-exports.resetPassword = async (req, res, next) => {
-  const { pass, confirm } = req.body
-  const { resetCode } = req.params
-
-  if (!(pass === confirm)) {
-    res.render('reset-password', {
-      url: '',
-      message: 'Your passwords do not match',
+  try {
+    let msg = ''
+    const seller = await Seller.findOne({
+      $and: [
+        { passwordResetToken: otp },
+        { passwordResetExpires: { $gt: Date.now() } },
+      ],
     })
-  }
 
-  if (pass === confirm) {
-    try {
-      const user = await User.findOne({ passwordResetToken: resetCode })
+    const buyer = await Buyer.findOne({
+      $and: [
+        { passwordResetToken: otp },
+        { passwordResetExpires: { $gt: Date.now() } },
+      ],
+    })
 
-      user.passwordResetToken = ''
-      user.passwordResetExpires = ''
-      user.password = pass
+    if (buyer != null) {
+      buyer.password = password
+      buyer.passwordResetToken = null
+      buyer.passwordResetExpires = null
 
-      await user.save()
+      buyer.save()
 
-      res.render('thank-you', {
-        message: 'password changed successfully',
+      return res.status(200).json({
+        status: 'success',
+        message: 'password reset successfully',
+        data: '',
       })
-    } catch (e) {
-      return res.render('error', { message: e.message })
+    } else {
+      msg = 'Your code is either invalid or it has expired'
     }
+
+    if (seller != null) {
+      seller.password = password
+      seller.passwordResetToken = null
+      seller.passwordResetExpires = null
+      seller.save()
+
+     return res.status(200).json({
+        status: 'success',
+        message: 'password reset successfully',
+        data: '',
+      })
+    } else {
+      msg = 'Your code is either invalid or it has expired'
+    }
+
+    if (msg != '') {
+      return next(new Error(msg, 400))
+    }
+  } catch (e) {
+    return next(new Error(e.message, 500))
   }
 }
+
+module.exports = resetPassword
