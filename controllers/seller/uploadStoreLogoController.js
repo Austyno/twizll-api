@@ -4,7 +4,6 @@ const path = require('path')
 const Error = require('../../utils/errorResponse')
 const cloudStorage = require('../../utils/uploadToCloudinary')
 
-
 const storeLogo = (req, res, next) => {
   const seller = req.user
   const sellerStore = req.store
@@ -54,7 +53,7 @@ const storeLogo = (req, res, next) => {
 
       res.status(200).json({
         status: 'success',
-        message: 'Store logo updatesd successfully',
+        message: 'Store logo updated successfully',
         data: update,
       })
     })

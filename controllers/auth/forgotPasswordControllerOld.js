@@ -102,5 +102,51 @@ const forgotPassword = async (req, res, next) => {
         return next(new Error(e.message, 500))
       }
   }
+
+  // async verifyEmail(req, res, next) {
+  //   try {
+  //     const { verificationcode } = req.params;
+
+  //     const user = await User.findOne({
+  //       where: {
+  //         verification_token_expires: {
+  //           [Sequelize.Op.gt]: Time.startOfDay(),
+  //         },
+  //         verification_token: verificationcode,
+  //       },
+  //     });
+
+  //     if (user === null) {
+  //       return res.status(422).json({
+  //         status: 'not-found',
+  //         message: 'Your verification token is either invalid or expired.',
+  //       });
+  //     }
+
+  //     const data = {
+  //       is_verified: true,
+  //       verification_token: null,
+  //       verification_token_expires: null,
+  //     };
+  //     await User.update(data, {
+  //       where: {
+  //         email: user.email,
+  //       },
+  //     });
+
+  //     return res.status(201).json({
+  //       status: 'ok',
+  //       message: 'email verified successfully',
+  //     });
+  //   } catch (e) {
+  //     return next(e);
+  //   }
+  },
+
+
+
+
+
+
 }
 module.exports = forgotPassword

@@ -1,7 +1,6 @@
 const axios = require('axios')
 
 const convertCurrency = (from, to, amount) => {
-  console.log('convertin....')
   return new Promise(async (resolve, reject) => {
     try {
       const result = await axios.get(

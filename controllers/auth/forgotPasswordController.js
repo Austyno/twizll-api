@@ -28,12 +28,12 @@ const forgotPass = async (req, res, next) => {
 
       if (mail) {
         buyer.passwordResetToken = otp
-        buyer.passwordResetExpires = moment().add(1, 'day')
+        buyer.passwordResetExpires = moment().add(1, 'd')
         buyer.save()
         res.status(200).json({
           status: 'success',
           message:
-            'We have sent a verification code to your email, copy and past in the provided box',
+            'We have sent a verification code to your email, copy and paste in the provided box',
           data: '',
         })
       }

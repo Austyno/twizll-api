@@ -15,15 +15,15 @@ const getOtp = require('../../controllers/auth/sendOtp')
 const resetPassword = require('../../controllers/auth/resetPasswordController')
 const changePassword = require('../../controllers/auth/changePasswordController')
 
+const sendTokenLimiter = require('../../middleware/ratelimiter')
+
 router.route('/signup').post(signUp)
 router.route('/signup/social').post(socialReg)
 router.route('/login').post(login)
 router.route('/login/social').post(socialLogin)
 // router.route('/signup/verifyemail/:code').get(verifyEmail)
 router.route('/forgotpassword').post(forgotPassword)
-router
-  .route('/reset-password')
-  .post(resetPassword)
+router.route('/reset-password').post(resetPassword)
 
 router.route('/refresh-access').post(refreshAccess)
 
@@ -34,6 +34,6 @@ router.route('/change-password').post(getAuth, changePassword)
 
 router.route('/logout').post(logOut)
 router.route('/verify-otp').post(verifyOtp)
-router.route('/send-otp').post(getOtp)
+router.route('/send-otp').post(sendTokenLimiter, getOtp)
 
 module.exports = router
