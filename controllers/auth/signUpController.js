@@ -56,19 +56,12 @@ const signUp = async (req, res, next) => {
         //   process.env.JWT_SECRET
         // )
 
-        //send verification mail
-        const verificationMail = await sendMail.withTemplate(
-          { otp, fullName },
-          email,
-          '/verify.ejs',
-          'Please verify your email'
-        )
+        
 
         // const sendOtp = sms(phone,otp)
 
         if (
-          verificationMail &&
-          (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined)
+          stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined
         ) {
           const newSeller = await Seller.create({
             emailVerificationCode: otp,
@@ -80,6 +73,14 @@ const signUp = async (req, res, next) => {
             phone,
             password,
           })
+
+          //send verification mail
+          await sendMail.withTemplate(
+            { otp, fullName },
+            email,
+            '/verify.ejs',
+            'Please verify your email'
+          )
 
           // send mail to admin
           const userData = {
@@ -141,23 +142,24 @@ const signUp = async (req, res, next) => {
         const otp = generateOtp()
 
         //send verification mail
-        const verificationMail = await sendMail.withTemplate(
-          { otp, fullName },
+       
+
+        const newBuyer = await Buyer.create({
+          emailVerificationCode: otp,
+          emailCodeTimeExpiry: moment().add(1, 'days'),
           email,
-          '/verify.ejs',
-          'Please verify your email'
-        )
+          fullName,
+          phone,
+          password,
+        })
 
-        if (verificationMail) {
-          const newBuyer = await Buyer.create({
-            emailVerificationCode: otp,
-            emailCodeTimeExpiry: moment().add(1, 'days'),
+        if (newBuyer) {
+          await sendMail.withTemplate(
+            { otp, fullName },
             email,
-            fullName,
-            phone,
-            password,
-          })
-
+            '/verify.ejs',
+            'Please verify your email'
+          )
           // send mail to admin
           const userData = {
             email,
@@ -222,17 +224,10 @@ const signUp = async (req, res, next) => {
         //create otp
         const otp = generateOtp()
 
-        //send verification mail
-        const verificationMail = await sendMail.withTemplate(
-          { otp, fullName },
-          email,
-          '/verify.ejs',
-          'Please verify your email'
-        )
+        
 
         if (
-          verificationMail &&
-          (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined)
+          stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined
         ) {
           const newStylist = await Stylist.create({
             emailVerificationCode: otp,
@@ -244,6 +239,14 @@ const signUp = async (req, res, next) => {
             phone,
             password,
           })
+
+          //send verification mail
+          await sendMail.withTemplate(
+            { otp, fullName },
+            email,
+            '/verify.ejs',
+            'Please verify your email'
+          )
 
           // send mail to admin
           const userData = {
