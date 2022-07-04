@@ -135,6 +135,7 @@ const checkoutSession = async (req, res, next) => {
     )
   }
   try {
+    
     const line_items = []
 
     for (let i = 0; i < cartItems.length; i++) {

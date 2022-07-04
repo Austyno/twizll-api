@@ -95,6 +95,12 @@ const signUp = async (req, res, next) => {
             userData,
             'newUser'
           )
+          await sendMail.notifyAdmin(
+            'sales@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           res.status(201).json({
             status: 'success',
@@ -173,6 +179,12 @@ const signUp = async (req, res, next) => {
             userData,
             'newUser'
           )
+           await sendMail.notifyAdmin(
+             'sales@twizll.com',
+             'New User',
+             userData,
+             'newUser'
+           )
 
           res.status(201).json({
             status: 'success',
@@ -261,6 +273,12 @@ const signUp = async (req, res, next) => {
             userData,
             'newUser'
           )
+           await sendMail.notifyAdmin(
+             'sales@twizll.com',
+             'New User',
+             userData,
+             'newUser'
+           )
 
           res.status(201).json({
             status: 'success',

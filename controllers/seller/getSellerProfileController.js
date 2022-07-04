@@ -13,7 +13,10 @@ const profile = async (req, res, next) => {
   }
 
   try{
-    const user = await Seller.findById(req.user._id).populate('store','storeVisits totalSales totalOrders totalReturns docsUploaded storeVerified storeName')
+    const user = await Seller.findById(req.user._id).populate(
+      'store',
+      'storeVisits totalSales totalOrders totalReturns docsUploaded storeVerified storeName logo storeAddress'
+    )
     user.stripe_customer_id = undefined
     user.token= undefined
     user.__v = undefined

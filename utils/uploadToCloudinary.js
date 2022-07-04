@@ -18,7 +18,6 @@ const cloudStorage = filename => {
       })
       .catch(error => {
         reject(error)
-        console.log(error)
       })
   })
 }

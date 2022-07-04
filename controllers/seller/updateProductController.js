@@ -89,8 +89,10 @@ const updateProduct = async (req, res, next) => {
         {
           $set: {
             name: name ? name : proToUpdate.name,
-            // unitPrice: unitPrice ? Number(priceToGBP + 20) : proToUpdate.unitPrice,
-            unitPrice: unitPrice,
+            unitPrice: unitPrice
+              ? Number(priceToGBP + 20)
+              : proToUpdate.unitPrice,
+            // unitPrice: unitPrice,
             photos:
               updatedPhotos.length > 0 ? updatedPhotos : proToUpdate.photos,
             weight: Number(weight) ? Number(weight) : proToUpdate.weight,
