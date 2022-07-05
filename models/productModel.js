@@ -24,6 +24,10 @@ const productSchema = new Schema({
     required: [true, 'Product unitPrice not provided'],
     type: Number,
   },
+  originalPrice:{
+    type:Number,
+    required:true
+  },
   photos: [String],
   briefDesc: {
     type: String,

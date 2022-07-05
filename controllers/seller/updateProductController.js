@@ -75,6 +75,9 @@ const updateProduct = async (req, res, next) => {
     let priceToGBP
     if (unitPrice) {
       priceToGBP = await convert(currency, 'GBP', unitPrice)
+      originalPrice = unitPrice
+    }else if(originalPrice){
+      priceToGBP = await convert(currency, 'GBP', originalPrice)
     }
 
     let parsedAttributes
@@ -92,7 +95,7 @@ const updateProduct = async (req, res, next) => {
             unitPrice: unitPrice
               ? Number(priceToGBP + 20)
               : proToUpdate.unitPrice,
-            // unitPrice: unitPrice,
+            originalPrice: originalPrice ? originalPrice : proToUpdate.originalPrice,
             photos:
               updatedPhotos.length > 0 ? updatedPhotos : proToUpdate.photos,
             weight: Number(weight) ? Number(weight) : proToUpdate.weight,
@@ -133,7 +136,7 @@ const updateProduct = async (req, res, next) => {
         data: updateProduct,
       })
     } catch (e) {
-      return next(new Error(e.message, 500))
+      return next(e)
     }
   } else {
     return next(

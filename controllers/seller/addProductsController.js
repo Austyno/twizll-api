@@ -94,7 +94,7 @@ const addProduct = async (req, res, next) => {
         availableQty,
         weight,
         unitPrice: priceToGBP + 20,
-        // unitPrice: unitPrice + 20,
+        originalPrice: unitPrice,
         mainPhoto: result.secure_url,
         photos: uploadedPhotos,
         discount,

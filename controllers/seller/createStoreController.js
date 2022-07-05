@@ -8,7 +8,7 @@ const open = require('open')
 const createStore = async (req, res, next) => {
   //seller must be logged in
   const seller = req.user
-  const { storeName, storeAddress, postalCode, city } = req.body
+  const { storeName, storeAddress, postalCode, city,country } = req.body
 
   if (!seller) {
     return next(new Error('You need to sign in to create a store', 403))
@@ -27,6 +27,7 @@ const createStore = async (req, res, next) => {
       storeAddress,
       city,
       postalCode,
+      country
     })
     if (store) {
       const wallet = await Wallet.create({
