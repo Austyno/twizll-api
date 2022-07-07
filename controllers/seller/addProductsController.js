@@ -39,7 +39,7 @@ const addProduct = async (req, res, next) => {
     length,
   } = req.body
 
-  const photos = req.files.photos
+  const photos = req.files?.photos
 
   //convert price to pounds
   const priceToGBP = await convert(currency, 'GBP', unitPrice)
@@ -76,46 +76,39 @@ const addProduct = async (req, res, next) => {
   const price_id = await stripeUtil.createPrice(unitPrice, name)
 
   //upload main photo then create product
-  cloudStorage(req.files.mainPhoto.tempFilePath)
-    .then(async result => {
-      const product = await Product.create({
-        sub_category: subcategory,
-        name,
-        description,
-        returnPolicy,
-        brand,
-        sourceOfMaterial,
-        attributes: {
-          colors: parsed.colors,
-          sizes: parsed.sizes,
-        },
-        availableQty,
-        weight,
-        unitPrice: priceToGBP + 20,
-        originalPrice: unitPrice,
-        mainPhoto: result.secure_url,
-        photos: uploadedPhotos,
-        discount,
-        height,
-        width,
-        weight,
-        length,
-        store: sellerStore.id,
-        price_id: price_id.id,
-      })
-      const tmpFilePath = path.join(__dirname, '../../tmp/')
-      fs.unlink(`${tmpFilePath + result.original_filename}`, (err, reslt) => {
-        if (!err) {
-          console.log('file deleted')
-        }
-      })
-      res.status(201).json({
-        status: 'success',
-        message: 'product created successfully',
-        data: product,
-      })
-    })
-    .catch(e => next(new Error(e.message, 500)))
+  const res = await cloudStorage(req.files.mainPhoto.tempFilePath)
+
+  const product = await Product.create({
+    sub_category: subcategory,
+    name,
+    description,
+    returnPolicy,
+    brand,
+    sourceOfMaterial,
+    attributes: {
+      colors: parsed.colors,
+      sizes: parsed.sizes,
+    },
+    availableQty,
+    weight,
+    unitPrice: priceToGBP + 20,
+    originalPrice: unitPrice,
+    mainPhoto: res.secure_url,
+    photos: uploadedPhotos,
+    discount,
+    height,
+    width,
+    weight,
+    length,
+    store: sellerStore.id,
+    price_id: price_id.id,
+  })
+
+  res.status(201).json({
+    status: 'success',
+    message: 'product created successfully',
+    data: product,
+  })
 }
 
 module.exports = addProduct
