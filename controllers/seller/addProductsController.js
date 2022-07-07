@@ -76,7 +76,7 @@ const addProduct = async (req, res, next) => {
   const price_id = await stripeUtil.createPrice(unitPrice, name)
 
   //upload main photo then create product
-  const res = await cloudStorage(req.files.mainPhoto.tempFilePath)
+  const resp = await cloudStorage(req.files.mainPhoto.tempFilePath)
 
   const product = await Product.create({
     sub_category: subcategory,
@@ -93,7 +93,7 @@ const addProduct = async (req, res, next) => {
     weight,
     unitPrice: priceToGBP + 20,
     originalPrice: unitPrice,
-    mainPhoto: res.secure_url,
+    mainPhoto: resp.secure_url,
     photos: uploadedPhotos,
     discount,
     height,
