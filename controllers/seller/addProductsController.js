@@ -47,20 +47,18 @@ const addProduct = async (req, res, next) => {
   //parse attributes
   const parsed = JSON.parse(attributes)
 
-  if (!req.files.photos){
+  if (req.files.photos == null) {
     return res.status(400).json({
-      status:"error",
-      message:"Please upload an image",
-      data:""
+      status: 'error',
+      message: 'Please upload an image',
+      data: '',
     })
   }
-    if (req.files.photos && Array.isArray(req.files.photos))
+  if (req.files.photos && Array.isArray(req.files.photos))
+    if (photos.length < 1) {
       //check if more than one photo is uploaded
-      if (photos.length < 1) {
-        return next(
-          new Error('please upload at least one image in photos', 400)
-        )
-      }
+      return next(new Error('please upload at least one image in photos', 400))
+    }
 
   const uploadedPhotos = []
 
