@@ -30,7 +30,7 @@ const updateProfileImage = require('../../controllers/seller/updateProfileImage'
 const contactUs = require('../../controllers/seller/contactUsController')
 const updateStore = require('../../controllers/seller/updateStoreController')
 const uploadLogo = require('../../controllers/seller/uploadStoreLogoController')
-const getCountries = require('../../controllers/seller/getAllcountries')
+const getCountries = require('../../controllers/seller/getAllCountries')
 
 router
   .route('/products/:catId')
@@ -115,7 +115,7 @@ router
   .post(authenticated('seller'), authRole('seller'), uploadLogo)
 
 router.route('/countries').get(getCountries)
-  
+
 // router
 //   .route('/create-order')
 //   .post(authenticated('seller'), authRole('seller'), async (req, res) => {

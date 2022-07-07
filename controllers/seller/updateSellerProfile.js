@@ -14,15 +14,21 @@ const updateProfile = async (req, res, next) => {
   }
 
   try {
+    const data = {}
+    if(fullName){
+      data.fullName = fullName
+    }
+    if(address){
+      data.address = address
+    }
+
     const update = await Seller.findOneAndUpdate(
-      seller.id,
-      {
-        fullName: req.body.fullName === undefined ? seller.fullName : req.body.fullName,
-        address: req.body.address === undefined ? seller.address : req.body.address,
-      },
-      { new: true }
+
+      { _id: seller.id},
+        { $set: data },
+        { new: true } 
     )
-update.token = undefined
+    update.token = undefined
     res.status(201).json({
       status: 'success',
       message: 'seller profile updated successfully',

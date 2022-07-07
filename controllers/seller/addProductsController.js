@@ -53,23 +53,14 @@ const addProduct = async (req, res, next) => {
       return next(new Error('please upload at least one image in photos', 400))
     }
 
-  //upload photos to cloudinary
-  photos.forEach(photo => {
-    cloudStorage(photo.tempFilePath)
-      .then(result => {
-        uploadedPhotos.push(result.secure_url)
+  const uploadedPhotos = []
 
-        const tmpFilePath = path.join(__dirname, '../../tmp/')
-        fs.unlink(`${tmpFilePath + result.original_filename}`, (err, reslt) => {
-          if (!err) {
-            console.log('file deleted')
-          }
-        })
-      })
-      .catch(e => console.log(e))
+  //upload photos to cloudinary
+  photos.forEach(async photo => {
+    const result = await cloudStorage(photo.tempFilePath)
+    uploadedPhotos.push(result.secure_url)
   })
 
-  const uploadedPhotos = []
   console.log(uploadedPhotos)
 
   // console.log('price', priceToGBP)
