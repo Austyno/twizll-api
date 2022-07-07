@@ -12,24 +12,19 @@ const profile = async (req, res, next) => {
     return next(new Error('Only store owners can perform this action', 403))
   }
 
-  try{
-    const user = await Seller.findById(req.user._id).populate(
-      'store',
-      'storeVisits totalSales totalOrders totalReturns docsUploaded storeVerified storeName logo storeAddress'
-    )
+  try {
+    const user = await Seller.findById(req.user._id).populate('store')
     user.stripe_customer_id = undefined
-    user.token= undefined
+    user.token = undefined
     user.__v = undefined
-    
+
     res.status(200).json({
       status: 'success',
       message: 'Seller profile retrieved successfuly',
       data: user,
     })
-  }catch(e){
-    return next(new Error('There was an error geting your profile',500))
+  } catch (e) {
+    return next(new Error('There was an error geting your profile', 500))
   }
-
-  
 }
 module.exports = profile

@@ -11,12 +11,12 @@ const StoreSchema = new Schema({
   //   type: Boolean,
   //   default: false,
   // },
-  activeSubscription:{
-    type:Boolean,
-    default:false
+  activeSubscription: {
+    type: Boolean,
+    default: false,
   },
-  logo:{
-    type:String,
+  logo: {
+    type: String,
   },
   country: {
     type: String,
@@ -30,14 +30,11 @@ const StoreSchema = new Schema({
     type: String,
     required: [true, 'Your store address is required'],
   },
-  city:{
-    type:String
+  city: {
+    type: String,
   },
-  storeLogo:{
-    type:String
-  },
-  postalCode:{
-    type:Number
+  postalCode: {
+    type: Number,
   },
   storeVisits: {
     type: Number,
@@ -67,7 +64,7 @@ const StoreSchema = new Schema({
       'awaiting approval',
       'docs rejected',
       'upload docs',
-      'docs uploaded'
+      'docs uploaded',
     ],
     default: 'upload docs',
   },
