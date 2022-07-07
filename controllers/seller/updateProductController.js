@@ -121,7 +121,8 @@ const updateProduct = async (req, res, next) => {
           updatedPhotos.push(result.secure_url)
         })
         data.photos = updatedPhotos
-      } else {
+      }
+      if (req.files && req.files.photos) {
         const result = await cloudStorage(req.files.photos.tempFilePath)
         data.photos = result.secure_url
       }
