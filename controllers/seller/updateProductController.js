@@ -60,11 +60,6 @@ const updateProduct = async (req, res, next) => {
       if (name) {
         data.name = name
       }
-      if (unitPrice) {
-        data.unitPrice = originalPrice
-          ? await convert(currency, 'GBP', originalPrice)
-          : await convert(currency, 'GBP', unitPrice)
-      }
       if (briefDesc) {
         data.briefDesc = briefDesc
       }
@@ -107,6 +102,7 @@ const updateProduct = async (req, res, next) => {
 
       if (originalPrice) {
         data.originalPrice = originalPrice
+        data.unitPrice = await convert(currency, 'GBP', Number(originalPrice))
       }
 
       if (req.files && req.files.mainPhoto) {
