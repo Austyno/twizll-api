@@ -14,6 +14,7 @@ const updateProfileImage = async (req, res, next) => {
   if (!sellerStore) {
     return next(new Error('Only store owners can perform this action', 403))
   }
+
   const allowedMediaTypes = ['jpg', 'jpeg', 'png']
 
   if (!allowedMediaTypes.includes(image.mimetype.split('/')[1])) {
@@ -39,21 +40,25 @@ const updateProfileImage = async (req, res, next) => {
     const newName = `${image.name.split('.')[0]}-${seller.id}${path.extname(
       image.name
     )}`
+    const result = await cloudStorage(image.tempFilePath)
 
-    cloudStorage(image.tempFilePath).then(async result => {
-      const update = await Seller.findOneAndUpdate(
-        seller.id,
-        {
-          photo: result.secure_url,
-        },
-        { new: true }
-      )
-      update.token = undefined
-      res.status(200).json({
-        status: 'success',
-        message: 'profile image updatesd successfully',
-        data: update,
-      })
+    const data = {
+      photo: result.secure_url,
+    }
+
+    const update = await Seller.findOneAndUpdate(
+      { _id: seller.id },
+      { $set: data },
+      { new: true }
+    )
+
+    update.token = undefined
+    update.refreshToken = undefined
+
+    res.status(200).json({
+      status: 'success',
+      message: 'profile image updatesd successfully',
+      data: update,
     })
   } catch (e) {
     return next(new Error(e.message, 500))
