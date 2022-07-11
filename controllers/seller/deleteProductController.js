@@ -15,24 +15,23 @@ const deleteProduct = async (req, res, next) => {
   if (!sellerStore) {
     return next(new Error('Only store owners can perform this action', 403))
   }
-
-  const prod = await Product.findById(productId)
-
-  if (!prod) {
-    return next(new Error('this product does not exist', 400))
-  }
-
   try {
-    if (prod.photos !== null) {
-      prod.photos.forEach(photo => {
-        deleteFromCloudinary(photo)
-      })
+    const prod = await Product.findById(productId)
+
+    if (!prod) {
+      return next(new Error('this product does not exist', 400))
     }
 
-    deleteFromCloudinary(prod.mainPhoto)
-    if (prod.store === sellerStore.id) {
+    if (prod.store.toString() === sellerStore.id.toString()) {
+      deleteFromCloudinary(prod.mainPhoto)
+      if (prod.photos !== null) {
+        prod.photos.forEach(photo => {
+          deleteFromCloudinary(photo)
+        })
+      }
+
       await Product.findByIdAndDelete(productId)
-      res.status(200).json({
+      return res.status(200).json({
         status: 'success',
         message: 'product deleted successfully',
         data: '',
