@@ -94,14 +94,14 @@ const updateProductImage = async (req, res, next) => {
         )
       }
 
-      // if (req.files.photos.size > 1000000) {
-      //   return next(
-      //     new Error(
-      //       `Upload file size is too large. Upload a file less or equal to 1mb`,
-      //       400
-      //     )
-      //   )
-      // }
+      if (req.files.photos.size > 1000000) {
+        return next(
+          new Error(
+            `Upload file size is too large. Upload a file less or equal to 1mb`,
+            400
+          )
+        )
+      }
       const result = await cloudStorage(req.files.photos.tempFilePath)
 
       const updated = await Product.findOneAndUpdate(
@@ -131,14 +131,14 @@ const updateProductImage = async (req, res, next) => {
         )
       }
 
-      // if (req.files.mainPhoto.size > 1000000) {
-      //   return next(
-      //     new Error(
-      //       `Upload file size is too large. Upload a file less or equal to 1mb`,
-      //       400
-      //     )
-      //   )
-      // }
+      if (req.files.mainPhoto.size > 1000000) {
+        return next(
+          new Error(
+            `Upload file size is too large. Upload a file less or equal to 1mb`,
+            400
+          )
+        )
+      }
       const result = await cloudStorage(req.files.mainPhoto.tempFilePath)
       await Product.findOneAndUpdate(
         { _id: productId },
