@@ -43,6 +43,7 @@ const updateProduct = async (req, res, next) => {
       new Error('You need to create a store first then add products', 401)
     )
   }
+
   try {
     const productToUpdate = await Product.findById(productId)
 
@@ -101,6 +102,13 @@ const updateProduct = async (req, res, next) => {
       }
 
       if (originalPrice) {
+        if (!currency) {
+          return res.status(400).json({
+            status: 'bad request',
+            message: 'the currency is required to update price',
+            data: '',
+          })
+        }
         data.originalPrice = originalPrice
         data.unitPrice = await convert(currency, 'GBP', Number(originalPrice))
       }
