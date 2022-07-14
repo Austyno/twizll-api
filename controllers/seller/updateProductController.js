@@ -113,23 +113,23 @@ const updateProduct = async (req, res, next) => {
         data.unitPrice = await convert(currency, 'GBP', Number(originalPrice))
       }
 
-      if (req.files && req.files.mainPhoto) {
-        const upl = await cloudStorage(req.files.mainPhoto.tempFilePath)
-        data.mainPhoto = upl.secure_url
-      }
+      // if (req.files && req.files.mainPhoto) {
+      //   const upl = await cloudStorage(req.files.mainPhoto.tempFilePath)
+      //   data.mainPhoto = upl.secure_url
+      // }
 
-      if (req.files && req.files.photos && Array.isArray(req.files.photos)) {
-        let updatedPhotos = []
-        req.files.photos.forEach(async photo => {
-          const result = await cloudStorage(photo.tempFilePath)
-          updatedPhotos.push(result.secure_url)
-        })
-        data.photos = updatedPhotos
-      }
-      if (req.files && req.files.photos) {
-        const result = await cloudStorage(req.files.photos.tempFilePath)
-        data.photos = result.secure_url
-      }
+      // if (req.files && req.files.photos && Array.isArray(req.files.photos)) {
+      //   let updatedPhotos = []
+      //   req.files.photos.forEach(async photo => {
+      //     const result = await cloudStorage(photo.tempFilePath)
+      //     updatedPhotos.push(result.secure_url)
+      //   })
+      //   data.photos = updatedPhotos
+      // }
+      // if (req.files && req.files.photos) {
+      //   const result = await cloudStorage(req.files.photos.tempFilePath)
+      //   data.photos = result.secure_url
+      // }
 
       const updated = await Product.findOneAndUpdate(
         { _id: productId },
