@@ -44,19 +44,6 @@ const updateProductImage = async (req, res, next) => {
     const allowedMediaTypes = ['jpg', 'jpeg', 'png']
 
     if (req.files && req.files.photos && Array.isArray(req.files.photos)) {
-      if (
-        !allowedMediaTypes.includes(req.files.photos[0].mimetype.split('/')[1])
-      ) {
-        return next(
-          new Error(
-            `Media type ${
-              req.files.photos[0].mimetype.split('/')[1]
-            } is not allowed. Allowed image types ${allowedMediaTypes}`,
-            400
-          )
-        )
-      }
-
       if (req.files.photos[0].size > 1000000) {
         return next(
           new Error(
@@ -81,19 +68,6 @@ const updateProductImage = async (req, res, next) => {
     }
 
     if (req.files && req.files.photos) {
-      if (
-        !allowedMediaTypes.includes(req.files.photos.mimetype.split('/')[1])
-      ) {
-        return next(
-          new Error(
-            `Media type ${
-              req.files.photos.mimetype.split('/')[1]
-            } is not allowed. Allowed image types ${allowedMediaTypes}`,
-            400
-          )
-        )
-      }
-
       if (req.files.photos.size > 1000000) {
         return next(
           new Error(
