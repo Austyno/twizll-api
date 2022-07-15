@@ -47,7 +47,7 @@ const updateProduct = async (req, res, next) => {
   try {
     const productToUpdate = await Product.findById(productId)
 
-    if (productToUpdate === null) {
+    if (productToUpdate == null) {
       return res.status(400).json({
         status: 'failed',
         message: `The product does not exist`,

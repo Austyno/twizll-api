@@ -1,9 +1,10 @@
 const Error = require('../../utils/errorResponse')
-const countries = require('../../utils/countries')
+const Country = require('../../models/countries')
 
 
 const getAllCountries = async (req,res,next) => {
   try{
+    const countries = await Country.find()
   return res.status(200).json({
     status: 'success',
     message: 'countries retrieved successfully',
