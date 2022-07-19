@@ -8,7 +8,7 @@ const buyerSchema = new Schema(
     fullName: {
       type: String,
       trim: true,
-      required: [true, 'Please tell us your first name!'],
+      required: [true, 'Please tell us your full name!'],
     },
     email: {
       type: String,

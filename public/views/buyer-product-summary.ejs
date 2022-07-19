@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+  </head>
+  <body>
+    <div>
+      <p><span style="font-weight: bold">FullName:</span> <%= fullName %></p>
+      <p><span style="font-weight: bold">order Total: </span><%= order_total %></p>
+      <p><span style="font-weight: bold">products:</p>
+        <table>
+          <tr>
+          <th>Name</th>
+          <th>image</th>
+          <!-- <th>quantity</th> -->
+          </tr>
+          <% for(let product of product_summary){%>
+            <tr>
+              <td><%= product.name %></td>
+              <td><img src="<%= product.image %>" height="50px" width="50px"></td>
+            </tr>
+          <% }%>
+        </table>
+    </div>
+    cheers Twizll team.
+  </body>
+</html>

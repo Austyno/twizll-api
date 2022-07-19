@@ -22,7 +22,7 @@ const url =
 const Stripe = stripe(
   'sk_test_51H0RkNDPf3hBisiJlkGknCCyzzDhqymjc84C3pi8lBX0Ab4FzVccAx6Nzw2FDKFkqyozjuZqGqXF3nHx84wTUFWa00bQbyx23N'
 )
-const { webHooks } = require('./controllers/stripe/webHooksController')
+const webHooks = require('./controllers/stripe/webHooksController')
 
 dotenv.config({ path: './config/config.env' })
 connectToDb()

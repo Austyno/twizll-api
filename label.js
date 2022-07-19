@@ -1,4 +1,6 @@
 const axios = require('axios')
+const fs = require('fs')
+const path = require('path')
 
 function utcformat(d) {
   d = new Date(d)
@@ -294,10 +296,17 @@ axios
       password: 'C^5kU#4qP!0qT$1p',
     },
   })
-  .then(res => console.log(res.data))
+  .then(res => {
+    fs.writeFile(
+      path.join(__dirname, '/pdfLabels/label.pdf'),
+      res.data.documents[0].content,
+      'base64',
+      error => {
+        if (error) {
+          throw error
+        }
+        console.log('saved')
+      }
+    )
+  })
   .catch(e => console.log(e.message))
-
-// cloud hosting $120/month = $1440
-// 5 yrs = $7200
-// $72,000/ year DBA
-// 5 yrs = 360,000

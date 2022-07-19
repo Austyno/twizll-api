@@ -102,7 +102,7 @@ const signUp = async (req, res, next) => {
             'newUser'
           )
 
-          res.status(201).json({
+         return res.status(201).json({
             status: 'success',
             message:
               'seller signed up successfully. check your mail for your verification code',
@@ -186,7 +186,7 @@ const signUp = async (req, res, next) => {
              'newUser'
            )
 
-          res.status(201).json({
+          return res.status(201).json({
             status: 'success',
             message:
               'user signed up successfully. Please verify your email by clicking on the link in the email we sent you',
@@ -280,7 +280,7 @@ const signUp = async (req, res, next) => {
              'newUser'
            )
 
-          res.status(201).json({
+          return res.status(201).json({
             status: 'success',
             message:
               'stylist signed up successfully. Please verify your email by clicking on the link in the email we sent you',

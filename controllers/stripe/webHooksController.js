@@ -1,3 +1,4 @@
+// const sendMail = require('../../utils/sendMail')
 const Error = require('../../utils/errorResponse')
 const stripeUtil = require('../../utils/stripe/Stripe')
 const Seller = require('../../models/sellerModel')
@@ -8,10 +9,10 @@ const Store = require('../../models/storeModel')
 const Dhl = require('../../utils/dhl/Dhl')
 const Order = require('../../models/orderModel')
 const OrderItem = require('../../models/orderItem')
-const axios = require('axios')
+const CheckoutSession = require('../../models/checkoutSession')
+const fs = require('fs')
+const path = require('path')
 
-let checkoutSessionId = ''
-let customer = ''
 // a user adds their bank account we wneed to verify their account by requsting their BVN
 
 const webHooks = async (req, res, next) => {
@@ -37,13 +38,16 @@ const webHooks = async (req, res, next) => {
 
         break
       case 'checkout.session.completed':
-        console.log('session ID', checkoutSessionId)
-        // convert image from DHL base64 string to image.pdf
-        // 1. convert base64 string to buffer
-        // 2. convert buffer to image (write the image to pdf from base64 and save)
+        console.log(event.data.object.id)
+
+        const checkout_session = await CheckoutSession.findOne({
+          session_id: event.data.object.id,
+        })
+        const customer = await Buyer.findOne({ email: checkout_session.email })
 
         //retrieve line items
-        const lineItems = await stripeUtil.getLineItems(checkoutSessionId)
+        const lineItems = await stripeUtil.getLineItems(checkout_session.id)
+
         // get order total
         let totals = []
 
@@ -51,11 +55,12 @@ const webHooks = async (req, res, next) => {
           totals.push(item.amount_total)
         }
 
+        //get order toatl to ceate order
         const orderTotal = totals.reduce((a, b) => a + b)
 
         // create order
         const customerOrder = await Order.create({
-          buyer: customer,
+          buyer: customer.id,
           shippingAddress: {
             address: customer.shippingAddress.address,
             country: customer.shippingAddress.country,
@@ -65,46 +70,91 @@ const webHooks = async (req, res, next) => {
           orderTotal: orderTotal,
         })
 
+        const labels_for_seller = []
+
         //locate product and create order item
         for (item of lineItems.data) {
           const order_product = await Product.findOne({
             price_id: item.price.id,
           })
 
+          //update product qty and number sold
+          await Product.findOneAndUpdate(
+            { _id: order_product.id },
+            {
+              $set: {
+                numberSold: Number(numberSold) + Number(item.quantity),
+                availableQty: Number(availableQty) - Number(item.quantity),
+              },
+            }
+          )
+
+          //get labels for each product from dhl
+          const label = await Dhl.createLabel(
+            customer,
+            order_product,
+            item.quantity,
+            customerOrder.id,
+            item.amount_total / 100
+          )
+
+          //convert blob data from DHL to pdf
+          const label_pdf = fs.writeFile(
+            path.join(__dirname, `/pdfLabels/${order_product.name.pdf}`),
+            label.data.documents[0].content,
+            'base64',
+            error => {
+              if (error) {
+                throw error
+              }
+              console.log('pdf saved')
+            }
+          )
+
+          labels_for_seller.push(label_pdf)
+
+          //create order items in db with each product (TODO: refator to add tracking id as an array)
           const order_item = await OrderItem.create({
             orderId: customerOrder.id,
             product: order_product.id,
             quantity: item.quantity,
             totalPrice: item.amount_total,
+            tracking_id: label.packages[0].trackingNumber,
           })
 
-          //update customer orderitem with order_item.id
+          //update customer orderitem with order_item id
           await Order.updateOne(
             { _id: customerOrder.id },
             { $push: { orderItems: order_item.id } }
           )
         }
 
-        const labels_for_seller = []
+        //email buyer
+        const product_summary = []
 
-        //make a call to dhl get tracking id and label for each item
-        for (pro of lineItems.data) {
-          const product = await Product.findOne({ price_id: pro.price.id })
-          // const label = await Dhl.createLabel(customer,product)
-          const label = await Dhl.createLabel(
-            customer,
-            product,
-            pro.quantity,
-            customerOrder.id,
-            pro.amount_total / 100
-          )
-          labels_for_seller.push(label)
+        const buyer_order = await Order.findOne({ _id: customerOrder.id })
+
+        for (let product of buyer_order.orderItems) {
+          const product = await Product.findOne({ _id: product })
+          product_summary.push(product)
         }
+        //refactor so we can get the quantity for each product and email along
+        const order_summary = {
+          order_total: orderTotal,
+          products: product_summary,
+          fullName: customer.fullName,
+        }
+
+        // await sendMail.withTemplate(
+        //   order_summary,
+        //   customer.email,
+        //   '/buyer-product-summary.ejs',
+        //   'Your order summary'
+        // )
 
         console.log('labels :', labels_for_seller)
         // add tracking id to each order item.
         // email buyer a summary of items bought with tracking ids
-
         // update total sold for each product
         // email store owner items bought,label for each item and order id
         //group items based on store
@@ -123,44 +173,4 @@ const webHooks = async (req, res, next) => {
   }
 }
 
-const checkoutSession = async (req, res, next) => {
-  const { cartTotal, shippingAddress, cartItems } = req.body
-
-  const buyer = req.user
-  customer = req.user
-
-  if (!buyer) {
-    return next(
-      new Error('You need to be logged in to perform this action', 403)
-    )
-  }
-  try {
-    
-    const line_items = []
-
-    for (let i = 0; i < cartItems.length; i++) {
-      const prod = await Product.findById(cartItems[i].product)
-      line_items.push({
-        price: prod.price_id,
-        quantity: cartItems[i].qty,
-      })
-    }
-
-    const checkoutSession = await stripeUtil.createCheckoutSession(
-      buyer.email,
-      line_items
-    )
-    //save session id to use later to retrieve line items
-    checkoutSessionId = checkoutSession.id
-
-    res.status(200).json({
-      status: 'success',
-      message: 'check out session created',
-      data: checkoutSession.url,
-    })
-  } catch (e) {
-    return next(new Error(e, 500))
-  }
-}
-
-module.exports = { webHooks, checkoutSession }
+module.exports = webHooks

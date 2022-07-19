@@ -24,7 +24,7 @@ const orderItemSchema = new Schema(
       type: Schema.Types.Decimal128,
       default: 0.0,
     },
-    trackingId: {
+    tracking_id: {
       type: String,
     },
     status: {

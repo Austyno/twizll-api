@@ -2,7 +2,7 @@ const router = require('express').Router()
 const express = require('express')
 const authRole = require('../../middleware/authRole')
 const authenticated = require('../../middleware/authenticated')
-const webHooks = require('../../controllers/stripe/webHooksController')
+const checkoutSession = require('../../controllers/stripe/checkoutSessionController')
 const path = require('path')
 const {
   createSubscription,
@@ -14,7 +14,6 @@ const checkOut = require('../../controllers/stripe/checkoutController')
 const updateSubStatus = require('../../controllers/stripe/updateSubStatusController')
 const setSession = require('../../middleware/setSession')
 
-
 //subscription
 router
   .route('/start-sub')
@@ -24,13 +23,9 @@ router.route('/pay-sub').get(showSubpage)
 router.route('/config').get(pubKey)
 router.route('/updateSubStatus').post(updateSubStatus)
 
-//checkout
-// router
-//   .route('/checkout')
-//   .post(authenticated('buyer'), authRole('buyer'), checkOut)
-  router
-    .route('/checkout')
-    .post(authenticated('buyer'), authRole('buyer'), webHooks.checkoutSession)
+router
+  .route('/checkout')
+  .post(authenticated('buyer'), authRole('buyer'), checkoutSession)
 
 router.get('/subscribe/success', (req, res) => {
   res.render(path.join(__dirname, '../../public/views', 'success.ejs'))
