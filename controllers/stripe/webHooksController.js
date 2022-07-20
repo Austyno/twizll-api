@@ -86,8 +86,10 @@ const webHooks = async (req, res, next) => {
             { _id: order_product.id },
             {
               $set: {
-                numberSold: Number(numberSold) + Number(item.quantity),
-                availableQty: Number(availableQty) - Number(item.quantity),
+                numberSold:
+                  Number(order_product.numberSold) + Number(item.quantity),
+                availableQty:
+                  Number(order_product.availableQty) - Number(item.quantity),
               },
             }
           )
