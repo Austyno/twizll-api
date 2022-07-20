@@ -33,7 +33,7 @@ const OrderSchema = new Schema(
     // },
     deliveryType: {
       type: String,
-      enum: ['express', 'standard'],
+      enum: ['express', 'standard', 'regular'],
       default: 'regular',
     },
   },
