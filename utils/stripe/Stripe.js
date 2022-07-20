@@ -34,13 +34,13 @@ class StripeUtil {
 
   createWebhook(rawBody, sig) {
     return new Promise(async (resolve, reject) => {
-      let key = ''
+      let key = process.env.STRIPE_WEBHOOK_SECRET
 
-      if (process.env.NODE_ENV === 'development') {
-        key = process.env.STRIPE_TEST_WEBHOK_SECRET
-      } else {
-        key = process.env.STRIPE_WEBHOOK_SECRET
-      }
+      // if (process.env.NODE_ENV === 'development') {
+      //   key = process.env.STRIPE_TEST_WEBHOK_SECRET
+      // } else {
+      //   key = process.env.STRIPE_WEBHOOK_SECRET
+      // }
       try {
         const event = await Stripe.webhooks.constructEvent(rawBody, sig, key)
         resolve(event)
