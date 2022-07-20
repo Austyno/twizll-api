@@ -19,7 +19,8 @@ const webHooks = async (req, res, next) => {
   try {
     const event = await stripeUtil.createWebhook(
       req.body,
-      req.headers['stripe-signature']
+      req.headers['stripe-signature'],
+      'whsec_MtXUs0yI6NUSd3PLRNTHcOfksu7w32k7'
     )
     const data = event.data.object
 
@@ -46,7 +47,9 @@ const webHooks = async (req, res, next) => {
         const customer = await Buyer.findOne({ email: checkout_session.email })
 
         //retrieve line items
-        const lineItems = await stripeUtil.getLineItems(checkout_session.id)
+        const lineItems = await stripeUtil.getLineItems(
+          checkout_session.session_id
+        )
 
         // get order total
         let totals = []
@@ -161,7 +164,7 @@ const webHooks = async (req, res, next) => {
         // calculate how much earned and update store wallet
         // create transaction
         //update buyer loyality points
-        // res.send()
+        res.send()
         break
       default:
       // console.log(`Unhandled event type ${event.type}`)
