@@ -563,8 +563,8 @@ class DhlUtil {
           process.env.NODE_ENV === 'development'
             ? process.env.DHL_DEV_URL
             : process.env.DHL_PROD_URL
-
-        const label = await axios.post(process.env.DHL_DEV_URL, data, {
+        
+        const label = await axios.post(process.env.DHL_DEV_URL, data, {//remove dev url when production is ready
           auth: {
             username: process.env.DHL_USERNAME,
             password: process.env.DHL_PASSWORD,

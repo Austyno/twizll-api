@@ -102,6 +102,7 @@ const webHooks = async (req, res, next) => {
             customerOrder.id,
             item.amount_total / 100
           )
+          console.log(label.additionalDetails)
 
           //convert blob data from DHL to pdf
           const label_pdf = fs.writeFile(
