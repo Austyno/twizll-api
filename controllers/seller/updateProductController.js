@@ -5,6 +5,7 @@ const cloudStorage = require('../../utils/uploadToCloudinary')
 const convert = require('../../utils/convertCurrentcy')
 const path = require('path')
 const fs = require('fs')
+const stripeUtil = require('../../utils/stripe/Stripe')
 
 //TODO:refactor to only upload images if they were changed and not the same with what was there b4
 // also abort if there is an error -- use transactions
