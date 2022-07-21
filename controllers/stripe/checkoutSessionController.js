@@ -6,12 +6,34 @@ const checkoutSession = async (req, res, next) => {
   const { cartTotal, shippingAddress, cartItems } = req.body
 
   const buyer = req.user
+  const errors = {}
 
   if (!buyer) {
     return next(
       new Error('You need to be logged in to perform this action', 403)
     )
   }
+
+  if (!shippingAddress) {
+    errors.shippingAddress = `please provide a shipping address with 
+    ${(address, country, contactPerson, postalCode, city, countryCode)}`
+  }
+
+  if (!cartItems || cartItems.length < 1) {
+    errors.cartItems = 'You cart cant be empty'
+  }
+
+  if (!cartTotal || cartTotal == 0) {
+    errors.cartTotal = 'your cart total cant be 0'
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({
+      message: 'Please provide all required fields.',
+      error: errors,
+    })
+  }
+
   try {
     const line_items = []
 
@@ -30,9 +52,8 @@ const checkoutSession = async (req, res, next) => {
     //save session id to use later to retrieve line items
     await CheckoutSession.create({
       session_id: checkoutSession.id,
-      email:buyer.email
+      email: buyer.email,
     })
-
 
     res.status(200).json({
       status: 'success',
