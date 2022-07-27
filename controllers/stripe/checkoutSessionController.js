@@ -13,7 +13,7 @@ const checkoutSession = async (req, res, next) => {
       new Error('You need to be logged in to perform this action', 403)
     )
   }
- 
+
   if (!shippingAddress) {
     errors.shippingAddress = `please provide a shipping address with 
     ${(address, country, contactPerson, postalCode, city, countryCode)}`
@@ -42,7 +42,7 @@ const checkoutSession = async (req, res, next) => {
       line_items.push({
         price: prod.price_id,
         quantity: cartItems[i].qty,
-        tax_rates: 'txr_1LO2SrDPf3hBisiJQ0vqKncL',
+        tax_rates: ['txr_1LO2SrDPf3hBisiJQ0vqKncL'],
       })
     }
 
