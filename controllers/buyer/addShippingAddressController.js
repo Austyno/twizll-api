@@ -1,20 +1,22 @@
 const Error = require('../../utils/errorResponse')
 const Buyer = require('../../models/buyerModel')
 const countries = require('../../utils/countries')
+const Country = require('../../models/countries')
 
 const shippingAddress = async (req, res, next) => {
   const buyer = req.user
-  const { address, contactPerson, city, postalCode, country } = req.body
+  const { address, contactPerson, city, postalCode, country} = req.body
 
   if (!buyer) {
     return next(new Error('The buyer needs to login', 400))
   }
   //get contry code
   let countryCode = ''
-  for(let i = 0; i < countries.length; i++){
-    if(countries[i].label === country){
-      countryCode = countries[i].code
-      return
+  const all_countries = await Country.find()
+  for(let i = 0; i < all_countries.length; i++){
+    if (all_countries[i].name.toString() === country.toString()) {
+      countryCode = all_countries[i].code
+      break
     }
   }
   try {

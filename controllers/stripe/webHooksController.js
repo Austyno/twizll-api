@@ -12,6 +12,7 @@ const OrderItem = require('../../models/orderItem')
 const CheckoutSession = require('../../models/checkoutSession')
 const fs = require('fs')
 const path = require('path')
+const _ = require('lodash')
 
 // a user adds their bank account we wneed to verify their account by requsting their BVN
 
@@ -50,7 +51,6 @@ const webHooks = async (req, res, next) => {
         const lineItems = await stripeUtil.getLineItems(
           checkout_session.session_id
         )
-
         // get order total
         let totals = []
 
@@ -74,12 +74,19 @@ const webHooks = async (req, res, next) => {
         })
 
         const labels_for_seller = []
+        const buyer_tracking_ids = []
+
+
+        //use for grouping by store
+        const products_for_grouping = []
 
         //locate product and create order item
         for (item of lineItems.data) {
           const order_product = await Product.findOne({
             price_id: item.price.id,
           })
+
+          products_for_grouping.push(order_product)
 
           //update product qty and number sold
           await Product.findOneAndUpdate(
@@ -95,19 +102,23 @@ const webHooks = async (req, res, next) => {
           )
 
           //get labels for each product from dhl
-          const label = await Dhl.createLabel(
+          const dhl = await Dhl.createLabel(
             customer,
             order_product,
             item.quantity,
             customerOrder.id,
             item.amount_total / 100
           )
-          console.log(label.additionalDetails)
+
+          console.log(dhl.data.documents[0].content)
+
+          //split product name to use in pdf naming
+          const label_pdf_name = order_product.name.split(' ').join('_')
 
           //convert blob data from DHL to pdf
           const label_pdf = fs.writeFile(
-            path.join(__dirname, `/pdfLabels/${order_product.name.pdf}`),
-            label.data.documents[0].content,
+            path.join(__dirname, '/pdfLabels/' + `${label_pdf_name}.pdf`),
+            dhl.data.documents[0].content,
             'base64',
             error => {
               if (error) {
@@ -118,22 +129,44 @@ const webHooks = async (req, res, next) => {
           )
 
           labels_for_seller.push(label_pdf)
+          buyer_tracking_ids.push(dhl.data.packages[0].trackingNumber)
+
+          console.log(labels_for_seller)
+          console.log(buyer_tracking_ids)
 
           //create order items in db with each product (TODO: refator to add tracking id as an array)
-          const order_item = await OrderItem.create({
-            orderId: customerOrder.id,
-            product: order_product.id,
-            quantity: item.quantity,
-            totalPrice: item.amount_total,
-            tracking_id: label.packages[0].trackingNumber,
-          })
+          // const order_item = await OrderItem.create({
+          //   orderId: customerOrder.id,
+          //   product: order_product.id,
+          //   quantity: item.quantity,
+          //   totalPrice: item.amount_total,
+          //   tracking_id: label.packages[0].trackingNumber,
+          // })
 
           //update customer orderitem with order_item id
-          await Order.updateOne(
-            { _id: customerOrder.id },
-            { $push: { orderItems: order_item.id } }
-          )
+          // await Order.updateOne(
+          //   { _id: customerOrder.id },
+          //   { $push: { orderItems: order_item.id } }
+          // )
         }
+
+        //group products according to store
+        const result = _(products_for_grouping)
+          .groupBy(x => x.store)
+          .map((value, key) => ({ store: key, products: value }))
+          .value()
+
+        //calculate store total
+        let gTotal = []
+        for (let x = 0; x < result.length; x++) {
+          for (let j = 0; j < result[x].products.length; j++) {
+            if (result[x].store.id == result[x].products[j].store.id) {
+              console.log(result[x].products[j].total)
+            }
+          }
+        }
+
+        //calculate
 
         //email buyer
         const product_summary = []
@@ -172,10 +205,10 @@ const webHooks = async (req, res, next) => {
       default:
       // console.log(`Unhandled event type ${event.type}`)
     }
-    res.json({ received: true })
+    return res.json({ received: true })
   } catch (e) {
     console.log(e)
-    return next(new Error(e.message, 400))
+    return next(e)
   }
 }
 

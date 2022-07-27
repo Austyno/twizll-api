@@ -297,6 +297,7 @@ axios
     },
   })
   .then(res => {
+
     fs.writeFile(
       path.join(__dirname, '/pdfLabels/label.pdf'),
       res.data.documents[0].content,

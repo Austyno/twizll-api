@@ -41,9 +41,6 @@ const addProduct = async (req, res, next) => {
 
   const photos = req.files?.photos
 
-  //convert price to pounds
-  const priceToGBP = await convert(currency, 'GBP', unitPrice)
-
   //parse attributes
   const parsed = JSON.parse(attributes)
 
@@ -70,10 +67,19 @@ const addProduct = async (req, res, next) => {
 
   console.log(uploadedPhotos)
 
-  // console.log('price', priceToGBP)
+  //convert price to pounds
+  const priceToGBP = await convert(currency, 'GBP', unitPrice)
+  const stripe_price = Number(priceToGBP + 20).toFixed(2)
+
+  // add store id to price from stripe
+  const metaData = { store: sellerStore.id }
 
   //get price id from stripe
-  const price_id = await stripeUtil.createPrice(unitPrice, name)
+  const price_id = await stripeUtil.createPrice(
+    stripe_price * 100,
+    name,
+    metaData
+  )
 
   //upload main photo then create product
   const resp = await cloudStorage(req.files.mainPhoto.tempFilePath)

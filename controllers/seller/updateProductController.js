@@ -113,8 +113,16 @@ const updateProduct = async (req, res, next) => {
         data.originalPrice = originalPrice
         data.unitPrice = await convert(currency, 'GBP', Number(originalPrice))
         //get new price id from stripe
+        const converted_price = await convert(
+          currency,
+          'GBP',
+          Number(originalPrice)
+        )
+
+        const stripe_price = (converted_price + 20) * 100
+
         data.price_id = await stripeUtil.createPrice(
-          unitPrice,
+          stripe_price,
           productToUpdate.name
         )
       }

@@ -143,12 +143,13 @@ class StripeUtil {
   //   })
   // }
 
-  createPrice(unit_price, name) {
+  createPrice(unit_price, name, metadata) {
     return new Promise(async (resolve, reject) => {
       try {
         const price = await Stripe.prices.create({
           unit_amount_decimal: unit_price,
           currency: 'gbp',
+          metadata,
           product_data: {
             name,
           },
