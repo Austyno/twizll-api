@@ -12,6 +12,7 @@ const transactionSchema = new Schema({
       'payout',
       'withdrawal',
       'refund',
+      'sale'
     ],
     required: true,
     uppercase: true,
@@ -39,8 +40,5 @@ const transactionSchema = new Schema({
   },
   tx_ref: String,
 }, {timestamps: true});
-
-transactionSchema.index({title: 1, store: 1})
-
 
 module.exports = model('Transaction', transactionSchema);

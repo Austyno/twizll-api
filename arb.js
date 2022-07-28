@@ -6,23 +6,53 @@ const connectToDb = require('./config/db')
 dotenv.config({ path: './config/config.env' })
 connectToDb()
 const stripeUtil = require('./utils/stripe/Stripe')
+const Wallet = require('./models/walletModel')
+const TwizllWallet = require('./models/twizllWallet')
+const Trx = require('./models/transactionModel')
 
 const findAll = async () => {
   const lineItems = await stripeUtil.getLineItems(
-    'cs_test_b1GzK6JYQ3HasVepR5Csu2N85LbaelOxwgND4kvYaeX77lZlmLoMTKsv5u'
+    'cs_test_b1tcFuYM0SDdIriD0h8HFx6pxJ0HRDdSWGIe1Ng9riesdzzAbfltIFdHLk'
   )
+  // await Trx.dropIndexes()
 
-  const price = await stripeUtil.createPrice(2000,'blue velvet dress',{store:1234567890})
+  let ObjMap = {}
 
-  console.log(price)
+  for (let item of lineItems.data) {
+    let store = item.price.metadata.store
+    if (!ObjMap[store]) {
+      ObjMap[store] = 0
+    }
+    ObjMap[store] += item.amount_subtotal
+  }
 
-  //group products according to store
-  // const result = _(products)
-  //   .groupBy(x => x.store)
-  //   .map((value, key) => ({ store: key, products: value }))
-  //   .value()
-  // console.log('result', result[0].products)
+  console.log(ObjMap)
+  Object.keys(ObjMap).forEach(async store => {
+    if (store != 'undefined') {
+      const wallet = await Wallet.findOne({ store })
+      if (wallet != null) {
+        // cal 20% of total
+        const seller_total =
+          (Number(ObjMap[store]) - Number(ObjMap[store]) * 0.2) / 100
+        const twizll_comm = (Number(ObjMap[store]) * 0.2) / 100
+        wallet.balance = Number(wallet.balance + seller_total)
+        wallet.save()
+        //
+        await TwizllWallet.create({ store, amount: twizll_comm })
+        // create transaction
+        await Trx.create({
+          store,
+          type: 'sale',
+          status: 'successfull',
+          amount: seller_total,
+          title: 'sales of items',
+        })
+      }
+      console.log(wallet)
+    }
+  })
 }
+
 //calculate store total
 // let gTotal = []
 // for (let x = 0; x < result.length; x++) {
