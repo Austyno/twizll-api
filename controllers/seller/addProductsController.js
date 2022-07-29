@@ -14,12 +14,13 @@ require('../../models/categoryModel')
 
 const addProduct = async (req, res, next) => {
   const seller = req.user
+  const sellerStore = req.store
+
   if (req.store === null) {
     return next(
       new Error('You need to create a store first then add products', 400)
     )
   }
-  const sellerStore = req.store
 
   const {
     subcategory,

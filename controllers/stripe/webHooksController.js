@@ -9,6 +9,9 @@ const Store = require('../../models/storeModel')
 const Dhl = require('../../utils/dhl/Dhl')
 const Order = require('../../models/orderModel')
 const OrderItem = require('../../models/orderItem')
+const Wallet = require('../../models/walletModel')
+const TwizllWallet = require('../../models/twizllWallet')
+const Transaction = require('../../models/transactionModel')
 const CheckoutSession = require('../../models/checkoutSession')
 const fs = require('fs')
 const path = require('path')
@@ -55,7 +58,7 @@ const webHooks = async (req, res, next) => {
         let totals = []
 
         for (item of lineItems.data) {
-          totals.push(item.amount_total)
+          totals.push(item.amount_subtotal)
         }
 
         //get order toatl to ceate order
@@ -76,17 +79,11 @@ const webHooks = async (req, res, next) => {
         const labels_for_seller = []
         const buyer_tracking_ids = []
 
-
-        //use for grouping by store
-        const products_for_grouping = []
-
         //locate product and create order item
         for (item of lineItems.data) {
           const order_product = await Product.findOne({
             price_id: item.price.id,
           })
-
-          products_for_grouping.push(order_product)
 
           //update product qty and number sold
           await Product.findOneAndUpdate(
@@ -107,7 +104,7 @@ const webHooks = async (req, res, next) => {
             order_product,
             item.quantity,
             customerOrder.id,
-            item.amount_total / 100
+            item.amount_subtotal / 100
           )
 
           console.log(dhl.data.documents[0].content)
@@ -139,7 +136,7 @@ const webHooks = async (req, res, next) => {
           //   orderId: customerOrder.id,
           //   product: order_product.id,
           //   quantity: item.quantity,
-          //   totalPrice: item.amount_total,
+          //   totalPrice: item.amount_subtotal,
           //   tracking_id: label.packages[0].trackingNumber,
           // })
 
@@ -150,23 +147,39 @@ const webHooks = async (req, res, next) => {
           // )
         }
 
-        //group products according to store
-        const result = _(products_for_grouping)
-          .groupBy(x => x.store)
-          .map((value, key) => ({ store: key, products: value }))
-          .value()
-
-        //calculate store total
-        let gTotal = []
-        for (let x = 0; x < result.length; x++) {
-          for (let j = 0; j < result[x].products.length; j++) {
-            if (result[x].store.id == result[x].products[j].store.id) {
-              console.log(result[x].products[j].total)
-            }
+        //group products according to store and calculate earnings
+        let ObjMap = {}
+        for (let item of lineItems.data) {
+          let store = item.price.metadata.store
+          if (!ObjMap[store]) {
+            ObjMap[store] = 0
           }
+          ObjMap[store] += item.amount_subtotal
         }
 
-        //calculate
+        //map through the store ids, update store wallets with earned amount
+        Object.keys(ObjMap).forEach(async store => {
+          const wallet = await Wallet.findOne({ store })
+          if (wallet) {
+            // cal 20% of total
+            const total = Number(ObjMap[store]) / 100
+            const commission = (total * 0.2).toFixed(2)
+            const seller_total = (total - commission).toFixed(2)
+            const twizll_comm = commission
+            wallet.balance = Number(wallet.balance) + Number(seller_total)
+            wallet.save()
+            //
+            await TwizllWallet.create({ store, amount: twizll_comm })
+            // create transaction
+            await Transaction.create({
+              store,
+              type: 'sale',
+              status: 'successful',
+              amount: seller_total,
+              title: 'sales of items',
+            })
+          }
+        })
 
         //email buyer
         const product_summary = []
@@ -184,14 +197,22 @@ const webHooks = async (req, res, next) => {
           fullName: customer.fullName,
         }
 
-        // await sendMail.withTemplate(
-        //   order_summary,
-        //   customer.email,
-        //   '/buyer-product-summary.ejs',
-        //   'Your order summary'
-        // )
+        //send buyer email
+        await sendMail.withTemplate(
+          order_summary,
+          customer.email,
+          '/buyer-product-summary.ejs',
+          'Your order summary'
+        )
+        //send seller email
+        const seller_summary = {}
 
-        console.log('labels :', labels_for_seller)
+        await sendMail.withTemplate(
+          seller_summary,
+          customer,
+          '/new-order.ejs',
+          'New order summary'
+        )
         // add tracking id to each order item.
         // email buyer a summary of items bought with tracking ids
         // update total sold for each product
