@@ -131,13 +131,13 @@ const webHooks = async (req, res, next) => {
           console.log(labels_for_seller)
           console.log(buyer_tracking_ids)
 
-          //create order items in db with each product (TODO: refator to add tracking id as an array)
+          //create order items in db with each product
           const order_item = await OrderItem.create({
             orderId: customerOrder.id,
             product: order_product.id,
             quantity: item.quantity,
             totalPrice: item.amount_subtotal,
-            tracking_id: buyer_tracking_ids,
+            tracking_id: dhl.trackingId,
           })
 
           //update customer order with order_item id
