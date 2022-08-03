@@ -186,8 +186,8 @@ const webHooks = async (req, res, next) => {
 
         const buyer_order = await Order.findOne({ _id: customerOrder.id })
 
-        for (let product of buyer_order.orderItems) {
-          const product = await Product.findOne({ _id: product })
+        for (let item of buyer_order.orderItems) {
+          const product = await Product.findOne({ _id: item })
           product_summary.push(product)
         }
         //refactor so we can get the quantity for each product and email along
@@ -205,11 +205,9 @@ const webHooks = async (req, res, next) => {
           'Your order summary'
         )
         //send seller email
-        const seller_summary = {}
-
         await sendMail.withTemplate(
-          seller_summary,
-          customer,
+          order_summary,
+          customer.email,
           '/new-order.ejs',
           'New order'
         )
