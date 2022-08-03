@@ -4,8 +4,8 @@ const ejs = require('ejs')
 const API_KEY = process.env.MAILGUN_API_KEY
 const DOMAIN = process.env.MAILGUN_DOMAIN
 let mailgun = require('mailgun-js')({
-  apiKey: API_KEY,
-  domain: DOMAIN,
+  apiKey: '145204d0472bc27bec92c82f8e8c50f0-c4d287b4-2dba5dd6',
+  domain: 'mail.twizll.com',
   host: 'api.eu.mailgun.net',
 })
 
@@ -41,7 +41,7 @@ class SendEmail {
       )
     })
   }
-  notifyAdmin = async (emailAddress, subject, dataObject,template) => {
+  notifyAdmin = async (emailAddress, subject, dataObject, template) => {
     return new Promise((resolve, reject) => {
       ejs.renderFile(
         path.join(__dirname, `../public/views/${template}.ejs`),

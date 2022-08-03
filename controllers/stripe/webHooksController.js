@@ -1,4 +1,4 @@
-// const sendMail = require('../../utils/sendMail')
+const sendMail = require('../../utils/sendMail')
 const Error = require('../../utils/errorResponse')
 const stripeUtil = require('../../utils/stripe/Stripe')
 const Seller = require('../../models/sellerModel')
@@ -84,7 +84,6 @@ const webHooks = async (req, res, next) => {
           const order_product = await Product.findOne({
             price_id: item.price.id,
           })
-          console.log(order_product)
 
           //update product qty and number sold
           await Product.findOneAndUpdate(
@@ -108,15 +107,15 @@ const webHooks = async (req, res, next) => {
             item.amount_subtotal / 100
           )
 
-          console.log(dhl.data)
+          console.log(' dhl' + dhl.label)
 
-          //split product name to use in pdf naming
+          // //split product name to use in pdf naming
           const label_pdf_name = order_product.name.split(' ').join('_')
 
           //convert blob data from DHL to pdf
           const label_pdf = fs.writeFile(
             path.join(__dirname, '/pdfLabels/' + `${label_pdf_name}.pdf`),
-            dhl.data?.documents[0]?.content,
+            dhl.label,
             'base64',
             error => {
               if (error) {
@@ -127,25 +126,25 @@ const webHooks = async (req, res, next) => {
           )
 
           labels_for_seller.push(label_pdf)
-          buyer_tracking_ids.push(dhl.data?.packages[0]?.trackingNumber)
+          buyer_tracking_ids.push(dhl.trackingId)
 
           console.log(labels_for_seller)
           console.log(buyer_tracking_ids)
 
           //create order items in db with each product (TODO: refator to add tracking id as an array)
-          // const order_item = await OrderItem.create({
-          //   orderId: customerOrder.id,
-          //   product: order_product.id,
-          //   quantity: item.quantity,
-          //   totalPrice: item.amount_subtotal,
-          //   tracking_id: label.packages[0]?.trackingNumber,
-          // })
+          const order_item = await OrderItem.create({
+            orderId: customerOrder.id,
+            product: order_product.id,
+            quantity: item.quantity,
+            totalPrice: item.amount_subtotal,
+            tracking_id: buyer_tracking_ids,
+          })
 
-          //update customer orderitem with order_item id
-          // await Order.updateOne(
-          //   { _id: customerOrder.id },
-          //   { $push: { orderItems: order_item.id } }
-          // )
+          //update customer order with order_item id
+          await Order.updateOne(
+            { _id: customerOrder.id },
+            { $push: { orderItems: order_item.id } }
+          )
         }
 
         //group products according to store and calculate earnings
@@ -158,7 +157,7 @@ const webHooks = async (req, res, next) => {
           ObjMap[store] += item.amount_subtotal
         }
 
-        //map through the store ids, update store wallets with earned amount
+        // //map through the store ids, update store wallets with earned amount
         Object.keys(ObjMap).forEach(async store => {
           const wallet = await Wallet.findOne({ store })
           if (wallet) {
