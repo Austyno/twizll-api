@@ -107,9 +107,7 @@ const webHooks = async (req, res, next) => {
             item.amount_subtotal / 100
           )
 
-          console.log(' dhl' + dhl.label)
-
-          // //split product name to use in pdf naming
+          // //split product name to use in pdf namingcso seller can recognize each pdf
           const label_pdf_name = order_product.name.split(' ').join('_')
 
           //convert blob data from DHL to pdf
@@ -126,7 +124,7 @@ const webHooks = async (req, res, next) => {
           )
 
           labels_for_seller.push(label_pdf)
-          buyer_tracking_ids.push(dhl.trackingId)
+          if (dhl.trackingId) {buyer_tracking_ids.push(dhl.trackingId)}
 
           console.log(labels_for_seller)
           console.log(buyer_tracking_ids)
