@@ -40,9 +40,6 @@ const buyerSchema = new Schema(
       },
       select: false,
     },
-    address: {
-      type: String,
-    },
     role: {
       type: String,
       lowercase: true,

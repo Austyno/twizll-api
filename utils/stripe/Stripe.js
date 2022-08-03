@@ -143,16 +143,14 @@ class StripeUtil {
   //   })
   // }
 
-  createPrice(unit_price, name, metadata) {
+  createPrice(unit_price, metadata, product) {
     return new Promise(async (resolve, reject) => {
       try {
         const price = await Stripe.prices.create({
           unit_amount_decimal: unit_price,
           currency: 'gbp',
           metadata,
-          product_data: {
-            name,
-          },
+          product,
         })
         resolve(price)
       } catch (e) {
@@ -200,6 +198,21 @@ class StripeUtil {
       }
     })
   }
-}
 
+  createProduct(data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const product = await Stripe.products.create({
+          name: data.name,
+          active: true,
+          description: data.description,
+          images: data.images,
+        })
+        resolve(product)
+      } catch (e) {
+        return reject(e)
+      }
+    })
+  }
+}
 module.exports = new StripeUtil()

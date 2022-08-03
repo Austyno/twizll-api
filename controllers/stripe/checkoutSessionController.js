@@ -39,11 +39,13 @@ const checkoutSession = async (req, res, next) => {
 
     for (let i = 0; i < cartItems.length; i++) {
       const prod = await Product.findById(cartItems[i].product)
-      line_items.push({
-        price: prod.price_id,
-        quantity: cartItems[i].qty,
-        tax_rates: ['txr_1LO2SrDPf3hBisiJQ0vqKncL'],
-      })
+      if (prod) {
+        line_items.push({
+          price: prod.price_id,
+          quantity: cartItems[i].qty,
+          tax_rates: ['txr_1LO2SrDPf3hBisiJQ0vqKncL'],
+        })
+      }
     }
 
     const checkoutSession = await stripeUtil.createCheckoutSession(

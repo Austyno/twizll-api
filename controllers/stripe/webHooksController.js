@@ -211,7 +211,7 @@ const webHooks = async (req, res, next) => {
           seller_summary,
           customer,
           '/new-order.ejs',
-          'New order summary'
+          'New order'
         )
         // add tracking id to each order item.
         // email buyer a summary of items bought with tracking ids

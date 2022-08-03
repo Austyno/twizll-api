@@ -72,18 +72,33 @@ const addProduct = async (req, res, next) => {
   const priceToGBP = await convert(currency, 'GBP', unitPrice)
   const stripe_price = Number(priceToGBP + 20).toFixed(2)
 
+  //get price id from stripe
+  // const price_id = await stripeUtil.createPrice(
+  //   stripe_price * 100,
+  //   name,
+  //   metaData
+  // )
+
+  //upload main photo then create product
+  const resp = await cloudStorage(req.files.mainPhoto.tempFilePath)
+
+  const data = {
+    name,
+    active: true,
+    description,
+    images: [resp.secure_url],
+  }
+  const stripe_product = await stripeUtil.createProduct(data)
+
   // add store id to price from stripe
   const metaData = { store: sellerStore.id }
 
   //get price id from stripe
   const price_id = await stripeUtil.createPrice(
     stripe_price * 100,
-    name,
-    metaData
+    metaData,
+    stripe_product.id
   )
-
-  //upload main photo then create product
-  const resp = await cloudStorage(req.files.mainPhoto.tempFilePath)
 
   const product = await Product.create({
     sub_category: subcategory,
@@ -107,8 +122,8 @@ const addProduct = async (req, res, next) => {
     width,
     weight,
     length,
-    store: sellerStore.id,
     price_id: price_id.id,
+    store: sellerStore.id,
   })
 
   res.status(201).json({

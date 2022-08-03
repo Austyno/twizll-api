@@ -29,15 +29,18 @@ class DhlUtil {
     const tD = new Date()
     const delivaryDate = utcformat(tD)
 
-    const ts = Date.now()
-    const currentDate = new Date(ts)
-    const YYYY = currentDate.getFullYear()
-    let MM = currentDate.getMonth() + 1
-    const DD = currentDate.getDate()
-    if (MM < 10) {
-      MM = '0' + MM
-    }
-    console.log(`${YYYY + '-' + MM + '-' + DD}`)
+    // const ts = Date.now()
+    // const currentDate = new Date(ts)
+    // const YYYY = currentDate.getFullYear()
+    // let MM = currentDate.getMonth() + 1
+    // const DD = currentDate.getDate()
+    // if (MM < 10) {
+    //   MM = '0' + MM
+    // }
+    // if(DD < 10){
+    //   DD = '0'+DD
+    // }
+    // console.log(`${YYYY + '-' + MM + '-' + DD}`)
 
     return new Promise(async (resolve, reject) => {
       const data = {
@@ -563,8 +566,9 @@ class DhlUtil {
           process.env.NODE_ENV === 'development'
             ? process.env.DHL_DEV_URL
             : process.env.DHL_PROD_URL
-        
-        const label = await axios.post(process.env.DHL_DEV_URL, data, {//remove dev url when production is ready
+
+        const label = await axios.post(process.env.DHL_DEV_URL, data, {
+          //remove dev url when production is ready
           auth: {
             username: process.env.DHL_USERNAME,
             password: process.env.DHL_PASSWORD,
