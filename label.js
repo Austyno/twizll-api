@@ -21,6 +21,7 @@ function utcformat(d) {
 }
 const tD = new Date()
 const deli = utcformat(tD)
+console.log(deli)
 
 const data = {
   productCode: 'P',

@@ -29,19 +29,6 @@ class DhlUtil {
     const tD = new Date()
     const delivaryDate = utcformat(tD)
 
-    // const ts = Date.now()
-    // const currentDate = new Date(ts)
-    // const YYYY = currentDate.getFullYear()
-    // let MM = currentDate.getMonth() + 1
-    // const DD = currentDate.getDate()
-    // if (MM < 10) {
-    //   MM = '0' + MM
-    // }
-    // if(DD < 10){
-    //   DD = '0'+DD
-    // }
-    // console.log(`${YYYY + '-' + MM + '-' + DD}`)
-
     return new Promise(async (resolve, reject) => {
       const data = {
         productCode: 'P',
