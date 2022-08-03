@@ -312,8 +312,8 @@ class DhlUtil {
           label: label.data.documents[0].content,
         })
       } catch (e) {
-        console.log(e.response.data.addtionDetails)
-        reject(e)
+        console.log(e.response.data.addtionalDetails)
+        reject(e.response.data.addtionalDetails)
       }
     })
   }
