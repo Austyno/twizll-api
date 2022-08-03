@@ -115,7 +115,7 @@ const webHooks = async (req, res, next) => {
           //convert blob data from DHL to pdf
           const label_pdf = fs.writeFile(
             path.join(__dirname, '/pdfLabels/' + `${label_pdf_name}.pdf`),
-            dhl.data.documents[0].content,
+            dhl.data?.documents[0]?.content,
             'base64',
             error => {
               if (error) {
@@ -126,7 +126,7 @@ const webHooks = async (req, res, next) => {
           )
 
           labels_for_seller.push(label_pdf)
-          buyer_tracking_ids.push(dhl.data.packages[0].trackingNumber)
+          buyer_tracking_ids.push(dhl.data?.packages[0]?.trackingNumber)
 
           console.log(labels_for_seller)
           console.log(buyer_tracking_ids)
@@ -137,7 +137,7 @@ const webHooks = async (req, res, next) => {
           //   product: order_product.id,
           //   quantity: item.quantity,
           //   totalPrice: item.amount_subtotal,
-          //   tracking_id: label.packages[0].trackingNumber,
+          //   tracking_id: label.packages[0]?.trackingNumber,
           // })
 
           //update customer orderitem with order_item id
