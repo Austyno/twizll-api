@@ -107,7 +107,7 @@ const webHooks = async (req, res, next) => {
             item.amount_subtotal / 100
           )
 
-          console.log(dhl.data.documents[0].content)
+          console.log(dhl.data?.documents[0]?.content)
 
           //split product name to use in pdf naming
           const label_pdf_name = order_product.name.split(' ').join('_')
