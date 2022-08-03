@@ -84,6 +84,7 @@ const webHooks = async (req, res, next) => {
           const order_product = await Product.findOne({
             price_id: item.price.id,
           })
+          console.log(order_product)
 
           //update product qty and number sold
           await Product.findOneAndUpdate(
@@ -107,7 +108,7 @@ const webHooks = async (req, res, next) => {
             item.amount_subtotal / 100
           )
 
-          console.log(dhl.data?.documents[0]?.content)
+          console.log(dhl.data)
 
           //split product name to use in pdf naming
           const label_pdf_name = order_product.name.split(' ').join('_')
