@@ -114,7 +114,7 @@ const webHooks = async (req, res, next) => {
 
           //convert blob data from DHL to pdf
           const label_pdf = fs.writeFile(
-            path.join(__dirname, '/pdfLabels/' + `${label_pdf_name}.pdf`),
+            path.join(__dirname, '../../pdfLabels/' + `${label_pdf_name}.pdf`),
             dhl.label,
             'base64',
             error => {
