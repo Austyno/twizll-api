@@ -188,7 +188,7 @@ const webHooks = async (req, res, next) => {
         //   const product = await Product.findOne({ _id: item })
         //   product_summary.push(product)
         // };
-        
+
         //refactor so we can get the quantity for each product and email along
         const order_summary = {
           order_total: orderTotal,
@@ -200,7 +200,7 @@ const webHooks = async (req, res, next) => {
         await sendMail.withTemplate(
           order_summary,
           customer.email,
-          '/buyer-product-summary.ejs',
+          '/buyer-order.ejs',
           'Your order summary'
         )
         //send seller email
