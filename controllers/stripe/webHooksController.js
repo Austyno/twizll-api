@@ -139,7 +139,7 @@ const webHooks = async (req, res, next) => {
           })
 
           //update customer order with order_item id
-          await Order.updateOne(
+          await Order.findOneAndUpdate(
             { _id: customerOrder.id },
             { $push: { orderItems: order_item.id } }
           )
@@ -182,16 +182,17 @@ const webHooks = async (req, res, next) => {
         //email buyer
         const product_summary = []
 
-        const buyer_order = await Order.findOne({ _id: customerOrder.id })
+        const buyer_order_items = await OrderItem.find({ orderId: customerOrder.id})
 
-        for (let item of buyer_order.orderItems) {
-          const product = await Product.findOne({ _id: item })
-          product_summary.push(product)
-        }
+        // for (let item of buyer_order.orderItems) {
+        //   const product = await Product.findOne({ _id: item })
+        //   product_summary.push(product)
+        // };
+        
         //refactor so we can get the quantity for each product and email along
         const order_summary = {
           order_total: orderTotal,
-          products: product_summary,
+          products: buyer_order_items,
           fullName: customer.fullName,
         }
 
