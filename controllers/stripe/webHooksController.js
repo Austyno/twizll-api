@@ -168,7 +168,7 @@ const webHooks = async (req, res, next) => {
             wallet.save()
             //
             await TwizllWallet.create({ store, amount: twizll_comm })
-            // create transaction
+             // create transaction
             await Transaction.create({
               store,
               type: 'sale',
@@ -184,28 +184,30 @@ const webHooks = async (req, res, next) => {
 
         const buyer_order_items = await OrderItem.find({ orderId: customerOrder.id})
 
-        // for (let item of buyer_order.orderItems) {
-        //   const product = await Product.findOne({ _id: item })
-        //   product_summary.push(product)
-        // };
+
+
+        for (let item of buyer_order_items) {
+          const product = await Product.findOne({ _id: buyer_order_items.product })
+          product_summary.push({ product, qty: buyer_order_items.quantity })
+        };
 
         //refactor so we can get the quantity for each product and email along
         const order_summary = {
           order_total: orderTotal,
-          products: buyer_order_items,
+          products: product_summary,
           fullName: customer.fullName,
         }
 
         //send buyer email
         await sendMail.withTemplate(
-          order_summary,
+          product_summary,
           customer.email,
           '/buyer-order.ejs',
           'Your order summary'
         )
         //send seller email
         await sendMail.withTemplate(
-          order_summary,
+          product_summary,
           customer.email,
           '/new-order.ejs',
           'New order'
