@@ -7,8 +7,8 @@ const createAuthToken = require('../../utils/createAuthToken')
 const login = async (req, res, next) => {
   const { email, password, role } = req.body
 
-  if(role === undefined){
-    return next(new Error('Role is required',400))
+  if (role === undefined) {
+    return next(new Error('Role is required', 400))
   }
 
   switch (role) {
@@ -47,7 +47,7 @@ const login = async (req, res, next) => {
         } else if (loggedInUser.plan.status === 'active') {
           if (loggedInUser.plan.end_date < Date.now()) {
             loggedInUser.plan.status = 'expired'
-            loggedInUser.save({ validateBeforeSave:false })
+            loggedInUser.save({ validateBeforeSave: false })
             return next(new Error('Your subscription plan has expired', 403))
           }
         }
@@ -63,28 +63,32 @@ const login = async (req, res, next) => {
       }
     //buyer
     case 'buyer':
-      const buyer = await Buyer.findOne({ email }).select('+password')
+      try {
+        const buyer = await Buyer.findOne({ email }).select('+password')
 
-      if (!buyer) {
-        return next(new Error('incorrect credentials', 400))
+        if (!buyer) {
+          return next(new Error('incorrect credentials', 400))
+        }
+
+        const passwordValid = bcrypt.compareSync(password, buyer.password)
+
+        if (!passwordValid) {
+          return next(new Error('incorrect credentials', 400))
+        }
+
+        const loggedInUser = await Buyer.findOne({ email })
+        loggedInUser.emailCodeTimeExpiry = undefined
+        loggedInUser.emailVerificationCode = undefined
+
+        return createAuthToken(
+          loggedInUser,
+          'user logged in successfully',
+          200,
+          res
+        )
+      } catch (e) {
+        return next(e)
       }
-
-      const passwordValid = bcrypt.compareSync(password, buyer.password)
-
-      if (!passwordValid) {
-        return next(new Error('incorrect credentials', 400))
-      }
-
-      const loggedInUser = await Buyer.findOne({ email })
-      loggedInUser.emailCodeTimeExpiry = undefined
-      loggedInUser.emailVerificationCode = undefined
-
-      return createAuthToken(
-        loggedInUser,
-        'user logged in successfully',
-        200,
-        res
-      )
   }
 }
 module.exports = login
