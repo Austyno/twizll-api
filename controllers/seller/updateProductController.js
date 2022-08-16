@@ -10,7 +10,7 @@ const stripeUtil = require('../../utils/stripe/Stripe')
 //TODO:refactor to only upload images if they were changed and not the same with what was there b4
 // also abort if there is an error -- use transactions
 
-// TODO: refactor the whole endpoint
+// TODO: refactor the whole endpoint update product on stripe if name,image or price is changed 
 // create a cron job to delete tem images
 const updateProduct = async (req, res, next) => {
   const { productId } = req.params
@@ -111,7 +111,9 @@ const updateProduct = async (req, res, next) => {
           })
         }
         data.originalPrice = originalPrice
-        data.unitPrice = await convert(currency, 'GBP', Number(originalPrice))
+        data.unitPrice = await convert(
+          (currency, 'GBP', Number(originalPrice)).toFixed(2)
+        )
         //get new price id from stripe
         const converted_price = await convert(
           currency,
@@ -119,12 +121,17 @@ const updateProduct = async (req, res, next) => {
           Number(originalPrice)
         )
 
-        const stripe_price = (converted_price + 20) * 100
+        const stripe_price = (converted_price + 20).toFixed(2) * 100
 
-        data.price_id = await stripeUtil.createPrice(
+        const metadata = { store: sellerStore.id.toString() }
+
+        // get price id from stripe
+        const price = await stripeUtil.createPrice(
           stripe_price,
+          metadata,
           productToUpdate.name
         )
+        data.prce_id = price.id
       }
 
       const updated = await Product.findOneAndUpdate(

@@ -15,7 +15,7 @@ const Transaction = require('./models/transactionModel')
 
 const findAll = async () => {
   const lineItems = await stripeUtil.getLineItems(
-    'cs_test_a1JXt973NVWsl9Utt6aGQLgwQzl957HuR5Joh3Ci1ms2JWCA2q1v0UG0Ei'
+    'cs_test_a1ooS92MNz2LVgf70wBEyVCdEuOJYdYKApJ6sOkAsVHjv0mHxdcG5NKmq1'
   )
   // await Trx.dropIndexes()
   console.log(lineItems.data[0].price)

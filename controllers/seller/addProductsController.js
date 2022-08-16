@@ -10,7 +10,7 @@ const stripeUtil = require('../../utils/stripe/Stripe')
 require('../../models/productModel')
 require('../../models/categoryModel')
 
-//TODO: refactor using transactions to prevent photos from being uploaded if there is an error
+//TODO: if 
 
 const addProduct = async (req, res, next) => {
   const seller = req.user

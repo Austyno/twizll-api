@@ -64,6 +64,7 @@ const checkoutSession = async (req, res, next) => {
       data: checkoutSession.url,
     })
   } catch (e) {
+    console.log(e)
     return next(e)
   }
 }
