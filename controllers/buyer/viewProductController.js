@@ -15,7 +15,7 @@ const viewProduct = async (req, res, next) => {
     })
   }
 
-  // try {
+  try {
   const product = await Product.findById(productId).populate('subcategory')
 
   const similarProducts = await SubCategory.findById(
@@ -50,8 +50,8 @@ const viewProduct = async (req, res, next) => {
       youMayAlsoLike,
     },
   })
-  // } catch (e) {
-  //   return next(e)
-  // }
+  } catch (e) {
+    return next(e)
+  }
 }
 module.exports = viewProduct
