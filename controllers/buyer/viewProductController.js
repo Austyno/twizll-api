@@ -24,7 +24,7 @@ const viewProduct = async (req, res, next) => {
 
     const productCategory = await SubCategory.findById(product.sub_category)
 
-    //update ctegory views
+    //check if category views exist
     if (productCategory.views) {
       productCategory.views = Number(productCategory.views) + 1
       productCategory.save({ validateBeforeSave: false })
