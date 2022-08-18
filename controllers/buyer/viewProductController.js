@@ -30,8 +30,10 @@ const viewProduct = async (req, res, next) => {
       productCategory.save({ validateBeforeSave: false })
     }
 
-    product.views = Number(product.views) + 1
-    await product.save({ validateBeforeSave: false })
+    if (product.views) {
+      product.views = Number(product.views) + 1
+      product.save({ validateBeforeSave: false })
+    }
 
     const youMayAlsoLike = similarProducts.products.filter(
       item => item._id != productId
