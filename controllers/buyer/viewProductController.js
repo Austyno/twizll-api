@@ -25,19 +25,22 @@ const viewProduct = async (req, res, next) => {
   const productCategory = await SubCategory.findById(product.sub_category)
 
   //check if category views exist
-  if (productCategory.views != null) {
+  if (productCategory != null) {
     productCategory.views = Number(productCategory.views) + 1
     productCategory.save({ validateBeforeSave: false })
   }
 
-  if (product.views != null) {
+  if (product != null) {
     product.views = Number(product.views) + 1
     product.save({ validateBeforeSave: false })
   }
+  let youMayAlsoLike
 
-  const youMayAlsoLike = similarProducts.products.filter(
-    item => item._id != productId
-  )
+  if (similarProducts != null) {
+    const youMayAlsoLike = similarProducts.products.filter(
+      item => item._id != productId
+    )
+  }
 
   res.status(200).json({
     status: 'success',
