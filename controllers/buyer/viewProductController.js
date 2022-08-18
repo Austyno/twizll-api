@@ -16,37 +16,37 @@ const viewProduct = async (req, res, next) => {
   }
 
   // try {
-    const product = await Product.findById(productId).populate('subcategory')
+  const product = await Product.findById(productId).populate('subcategory')
 
-    const similarProducts = await SubCategory.findById(
-      product.sub_category
-    ).populate('products')
+  const similarProducts = await SubCategory.findById(
+    product.sub_category
+  ).populate('products')
 
-    const productCategory = await SubCategory.findById(product.sub_category)
+  const productCategory = await SubCategory.findById(product.sub_category)
 
-    //check if category views exist
-    if (productCategory.views) {
-      productCategory.views = Number(productCategory.views) + 1
-      productCategory.save({ validateBeforeSave: false })
-    }
+  //check if category views exist
+  if (productCategory.views != null) {
+    productCategory.views = Number(productCategory.views) + 1
+    productCategory.save({ validateBeforeSave: false })
+  }
 
-    if (product.views) {
-      product.views = Number(product.views) + 1
-      product.save({ validateBeforeSave: false })
-    }
+  if (product.views != null) {
+    product.views = Number(product.views) + 1
+    product.save({ validateBeforeSave: false })
+  }
 
-    const youMayAlsoLike = similarProducts.products.filter(
-      item => item._id != productId
-    )
+  const youMayAlsoLike = similarProducts.products.filter(
+    item => item._id != productId
+  )
 
-    res.status(200).json({
-      status: 'success',
-      message: 'product details retrieved successfully',
-      data: {
-        product,
-        youMayAlsoLike,
-      },
-    })
+  res.status(200).json({
+    status: 'success',
+    message: 'product details retrieved successfully',
+    data: {
+      product,
+      youMayAlsoLike,
+    },
+  })
   // } catch (e) {
   //   return next(e)
   // }
