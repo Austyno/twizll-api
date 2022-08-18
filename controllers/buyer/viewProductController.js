@@ -46,7 +46,7 @@ const viewProduct = async (req, res, next) => {
       },
     })
   } catch (e) {
-    return next(new Error(e.message, 500))
+    return next(e)
   }
 }
 module.exports = viewProduct
