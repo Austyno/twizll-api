@@ -210,8 +210,14 @@ const signUp = async (req, res, next) => {
 
     case 'stylist':
       const stylistExist = await Stylist.findOne({ email })
-      if (stylistExist) {
-        return next(new Error('A stylist with this email already exist', 400))
+      console.log(stylistExist)
+
+      if (stylistExist != null) {
+        return res.status(400).json({
+          status: 'Faled',
+          message: 'A stylist with this email already exist',
+          data: '',
+        })
       }
 
       try {
@@ -239,16 +245,16 @@ const signUp = async (req, res, next) => {
             style_name,
           })
 
-          if (newStylist){
-            Wallet.create({ style: newStylist.id})
+          if (newStylist) {
+            Wallet.create({ style: newStylist.id })
           }
-            //send verification mail
-            await sendMail.withTemplate(
-              { otp, fullName },
-              email,
-              '/verify.ejs',
-              'Please verify your email'
-            )
+          //send verification mail
+          await sendMail.withTemplate(
+            { otp, fullName },
+            email,
+            '/verify.ejs',
+            'Please verify your email'
+          )
 
           // send mail to admin
           const userData = {
