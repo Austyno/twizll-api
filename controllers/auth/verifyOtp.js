@@ -26,11 +26,11 @@ const verifyemail = async (req, res, next) => {
     const get_OTP = await Promise.all([buyer, seller, stylist])
 
     if (get_OTP[0] != undefined || get_OTP[0] != null) {
-      user = buyer
+      user = get_OTP[0]
     } else if (get_OTP[1] != undefined || get_OTP[1] != null) {
-      user = seller
+      user = get_OTP[1]
     } else if (get_OTP[2] != undefined || get_OTP[2] != null) {
-      user = stylist
+      user = get_OTP[2]
     } else {
       user = null
     }
