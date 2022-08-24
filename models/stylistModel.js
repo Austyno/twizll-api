@@ -84,9 +84,8 @@ const stylistSchema = new Schema(
       required: [true, 'Please provide a valid social media handle'],
     },
     country: {
-      type: String,
-      required: [true, 'stylist country is required'],
-      uppercase: true,
+      type: Schema.Types.ObjectId,
+      ref: 'Country',
     },
     style_name: {
       type: String,

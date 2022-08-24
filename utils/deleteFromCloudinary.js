@@ -2,16 +2,16 @@ const cloudinary = require('cloudinary').v2
 
 const cloudDelete = filename => {
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: 'dq59gbro3',
+    api_key: 384628718881899,
+    api_secret: 'nDZHzEGzbS2zNhBDNFhvKSV-4L0',
     shorten: true,
     secure: true,
     ssl_detected: true,
   })
 
-  cloudinary.uploader.destroy(filename, (err,result) => {
-    if(err){
+  cloudinary.uploader.destroy(filename, { invalidate: true }, (err, result) => {
+    if (err) {
       console.log(err)
     }
     console.log(result)
