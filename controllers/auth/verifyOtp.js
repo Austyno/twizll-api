@@ -1,6 +1,7 @@
 const Error = require('../../utils/errorResponse')
 const Seller = require('../../models/sellerModel')
 const Buyer = require('../../models/buyerModel')
+const Stylist = require('../../models/stylistModel')
 const createAuthToken = require('../../utils/createAuthToken')
 
 const verifyemail = async (req, res, next) => {
@@ -12,20 +13,24 @@ const verifyemail = async (req, res, next) => {
 
   try {
     let user
-    const buyer = await Buyer.findOne({
+    const buyer = Buyer.findOne({
       $and: [{ email: email }, { emailVerificationCode: otp }],
     })
-    const seller = await Seller.findOne({
+    const seller = Seller.findOne({
       $and: [{ email: email }, { emailVerificationCode: otp }],
     })
-    // const stylist = await Stylist.findOne({
-    //   $and: [{ email: email }, { emailVerificationCode: otp }],
-    // })
+    const stylist = Stylist.findOne({
+      $and: [{ email: email }, { emailVerificationCode: otp }],
+    })
 
-    if (buyer != undefined || buyer != null) {
+    const get_OTP = await Promise.all([buyer, seller, stylist])
+
+    if (get_OTP[0] != undefined || get_OTP[0] != null) {
       user = buyer
-    } else if (seller != undefined || seller != null) {
+    } else if (get_OTP[1] != undefined || get_OTP[1] != null) {
       user = seller
+    } else if (get_OTP[2] != undefined || get_OTP[2] != null) {
+      user = stylist
     } else {
       user = null
     }

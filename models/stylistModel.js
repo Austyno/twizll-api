@@ -79,6 +79,19 @@ const stylistSchema = new Schema(
     address: {
       type: String,
     },
+    social_handle: {
+      type: String,
+      required: [true, 'Please provide a valid social media handle'],
+    },
+    country: {
+      type: String,
+      required: [true, 'stylist country is required'],
+      uppercase: true,
+    },
+    style_name: {
+      type: String,
+      required: [true, 'style name is required'],
+    },
     role: {
       type: String,
       lowercase: true,

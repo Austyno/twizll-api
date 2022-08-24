@@ -8,11 +8,20 @@ const stripe = require('../../utils/stripe/Stripe')
 const createAuthToken = require('../../utils/createAuthToken')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
-const sms = require('../../utils/twillio/sms')
+const Wallet = require('../../models/walletModel')
 const generateOtp = require('../../utils/generateOtp')
 
 const signUp = async (req, res, next) => {
-  const { email, phone, password, fullName, role } = req.body
+  const {
+    email,
+    phone,
+    password,
+    fullName,
+    role,
+    social_handle,
+    style_name,
+    country,
+  } = req.body
 
   const passCheck =
     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/
@@ -56,13 +65,9 @@ const signUp = async (req, res, next) => {
         //   process.env.JWT_SECRET
         // )
 
-        
-
         // const sendOtp = sms(phone,otp)
 
-        if (
-          stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined
-        ) {
+        if (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined) {
           const newSeller = await Seller.create({
             emailVerificationCode: otp,
             emailCodeTimeExpiry: moment().add(1, 'days'),
@@ -102,7 +107,7 @@ const signUp = async (req, res, next) => {
             'newUser'
           )
 
-         return res.status(201).json({
+          return res.status(201).json({
             status: 'success',
             message:
               'seller signed up successfully. check your mail for your verification code',
@@ -148,7 +153,6 @@ const signUp = async (req, res, next) => {
         const otp = generateOtp()
 
         //send verification mail
-       
 
         const newBuyer = await Buyer.create({
           emailVerificationCode: otp,
@@ -179,12 +183,12 @@ const signUp = async (req, res, next) => {
             userData,
             'newUser'
           )
-           await sendMail.notifyAdmin(
-             'sales@twizll.com',
-             'New User',
-             userData,
-             'newUser'
-           )
+          await sendMail.notifyAdmin(
+            'sales@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           return res.status(201).json({
             status: 'success',
@@ -217,30 +221,10 @@ const signUp = async (req, res, next) => {
         freeTrial.status = 'active'
         freeTrial.end_date = moment().add(30, 'days')
 
-        // const url =
-        //   process.env.NODE_ENV === 'production'
-        //     ? process.env.PROD_ADDRESS
-        //     : process.env.DEV_ADDRESS
-
-        // const verificationCode = crypto.randomBytes(20).toString('hex')
-        // const verificationCode = jwt.sign(
-        //   { role: 'stylist' },
-        //   process.env.JWT_SECRET
-        // )
-
-        //create email verification link
-        // const verificationLink = `${
-        //   url + req.originalUrl
-        // }/verifyemail/${verificationCode}`
-
         //create otp
         const otp = generateOtp()
 
-        
-
-        if (
-          stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined
-        ) {
+        if (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined) {
           const newStylist = await Stylist.create({
             emailVerificationCode: otp,
             emailCodeTimeExpiry: moment().add(1, 'days'),
@@ -250,15 +234,21 @@ const signUp = async (req, res, next) => {
             fullName,
             phone,
             password,
+            social_handle,
+            country,
+            style_name,
           })
 
-          //send verification mail
-          await sendMail.withTemplate(
-            { otp, fullName },
-            email,
-            '/verify.ejs',
-            'Please verify your email'
-          )
+          if (newStylist){
+            Wallet.create({ style: newStylist.id})
+          }
+            //send verification mail
+            await sendMail.withTemplate(
+              { otp, fullName },
+              email,
+              '/verify.ejs',
+              'Please verify your email'
+            )
 
           // send mail to admin
           const userData = {
@@ -273,17 +263,17 @@ const signUp = async (req, res, next) => {
             userData,
             'newUser'
           )
-           await sendMail.notifyAdmin(
-             'sales@twizll.com',
-             'New User',
-             userData,
-             'newUser'
-           )
+          await sendMail.notifyAdmin(
+            'sales@twizll.com',
+            'New User',
+            userData,
+            'newUser'
+          )
 
           return res.status(201).json({
             status: 'success',
             message:
-              'stylist signed up successfully. Please verify your email by clicking on the link in the email we sent you',
+              'stylist signed up successfully. Please verify your email by copying the code in the email we sent you',
             data: newStylist,
           })
         } else {
