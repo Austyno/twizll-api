@@ -114,15 +114,13 @@ const signUp = async (req, res, next) => {
             data: newSeller,
           })
         } else {
-          return next(
-            new Error(
-              'sorry we could not register you now, please try again',
-              400
-            )
-          )
+          return res.status(500).json({
+            status: 'failed',
+            message: 'sorry we could not register you now, please try again',
+          })
         }
       } catch (e) {
-        return next(new Error(e.message, 500))
+        return next(e)
       }
       break
 
@@ -197,15 +195,13 @@ const signUp = async (req, res, next) => {
             data: newBuyer,
           })
         } else {
-          return next(
-            new Error(
-              'sorry we could not register you now, please try again',
-              400
-            )
-          )
+          return res.status(500).json({
+            status: 'failed',
+            message: 'sorry we could not register you now, please try again',
+          })
         }
       } catch (e) {
-        return next(new Error(e.message, 500))
+        return next(e)
       }
 
     case 'stylist':
@@ -283,15 +279,13 @@ const signUp = async (req, res, next) => {
             data: newStylist,
           })
         } else {
-          return next(
-            new Error(
-              'sorry we could not register you now, please try again',
-              400
-            )
-          )
+          return res.status(500).json({
+            status: 'failed',
+            message: 'sorry we could not register you now, please try again',
+          })
         }
       } catch (e) {
-        return next(new Error(e.message, 500))
+        return next(e)
       }
       break
   }
