@@ -1,5 +1,6 @@
 const Seller = require('../../models/sellerModel')
 const Buyer = require('../../models/buyerModel')
+const Stylist = require('../../models/stylistModel')
 const Error = require('../../utils/errorResponse')
 const bcrypt = require('bcryptjs')
 const createAuthToken = require('../../utils/createAuthToken')
@@ -77,6 +78,40 @@ const login = async (req, res, next) => {
         }
 
         const loggedInUser = await Buyer.findOne({ email })
+        loggedInUser.emailCodeTimeExpiry = undefined
+        loggedInUser.emailVerificationCode = undefined
+
+        return createAuthToken(
+          loggedInUser,
+          'user logged in successfully',
+          200,
+          res
+        )
+      } catch (e) {
+        return next(e)
+      }
+
+    case 'stylist':
+      try {
+        const stylist = await Stylist.findOne({ email }).select('+password')
+
+        if (!stylist) {
+          return res.status(400).json({
+            status: 'Failed',
+            message: 'incorrect credentials',
+          })
+        }
+
+        const passwordValid = bcrypt.compareSync(password, stylist.password)
+
+        if (!passwordValid) {
+          return res.status(400).json({
+            status: 'Failed',
+            message: 'incorrect credentials',
+          })
+        }
+
+        const loggedInUser = await Stylist.findOne({ email })
         loggedInUser.emailCodeTimeExpiry = undefined
         loggedInUser.emailVerificationCode = undefined
 
