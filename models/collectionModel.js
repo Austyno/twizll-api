@@ -12,13 +12,20 @@ const twizllCollectionSchema = new Schema({
   photo: {
     type: String,
   },
-  collectionCategory: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
-  collectionSubCategory: [{ type: Schema.Types.ObjectId, ref: 'SubCategory' }],
-  collectionProducts: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+
   createdAt: {
     type: Date,
     default: Date.now(),
   },
+})
+twizllCollectionSchema.set('toObject', { virtuals: true })
+twizllCollectionSchema.set('toJSON', { virtuals: true })
+
+twizllCollectionSchema.virtual('styles', {
+  ref: 'Style',
+  localField: '_id',
+  foreignField: 'collectionId',
+  justOne: false,
 })
 
 twizllCollectionSchema.index({ name: 1 })

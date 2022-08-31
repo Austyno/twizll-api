@@ -14,6 +14,9 @@ const app = express()
 const stripe = require('stripe')
 const morgan = require('morgan')
 
+dotenv.config({ path: './config/config.env' })
+connectToDb()
+
 const url =
   process.env.NODE_ENV === 'development'
     ? process.env.MONGODB_DEV_URL
@@ -24,8 +27,6 @@ const Stripe = stripe(
 )
 const webHooks = require('./controllers/stripe/webHooksController')
 
-dotenv.config({ path: './config/config.env' })
-connectToDb()
 app.post(
   '/api/stripe/webhook',
   express.raw({ type: 'application/json' }),
@@ -81,6 +82,7 @@ const cartRoutes = require('./routes/cart/cartRoutes')
 const reviewsRoutes = require('./routes/reviews/reviewRoutes')
 const buyerRoutes = require('./routes/buyer/buyerRoutes')
 const categoryRoutes = require('./routes/category/categoryRoutes')
+const stylistRoutes = require('./routes/stylist/stylistRoutes')
 
 app.use(mongoSanitize())
 
@@ -112,6 +114,7 @@ app.use('/api/cart', cartRoutes)
 app.use('/api/reviews', reviewsRoutes)
 app.use('/api/buyer', buyerRoutes)
 app.use('/api/categories', categoryRoutes)
+app.use('/api/stylist', stylistRoutes)
 
 app.use(Errors)
 

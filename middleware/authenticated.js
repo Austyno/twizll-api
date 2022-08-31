@@ -7,9 +7,7 @@ const Seller = require('../models/sellerModel')
 const Stylist = require('../models/stylistModel')
 
 // Protect routes
-const authenticated =  (role) => {
-
-
+const authenticated = role => {
   return async (req, res, next) => {
     let token
 
@@ -24,8 +22,12 @@ const authenticated =  (role) => {
     }
 
     // Make sure token exists
-    if (token === null) {
-      return next(new Error('You need to sign in', 403))
+    if (token == null) {
+      return res.status(403).json({
+        status: 'forbidden',
+        message: 'you need to sign in to access this resource',
+        data: '',
+      })
     }
 
     //get db from role
@@ -50,7 +52,6 @@ const authenticated =  (role) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
       req.user = await db.findById(decoded.id)
-
 
       if (role === 'seller') {
         //locate seller store and add to request object
