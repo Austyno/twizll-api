@@ -2,9 +2,9 @@ const { Schema, model } = require('mongoose')
 
 const styleSchema = new Schema(
   {
-    stylist:{
-      type:Schema.Types.ObjectId,
-      ref:'Stylist'
+    stylist: {
+      type: Schema.Types.ObjectId,
+      ref: 'Stylist',
     },
     name: {
       type: String,
@@ -23,6 +23,10 @@ const styleSchema = new Schema(
     price: {
       type: Number,
       required: [true, 'Please add a price for this style'],
+    },
+    image: {
+      type: String,
+      required: true,
     },
     views: {
       type: Number,
