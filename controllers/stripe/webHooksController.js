@@ -107,7 +107,7 @@ const webHooks = async (req, res, next) => {
             item.amount_subtotal / 100
           )
 
-          // //split product name to use in pdf namingcso seller can recognize each pdf
+           //split product name to use in pdf namingcso seller can recognize each pdf
           const label_pdf_name = order_product.name.split(' ').join('_')
 
           //convert blob data from DHL to pdf

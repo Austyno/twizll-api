@@ -1,7 +1,6 @@
 const Style = require('../../models/styleModel')
 
 const createStyle = async (req, res, next) => {
-  console.log('...here we go')
   const stylist = req.user
   const { name, collection, description, style_items, price } = req.body
   try {
