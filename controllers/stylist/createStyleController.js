@@ -1,5 +1,8 @@
 const Style = require('../../models/styleModel')
 const cloudStorage = require('../../utils/uploadToCloudinary')
+const sendMail = require('../../utils/sendMail')
+const Buyer = require('../../models/buyerModel')
+const Collection = require('../../models/collectionModel')
 
 const createStyle = async (req, res, next) => {
   const stylist = req.user
@@ -19,9 +22,7 @@ const createStyle = async (req, res, next) => {
     if (Array.isArray(style_items) && style_items.length == 0) {
       errors.style_items = 'please add at least a single item to this style'
     }
-    if (!price) {
-      errors.price = 'Tell us ho much this style cost'
-    }
+
     if (!req.files.image) {
       errors.image = 'Please provide an image for this style'
     }
@@ -40,10 +41,21 @@ const createStyle = async (req, res, next) => {
       name,
       description,
       style_items,
-      price,
       stylist: stylist.id,
       collectionId: collection,
       image: result.secure_url,
+    })
+
+    const collection = await Collection.findById(collection)
+    const data = {
+      fullName: stylist.fullName,
+      style_name: style.name,
+      collection: collection.name,
+    }
+
+    stylist.followers.forEach(async follower => {
+      const user = await Buyer.findById(follower)
+      sendMail.withTemplate(data, user.email, 'new-style.ejs', 'New style')
     })
 
     return res.status(201).json({

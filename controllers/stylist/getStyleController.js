@@ -7,7 +7,7 @@ const getStyle = async (req, res, next) => {
     if (!style) {
       return res.status(404).json({
         status: 'not found',
-        message: 'the style does not exist',
+        message: 'we could not find the style in our records',
         data: '',
       })
     }

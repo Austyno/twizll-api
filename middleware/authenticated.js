@@ -42,6 +42,7 @@ const authenticated = role => {
 
     //ensure token  is in the db
     const userToken = await db.findOne({ token })
+
     if (!userToken) {
       return next(
         new Error('you are logged out, please login to continue', 400)
@@ -60,7 +61,7 @@ const authenticated = role => {
 
       next()
     } catch (e) {
-      if (e.name === 'TokenExpiredError') {
+      if (e.name ===  'TokenExpiredError') {
         return next(
           new Error('Your session has expired. Please log in again.', 403)
         )

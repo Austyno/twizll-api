@@ -111,10 +111,12 @@ const stylistSchema = new Schema(
         type: Date,
       },
     },
+    followers: [{ type: Schema.Types.ObjectId, ref:'Buyer'}],
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    followers: [{ ref: 'Buyer', type: Schema.Types.ObjectId }],
     createdAt: {
       type: Date,
       default: Date.now(),

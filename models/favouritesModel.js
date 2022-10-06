@@ -12,6 +12,7 @@ const favouriteSchema = new Schema(
         ref: 'Product',
       },
     ],
+    favourite_styles: [{ type: Schema.Types.ObjectId, ref: 'Style' }],
   },
   { timestamps: true }
 )

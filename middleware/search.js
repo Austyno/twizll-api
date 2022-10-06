@@ -75,3 +75,4 @@ const search = (model, populate) => async (req, res, next) => {
 }
 
 module.exports = search
+
