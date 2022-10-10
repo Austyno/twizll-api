@@ -10,39 +10,58 @@ const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const Wallet = require('../../models/walletModel')
 const generateOtp = require('../../utils/generateOtp')
+const isValidPassword = require('../../utils/checkPassword')
 
 const signUp = async (req, res, next) => {
-  const {
-    email,
-    phone,
-    password,
-    fullName,
-    role,
-    social_handle,
-    style_name,
-    country,
-  } = req.body
+  const { role } = req.body
 
-  const passCheck =
-    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/
-
-  if (!password.match(passCheck)) {
-    return next(
-      new Error(
-        'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and a special character',
-        400
-      )
-    )
+  if (role == undefined) {
+    return res.status(400).json({
+      status: 'failed',
+      message: 'Role is required',
+    })
   }
-  if (role === undefined) {
-    return next(new Error('Role is required', 400))
-  }
-
   switch (role) {
     case 'seller':
+      const { email, phone, fullName, password } = req.body
+      let errors = {}
+      if (!fullName) {
+        errors.fullName = 'please add your full name'
+      }
+      if (!email) {
+        errors.email = 'Please add an email'
+      }
+      if (!password) {
+        errors.password = 'please add your password'
+      }
+      if (!phone) {
+        errors.phone = 'please add your phone number'
+      }
+
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Please fix the error/s and try again',
+          data: errors,
+        })
+      }
+
+      const passCheck = isValidPassword(password)
+
+      if (!passCheck) {
+        return res.status(400).json({
+          status: 'failed',
+          message:
+            'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and a special character',
+        })
+      }
+
       const sellerExist = await Seller.findOne({ email })
       if (sellerExist) {
-        return next(new Error('A seller with this email already exist', 400))
+        return res.status(400).json({
+          status: 'failed',
+          message: 'A seller with this email already exist',
+        })
       }
 
       try {
@@ -52,20 +71,8 @@ const signUp = async (req, res, next) => {
         freeTrial.status = 'active'
         freeTrial.end_date = moment().add(30, 'days')
 
-        const url =
-          process.env.NODE_ENV === 'production'
-            ? process.env.PROD_ADDRESS
-            : process.env.DEV_ADDRESS
-
         //create otp
         const otp = generateOtp()
-
-        // const verificationCode = jwt.sign(
-        //   { role: 'seller' },
-        //   process.env.JWT_SECRET
-        // )
-
-        // const sendOtp = sms(phone,otp)
 
         if (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined) {
           const newSeller = await Seller.create({
@@ -125,28 +132,54 @@ const signUp = async (req, res, next) => {
       break
 
     case 'buyer':
-      const buyerExist = await Buyer.findOne({ email })
+      const {
+        email: buyerEmail,
+        phone: buyerPhone,
+        fullName: buyerName,
+        password: buyerPass,
+      } = req.body
+      let validationErrors = {}
+      if (!buyerName) {
+        validationErrors.fullName = 'please add your full name'
+      }
+      if (!buyerEmail) {
+        validationErrors.email = 'Please add an email'
+      }
+      if (!buyerPass) {
+        validationErrors.password = 'please add your password'
+      }
+      if (!buyerPhone) {
+        errors.phone = 'please add your phone number'
+      }
+
+      if (Object.keys(validationErrors).length > 0) {
+        return res.status(400).json({
+          status: 'failed',
+          message: 'Please fix the error/s and try again',
+          data: validationErrors,
+        })
+      }
+
+      const passChecker = isValidPassword(buyerPass)
+
+      if (!passChecker) {
+        return res.status(400).json({
+          status: 'failed',
+          message:
+            'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and a special character',
+        })
+      }
+
+      const buyerExist = await Buyer.findOne({ email: buyerEmail })
       if (buyerExist) {
-        return next(new Error('A buyer with this email already exist', 400))
+        return res.status(400).json({
+          status: 'failed',
+          message: 'A buyer with this email already exist',
+          data: [],
+        })
       }
 
       try {
-        const url =
-          process.env.NODE_ENV === 'production'
-            ? process.env.PROD_ADDRESS
-            : process.env.DEV_ADDRESS
-
-        // const verificationCode = crypto.randomBytes(20).toString('hex')
-        // const verificationCode = jwt.sign(
-        //   { role: 'buyer' },
-        //   process.env.JWT_SECRET
-        // )
-
-        //create email verification link
-        // const verificationLink = `${
-        //   url + req.originalUrl
-        // }/verifyemail/${verificationCode}`
-
         //create otp
         const otp = generateOtp()
 
@@ -155,24 +188,24 @@ const signUp = async (req, res, next) => {
         const newBuyer = await Buyer.create({
           emailVerificationCode: otp,
           emailCodeTimeExpiry: moment().add(1, 'days'),
-          email,
-          fullName,
-          phone,
-          password,
+          email: buyerEmail,
+          fullName: buyerName,
+          phone: buyerPhone,
+          password: buyerPass,
         })
 
         if (newBuyer) {
           await sendMail.withTemplate(
-            { otp, fullName },
-            email,
+            { otp, fullName: buyerName },
+            buyerEmail,
             '/verify.ejs',
             'Please verify your email'
           )
           // send mail to admin
           const userData = {
-            email,
-            phone,
-            fullName,
+            email: buyerEmail,
+            phone: buyerPhone,
+            fullName: buyerName,
             role: 'buyer',
           }
           await sendMail.notifyAdmin(
@@ -191,7 +224,7 @@ const signUp = async (req, res, next) => {
           return res.status(201).json({
             status: 'success',
             message:
-              'user signed up successfully. Please verify your email by clicking on the link in the email we sent you',
+              'user signed up successfully. check your mail for your verification code ',
             data: newBuyer,
           })
         } else {
@@ -205,12 +238,63 @@ const signUp = async (req, res, next) => {
       }
 
     case 'stylist':
-      const stylistExist = await Stylist.findOne({ email })
-      console.log(stylistExist)
+      console.log('sign up stylist')
+
+      const {
+        email: stylistMail,
+        phone: stylistPhone,
+        fullName: stylistName,
+        password: stylistPass,
+        social_handle,
+        style_name,
+        country,
+      } = req.body
+      let validate = {}
+      if (!stylistName) {
+        validate.fullName = 'please add your full name'
+      }
+      if (!stylistMail) {
+        validate.email = 'Please add an email'
+      }
+      if (!stylistPass) {
+        validate.password = 'please add your password'
+      }
+      if (!stylistPhone) {
+        validate.phone = 'please add your phone number'
+      }
+      if (!social_handle){
+        validate.social_media_handle = 'please add a social media handle eg www.linkedin.com/in/austyno'
+      }
+      if(!style_name){
+        validate.style_name = "please add your style name"
+      }
+      if(!country){
+        validate.country = "your country is required"
+      }
+        if (Object.keys(validate).length > 0) {
+          return res.status(400).json({
+            status: 'failed',
+            message: 'Please fix the error/s and try again',
+            data: validate,
+          })
+        }
+
+      const check = isValidPassword(stylistPass)
+
+      if (!check) {
+        return res.status(400).json({
+          status: 'failed',
+          message:
+            'Password must be minimum of eight (8) characters long, containing uppercase and lowercase letters,atleast a number and a special character',
+        })
+      }
+
+      const stylistExist = await Stylist.findOne({ email:stylistMail })
+
 
       if (stylistExist != null) {
         return res.status(400).json({
-          status: 'Faled',
+          status: 'Failed',
           message: 'A stylist with this email already exist',
           data: '',
         })
@@ -219,7 +303,7 @@ const signUp = async (req, res, next) => {
       try {
         let stripeCustomerId = ''
         let freeTrial = {}
-        stripeCustomerId = await stripe.addNewCustomer(email)
+        stripeCustomerId = await stripe.addNewCustomer(stylistMail)
         freeTrial.status = 'active'
         freeTrial.end_date = moment().add(30, 'days')
 
@@ -232,10 +316,10 @@ const signUp = async (req, res, next) => {
             emailCodeTimeExpiry: moment().add(1, 'days'),
             stripe_customer_id: stripeCustomerId.id,
             free_trial: freeTrial,
-            email,
-            fullName,
-            phone,
-            password,
+            email: stylistMail,
+            fullName:stylistName,
+            phone:stylistPhone,
+            password:stylistPass,
             social_handle,
             country,
             style_name,
@@ -246,17 +330,17 @@ const signUp = async (req, res, next) => {
           }
           //send verification mail
           await sendMail.withTemplate(
-            { otp, fullName },
-            email,
+            { otp, fullName:stylistName },
+            stylistMail,
             '/verify.ejs',
             'Please verify your email'
           )
 
           // send mail to admin
           const userData = {
-            email,
-            phone,
-            fullName,
+            email:stylistMail,
+            phone:stylistPhone,
+            fullName:stylistName,
             role: 'stylist',
           }
           await sendMail.notifyAdmin(
