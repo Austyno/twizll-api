@@ -155,7 +155,7 @@ const webHooks = async (req, res, next) => {
           ObjMap[store] += item.amount_subtotal
         }
 
-        // //map through the store ids, update store wallets with earned amount
+        //map through the store ids, update store wallets with earned amount
         Object.keys(ObjMap).forEach(async store => {
           const wallet = await Wallet.findOne({ store })
           if (wallet) {
