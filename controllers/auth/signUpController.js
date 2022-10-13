@@ -149,7 +149,7 @@ const signUp = async (req, res, next) => {
         validationErrors.password = 'please add your password'
       }
       if (!buyerPhone) {
-        errors.phone = 'please add your phone number'
+        validationErrors.phone = 'please add your phone number'
       }
 
       if (Object.keys(validationErrors).length > 0) {
