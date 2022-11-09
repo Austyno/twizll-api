@@ -10,6 +10,10 @@ const checkoutSessionSchema = new Schema(
       type: String,
       required: true,
     },
+    styleID: {
+      type: String,
+      default: '',
+    },
   },
   { timestamps: true }
 )

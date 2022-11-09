@@ -13,9 +13,9 @@ const Wallet = require('../../models/walletModel')
 const TwizllWallet = require('../../models/twizllWallet')
 const Transaction = require('../../models/transactionModel')
 const CheckoutSession = require('../../models/checkoutSession')
+const Style = require('../../models/styleModel')
 const fs = require('fs')
 const path = require('path')
-const _ = require('lodash')
 
 // a user adds their bank account we wneed to verify their account by requsting their BVN
 
@@ -49,6 +49,11 @@ const webHooks = async (req, res, next) => {
           session_id: event.data.object.id,
         })
         const customer = await Buyer.findOne({ email: checkout_session.email })
+
+        // Retrieve style
+        if(checkout_session.styleID != ''){
+          const style = await Style.findById(checkout_session.styleID)
+        }
 
         //retrieve line items
         const lineItems = await stripeUtil.getLineItems(
@@ -107,7 +112,7 @@ const webHooks = async (req, res, next) => {
             item.amount_subtotal / 100
           )
 
-           //split product name to use in pdf namingcso seller can recognize each pdf
+           //split product name to use in pdf naming so seller can recognize each pdf
           const label_pdf_name = order_product.name.split(' ').join('_')
 
           //convert blob data from DHL to pdf
@@ -177,6 +182,7 @@ const webHooks = async (req, res, next) => {
               title: 'sales of items',
             })
           }
+          //check if style exist on the session and calculate commission for stylist (5%)
         })
 
         //email buyer

@@ -11,7 +11,9 @@ const updateStyle = require('../../controllers/stylist/updateStyleController')
 const follow = require('../../controllers/stylist/followStyleController')
 const profile = require('../../controllers/stylist/getStylistProfileController')
 
-router.route('/collections').post(createCollection)
+router
+  .route('/collections')
+  .post(authenticated('stylist'), authRole('stylist'), createCollection)
 router.route('/collections').get(getCollections)
 
 router.route('/collections/:collectionId').get(getSingleCollection)

@@ -3,7 +3,7 @@ const Product = require('../../models/productModel')
 const CheckoutSession = require('../../models/checkoutSession')
 
 const checkoutSession = async (req, res, next) => {
-  const { cartTotal, shippingAddress, cartItems } = req.body
+  const { cartTotal, shippingAddress, cartItems, styleID } = req.body
 
   const buyer = req.user
   const errors = {}
@@ -53,10 +53,25 @@ const checkoutSession = async (req, res, next) => {
       line_items
     )
     //save session id to use later to retrieve line items
-    await CheckoutSession.create({
-      session_id: checkoutSession.id,
-      email: buyer.email,
-    })
+    if (!checkoutSession){
+      return res.status(500).json({
+        status:'failed',
+        message:'sorry we could not create your checkout now. Please try again ',
+        data:''
+      })
+    }
+    //store style id
+    if (styleID != undefined){
+      await CheckoutSession.create({
+        session_id: checkoutSession.id,
+        email: buyer.email,
+        styleID
+      })
+    }
+      await CheckoutSession.create({
+        session_id: checkoutSession.id,
+        email: buyer.email,
+      })
 
     res.status(200).json({
       status: 'success',

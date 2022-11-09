@@ -18,12 +18,21 @@ const login = async (req, res, next) => {
       const user = await Seller.findOne({ email }).select('+password')
 
       if (!user) {
-        return next(new Error('incorrect credentials', 400))
+        return res.status(400).json({
+          status: 'failed',
+          message: 'incorect credentials',
+          data: [],
+        })
       }
 
       const verifyPass = bcrypt.compareSync(password, user.password)
+
       if (!verifyPass) {
-        return next(new Error('incorrect credentials', 400))
+        return res.status(400).json({
+          status: 'failed',
+          message: 'incorect credentials',
+          data: [],
+        })
       }
 
       try {
@@ -74,7 +83,11 @@ const login = async (req, res, next) => {
         const passwordValid = bcrypt.compareSync(password, buyer.password)
 
         if (!passwordValid) {
-          return next(new Error('incorrect credentials', 400))
+          return res.status(400).json({
+            status: 'failed',
+            message: 'incorect credentilas',
+            data: [],
+          })
         }
 
         const loggedInUser = await Buyer.findOne({ email })

@@ -20,10 +20,7 @@ const styleSchema = new Schema(
       required: [true, 'Please provide a description for this style'],
     },
     style_items: [{ ref: 'Product', type: Schema.Types.ObjectId }],
-    price: {
-      type: Number,
-      required: [true, 'Please add a price for this style'],
-    },
+
     image: {
       type: String,
       required: true,
