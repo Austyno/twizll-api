@@ -130,7 +130,8 @@ process.on('uncaughtException', err => {
 })
 
 process.on('unhandledRejection', err => {
-  console.error(err.name, err.message)
+  console.error(err);
+  // console.error(err.name, err.message)
   console.log('UNHANDLED REJECTION! 😞 Shutting down Server...')
   // process.exit(1)
 
