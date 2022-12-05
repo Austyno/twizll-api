@@ -14,6 +14,7 @@ const getOtp = require('../../controllers/auth/sendOtp')
 
 const resetPassword = require('../../controllers/auth/resetPasswordController')
 const changePassword = require('../../controllers/auth/changePasswordController')
+const registerWebSeller = require('../../controllers/auth/sellerWebSignUpController')
 
 const sendTokenLimiter = require('../../middleware/ratelimiter')
 
@@ -35,5 +36,6 @@ router.route('/change-password').post(getAuth, changePassword)
 router.route('/logout').post(logOut)
 router.route('/verify-otp').post(verifyOtp)
 router.route('/send-otp').post(sendTokenLimiter, getOtp)
+router.route('/web/register').post(registerWebSeller)
 
 module.exports = router

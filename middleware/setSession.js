@@ -7,7 +7,7 @@ const url =
   process.env.NODE_ENV === 'development'
     ? process.env.MONGODB_DEV_URL
     : process.env.MONGODB_URL
-    
+
 const setSession = session({
   name: 'session',
   store: MongoStore.create({

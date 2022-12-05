@@ -4,6 +4,9 @@ const Stylist = require('../../models/stylistModel')
 const Error = require('../../utils/errorResponse')
 const bcrypt = require('bcryptjs')
 const createAuthToken = require('../../utils/createAuthToken')
+const { detect } = require('detect-browser')
+const browser = detect()
+const setSession = require('../../middleware/setSession')
 
 const login = async (req, res, next) => {
   const { email, password, role } = req.body

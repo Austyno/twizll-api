@@ -7,8 +7,8 @@ const clearCart = async (req, res, next) => {
     let cart = await Cart.findOne({ _id: req.session.cartId })
 
     cart.cartItems = []
-    cart.totalPrice = '0'
-    cart.cartDiscountedPrice = '0'
+    cart.cartTotal = '0'
+    cart.cartDiscount = '0'
 
     await cart.save({ validateBeforeSave: false })
     res.status(200).json({

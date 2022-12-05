@@ -20,7 +20,7 @@ const checkoutSession = async (req, res, next) => {
   }
 
   if (!cartItems || cartItems.length < 1) {
-    errors.cartItems = 'You cart cant be empty'
+    errors.cartItems = 'You cart cannot be empty'
   }
 
   if (!cartTotal || cartTotal == 0) {

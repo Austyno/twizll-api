@@ -1,54 +1,47 @@
 const Cart = require('../models/cartModel')
 
 const checkCart = async (req, res, next) => {
+  try {
+    if (!req.session.cartId || req.session.cartId === null) {
+      if (req.user) {
+        const availableCart = await Cart.findOne({ owner: req.user._id })
 
-  if (!req.session.cartId || req.session.cartId === null) {
-    //check if there is a logged in user
-    if (req.session.userId || req.user) {
+        if (availableCart) {
+          req.session.cartId = availableCart._id
+        } else {
+          let newCart = await Cart.create({ owner: req.user._id })
 
-      //get the cart for this user
-      const availableCart = await Cart.findOne({owner: req.session.userId || req.user.id })
-
-      if (availableCart) {
-        req.session.cartId = availableCart._id
-      }else {
-        let newCarts = await Cart.create([
-          { owner: req.session.userId || req.user.id },
-        ])
-        await newCarts[0].save()
-
-        req.session.cartId = newCarts[0]._id
+          req.session.cartId = newCart._id
+        }
+      } else {
+        let newCart = await Cart.create({})
+        req.session.cartId = newCart._id
       }
+      return next()
     } else {
-      let newCarts = await Cart.create([{}])
-      await newCarts[0].save()
+      let targetCart = await Cart.findOne({ _id: req.session.cartId })
 
-      req.session.cartId = newCarts[0]._id
+      if (!targetCart) {
+        let cartBody = {}
+
+        if (req.user) {
+          cartBody.owner = req.user._id
+        }
+
+        let newTargetCart = await Cart.create(cartBody)
+
+        req.session.cartId = newTargetCart._id
+      }
+
+      if ((targetCart.owner === null || !targetCart.owner) && req.user) {
+        // await Cart.findOneAndUpdate({ _id: targetCart._id }, { owner: req.user._id })
+        targetCart.owner = req.user._id
+        targetCart.save({ validateBeforeSave: false })
+      }
+      return next()
     }
-    return next()
-  } else {
-    //cart exist in session
-    let targetCart = await Cart.findOne({ _id: req.session.cartId })
-
-    if (!targetCart) {
-      let cartBody = {}
-
-      if (req.session.userId){ cartBody.owner = req.session.userId}
-
-      let newTargetCart = await Cart.create([cartBody])
-      await newTargetCart[0].save()
-
-      req.session.cartId = newTargetCart[0]._id
-    } else if (
-      (targetCart.owner === null || !targetCart.owner) &&
-      req.session.userId
-    ) {
-      await Cart.findOneAndUpdate(
-        { _id: targetCart._id },
-        { owner: req.session.userId }
-      )
-    }
-    return next()
+  } catch (e) {
+    return next(e)
   }
 }
 

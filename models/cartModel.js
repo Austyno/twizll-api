@@ -10,7 +10,7 @@ const cartItemSchema = new Schema({
     required: true,
     min: [1, 'Quantity can not be less than 1.'],
   },
-  totalPrice: { type: Schema.Types.Decimal128, default: '0.00' },
+  total: { type: Schema.Types.Decimal128, default: '0.00' },
   // discountedPrice: { type: Schema.Types.Decimal128, default: '0.00' },
 })
 
@@ -20,15 +20,13 @@ const cartSchema = new Schema(
       ref: 'Buyer',
       type: Schema.Types.ObjectId,
       index: true,
-      unique: true,
-      sparse: true,
     },
     cartItems: [cartItemSchema],
-    cartTotalPrice: {
+    cartTotal: {
       type: Schema.Types.Decimal128,
       default: 0,
     },
-    cartDiscountedPrice: {
+    cartDiscount: {
       type: Schema.Types.Decimal128,
       default: 0,
     },

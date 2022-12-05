@@ -14,70 +14,80 @@ const updateCart = async (req, res, next) => {
   )
 
   if (productInCartIndex === -1) {
-    return next(new Error('cant find the product in the cart', 400))
+    return res.status(404).json({
+      status: 'failed',
+      message: 'cant find the product in the cart',
+      data: [],
+    })
   }
   switch (action) {
-    case 'increment':
+    case 'incr':
       try {
         cart.cartItems[productInCartIndex].qty =
           cart.cartItems[productInCartIndex].qty + 1
 
         //update total price
-        cart.cartItems[productInCartIndex].totalPrice =
+        cart.cartItems[productInCartIndex].total =
           Number(cart.cartItems[productInCartIndex].qty) *
           Number(productDetails.unitPrice)
 
         //update cart total price
-        cart.cartTotalPrice = cart.cartItems
-          .map(item => Number(item.totalPrice))
+        cart.cartTotal = cart.cartItems
+          .map(item => Number(item.total))
           .reduce((a, b) => a + b)
 
         await cart.save()
 
         const newCart = await Cart.findOne({
           _id: req.session.cartId,
-        }).populate('cartItems.product')
+        }).populate(
+          'cartItems.product',
+          'name unitPrice mainPhoto briefDetails'
+        )
         res.status(200).json({
           status: 'success',
           message: 'Product quantity incremented successfully',
           data: newCart,
         })
       } catch (e) {
-        return next(new Error(e.message, 500))
+        return next(e)
       }
 
       break
-    case 'decrement':
+    case 'decr':
       try {
         cart.cartItems[productInCartIndex].qty =
-          cart.cartItems[productInCartIndex].qty - 1
+          Number(cart.cartItems[productInCartIndex].qty) - 1
 
         if (cart.cartItems[productInCartIndex].qty === 0) {
           cart.cartItems.splice(productInCartIndex, 1)
         }
 
         //update total price
-        cart.cartItems[productInCartIndex].totalPrice =
+        cart.cartItems[productInCartIndex].total =
           Number(cart.cartItems[productInCartIndex].qty) *
           Number(productDetails.unitPrice)
 
         //update cart total price
-        cart.cartTotalPrice = cart.cartItems
-          .map(item => Number(item.totalPrice))
+        cart.cartTotal = cart.cartItems
+          .map(item => Number(item.total))
           .reduce((a, b) => a + b)
 
         await cart.save()
 
         const decCart = await Cart.findOne({
           _id: req.session.cartId,
-        }).populate('cartItems.product')
+        }).populate(
+          'cartItems.product',
+          'name unitPrice mainPhoto briefDetails'
+        )
         res.status(200).json({
           status: 'success',
           message: 'Product quantity decremented successfully',
           data: decCart,
         })
       } catch (e) {
-        return next(new Error(e.message, 500))
+        return next(e)
       }
       break
     case 'remove':
@@ -86,14 +96,17 @@ const updateCart = async (req, res, next) => {
 
         const updated = await Cart.findOne({
           _id: req.session.cartId,
-        }).populate('cartItems.product')
+        }).populate(
+          'cartItems.product',
+          'name unitPrice mainPhoto briefDetails'
+        )
         res.status(200).json({
           status: 'success',
           message: 'Product removed successfully',
           data: updated,
         })
       } catch (e) {
-        return next(new Error(e.message, 500))
+        return next(e)
       }
       break
     default:

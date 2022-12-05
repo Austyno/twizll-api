@@ -7,60 +7,86 @@ const addToCart = async (req, res, next) => {
   qty = Number(qty)
 
   if (!productId || !qty) {
-    return next(new Error('one or more required parameters are missing', 400))
-  }
-
-  const productDetails = await Product.findById({ _id: productId })
-
-  if (!productDetails) {
-    return next(new Error('no product exist with this product ID', 400))
-  }
-
-  if (qty === 0) {
-    return next(new Error('Quantity to be added cannot be 0.', 400))
-  }
-
-  let cart = await Cart.findOne({ _id: req.session.cartId })
-
-  const productExistInCart = cart.cartItems.findIndex(
-    item => item.product == productId
-  )
-
-  if (productExistInCart !== -1) {
-    cart.cartItems[productExistInCart].qty =
-      Number(cart.cartItems[productExistInCart].qty) + Number(qty)
-    cart.cartItems[productExistInCart].totalPrice =
-      Number(productDetails.unitPrice) *
-      Number(cart.cartItems[productExistInCart].qty)
-
-    cart.cartTotalPrice = cart.cartItems
-      .map(item => Number(item.totalPrice))
-      .reduce((a, b) => a + b)
-  } else if (productExistInCart === -1) {
-    cart.cartItems.push({
-      product: productId,
-      qty: qty,
-      totalPrice: Number(qty * productDetails.unitPrice),
+    return res.status(400).json({
+      status: 'failed',
+      message: 'one or more required parameters are missing',
+      data: [],
     })
-    cart.totalPrice = cart.cartItems
-      .map(item => Number(item.totalPrice))
-      .reduce((a, b) => a + b)
   }
-  if (cart.cartItems.length == 1) {
-    cart.totalPrice = cart.cartItems.totalPrice
+  if (qty == 0) {
+    return res.status(400).json({
+      status: 'failed',
+      message: 'Quantity to be added cannot be 0.',
+      data: [],
+    })
   }
+  try {
+    const productDetails = await Product.findById({ _id: productId })
 
-  await cart.save({ validateBeforeSave: false, new: true })
+    if (!productDetails) {
+      return res.status(400).json({
+        status: 'failed',
+        message: 'no product exist with this product ID',
+        data: [],
+      })
+    }
 
-  const newCart = await Cart.findOne({ _id: req.session.cartId }).populate(
-    'cartItems.product'
-  )
+    let cart = await Cart.findOne({ _id: req.session.cartId })
 
-  res.status(200).json({
-    status: 'success',
-    items_in_cart: cart.cartItems.length,
-    message: 'product added to cart successfully',
-    // data:newCart
-  })
+    const productIndexInCart = cart.cartItems.findIndex(
+      item => item.product == productId
+    )
+
+    if (productIndexInCart !== -1 && qty <= 0) {
+      cart.cartItems.splice(productIndexInCart, 1)
+      if (cart.cartItems.length == 0) {
+        cart.total = 0
+      } else {
+        cart.total = cart.cartItems
+          .map(item => Number(item.total))
+          .reduce((a, b) => a + b)
+      }
+    }
+
+    if (productIndexInCart !== -1 && qty > 0) {
+      cart.cartItems[productIndexInCart].qty =
+        Number(cart.cartItems[productIndexInCart].qty) + Number(qty)
+      cart.cartItems[productIndexInCart].total =
+        Number(productDetails.unitPrice) *
+        Number(cart.cartItems[productIndexInCart].qty)
+
+      cart.cartTotal = cart.cartItems
+        .map(item => Number(item.total))
+        .reduce((a, b) => a + b)
+    } else if (productIndexInCart === -1) {
+      cart.cartItems.push({
+        product: productId,
+        qty: qty,
+        total: Number(qty * productDetails.unitPrice),
+      })
+      cart.total = cart.cartItems
+        .map(item => Number(item.total))
+        .reduce((a, b) => a + b)
+    }
+    if (cart.cartItems.length == 1) {
+      cart.total = cart.cartItems.total
+    }
+
+    await cart.save({ validateBeforeSave: false, new: true })
+
+    const newCart = await Cart.findOne({ _id: req.session.cartId }).populate(
+      'cartItems.product',
+      'name unitPrice mainPhoto briefDetails'
+    )
+
+    res.status(200).json({
+      status: 'success',
+      itemsInCart: cart.cartItems.length,
+      message: 'product added to cart successfully',
+      data: newCart,
+    })
+  } catch (e) {
+    return next(e)
+  }
 }
 module.exports = addToCart

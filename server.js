@@ -34,6 +34,8 @@ app.post(
 )
 
 app.use(express.json())
+app.use(cookieParser())
+
 app.use(express.urlencoded({ extended: true }))
 app.use(fileUpload({ useTempFiles: true }))
 
@@ -104,7 +106,6 @@ app.use(xss())
 
 // Prevent http param pollution
 app.use(hpp())
-app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
 
@@ -130,7 +131,7 @@ process.on('uncaughtException', err => {
 })
 
 process.on('unhandledRejection', err => {
-  console.error(err);
+  console.error(err)
   // console.error(err.name, err.message)
   console.log('UNHANDLED REJECTION! 😞 Shutting down Server...')
   // process.exit(1)
