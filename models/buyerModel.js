@@ -75,6 +75,7 @@ const buyerSchema = new Schema(
       postalCode: { type: Number },
       city: { type: String },
       countryCode: { type: String },
+      phone: { type: String }
     },
     emailVerificationCode: String,
     emailCodeTimeExpiry: Date,

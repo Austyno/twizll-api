@@ -5,7 +5,7 @@ const Country = require('../../models/countries')
 
 const shippingAddress = async (req, res, next) => {
   const buyer = req.user
-  const { address, contactPerson, city, postalCode, country} = req.body
+  const { address, contactPerson, city, postalCode, country,phone} = req.body
 
   if (!buyer) {
     return next(new Error('The buyer needs to login', 400))
@@ -27,6 +27,7 @@ const shippingAddress = async (req, res, next) => {
     buyer.shippingAddress.country = country
     buyer.shippingAddress.postalCode = postalCode
     buyer.shippingAddress.countryCode = countryCode.toUpperCase()
+    buyer.shippingAddress.phone = phone
 
     await buyer.save({ validateBeforeSave: false })
 
