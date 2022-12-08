@@ -8,7 +8,11 @@ const verifyemail = async (req, res, next) => {
   const { email, otp } = req.body
 
   if (!email || !otp) {
-    return next(new Error('the email and otp are required', 400))
+    return res.status(400).json({
+      status:"failed",
+      message:'the email and otp are required',
+      data:[]
+    })
   }
 
   try {
@@ -39,7 +43,7 @@ const verifyemail = async (req, res, next) => {
       return res.status(400).json({
         status: 'failed',
         message: `we could not find a user with ${otp}`,
-        data: '',
+        data: [],
       })
     }
 
