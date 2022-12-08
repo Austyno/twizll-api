@@ -17,35 +17,37 @@ const addMultipleProducts = async (req, res, next) => {
 
         for (let pro of products) {
           if (item.product == pro.productId) {
-           console.log (pro.qty)
             //update qty in cart
-            // userCart.cartItems[index].qty =
-            //   Number(userCart.cartItems[index].qty) + Number(pro.qty)
+            userCart.cartItems[index].qty =
+              Number(userCart.cartItems[index].qty) + Number(pro.qty)
 
             // //update total in cart
-            // userCart.cartItems[index].total =
-            //   Number(productDetails.unitPrice) *
-            //   Number(userCart.cartItems[index].qty)
+            userCart.cartItems[index].total =
+              Number(productDetails.unitPrice) *
+              Number(userCart.cartItems[index].qty)
 
-            // // updatecart total based on cart items
-            // userCart.cartTotal = userCart.cartItems
-            //   .map(item => Number(item.total))
-            //   .reduce((a, b) => a + b)
+            // updatecart total based on cart items
+            userCart.cartTotal = userCart.cartItems
+              .map(item => Number(item.total))
+              .reduce((a, b) => a + b)
           } else {
-            // userCart.cartItems.push({
-            //   product: pro.productId,
-            //   qty: pro.qty,
-            //   total: Number(pro.qty) * Number(productDetails.unitPrice),
-            // })
+            userCart.cartItems.push({
+              product: pro.productId,
+              qty: pro.qty,
+              total: Number(pro.qty) * Number(productDetails.unitPrice),
+            })
           }
         }
-      await userCart.save({ validateBeforSave: false })
-
+        // await userCart.save({ validateBeforSave: false })
+        await Cart.findOneAndUpdate({ _id: req.session.cartId },userCart)
       })
-      const newCart = await Cart.findOne({ _id: req.session.cartId }).populate(
-        'cartItems.product',
-        'name unitPrice mainPhoto briefDetails'
-      )
+      // await userCart.save({ validateBeforSave: false })
+
+      // const newCart = await Cart.findOne({ _id: req.session.cartId }).populate(
+      //   'cartItems.product',
+      //   'name unitPrice mainPhoto briefDetails'
+      // )
+      const newCart = await Cart.findOne({ _id: req.session.cartId })
 
       return res.status(200).json({
         status: 'success',

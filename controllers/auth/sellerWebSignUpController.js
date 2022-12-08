@@ -7,8 +7,7 @@ const stripe = require('../../utils/stripe/Stripe')
 const sendMail = require('../../utils/sendMail')
 const moment = require('moment')
 const generateOtp = require('../../utils/generateOtp')
-
-
+const createAuthToken = require('../../utils/createAuthToken')
 
 const signUpSeller = async (req, res, next) => {
   const { email, phone, fullName, password } = req.body
@@ -58,32 +57,71 @@ const signUpSeller = async (req, res, next) => {
           if (docs.proofOfAddress == null) {
             regErrors.proofOfAddress = 'please up load proof of address'
           }
+          if (sellerExist.emailVerified === false) {
+            //generate otp
+            const otp = generateOtp()
 
-          return res.status(400).json({
-            status: 'failed',
-            message: 'user registered already.',
-            errors: regErrors ? regErrors : '',
-            data: sellerExist,
-          })
+            //send verification mail
+            await sendMail.withTemplate(
+              { otp, fullName: sellerExist.fullName },
+              sellerExist.email,
+              '/verify.ejs',
+              'Please verify your email'
+            )
+          }
+
+          return createAuthToken(
+            sellerExist,
+            'user registered already.',
+            400,
+            res,
+            'Please login',
+            regErrors
+          )
         } else {
-          return res.status(200).json({
-            status: 'success',
-            message: 'user registered already. Docs required',
-            flag: 'docs required',
-            data: sellerExist,
-          })
+          if (sellerExist.emailVerified === false) {
+            //generate otp
+            const otp = generateOtp()
+
+            //send verification mail
+            await sendMail.withTemplate(
+              { otp, fullName: sellerExist.fullName },
+              sellerExist.email,
+              '/verify.ejs',
+              'Please verify your email'
+            )
+          }
+          return createAuthToken(
+            sellerExist,
+            'user registered already. Docs required',
+            400,
+            res,
+            'docs required'
+          )
         }
       } else {
-        return res.status(200).json({
-          status: 'success',
-          message: 'user registered already. store required',
-          flag: 'store required',
-          data: sellerExist,
-        })
+        if (sellerExist.emailVerified === false) {
+          //generate otp
+          const otp = generateOtp()
+
+          //send verification mail
+          await sendMail.withTemplate(
+            { otp, fullName: sellerExist.fullName },
+            sellerExist.email,
+            '/verify.ejs',
+            'Please verify your email'
+          )
+        }
+        return createAuthToken(
+          sellerExist,
+          'user registered already.store required',
+          400,
+          res,
+          'store required'
+        )
       }
     } else {
       //registere user
-      console.log('we are here')
       let stripeCustomerId = ''
       let freeTrial = {}
       stripeCustomerId = await stripe.addNewCustomer(email)
@@ -131,13 +169,12 @@ const signUpSeller = async (req, res, next) => {
           userData,
           'newUser'
         )
-
-        return res.status(201).json({
-          status: 'success',
-          message:
-            'seller signed up successfully. check your mail for your verification code',
-          data: newSeller,
-        })
+        return createAuthToken(
+          newSeller,
+          'seller signed up successfully. check your mail for your verification code',
+          201,
+          res
+        )
       } else {
         return res.status(500).json({
           status: 'failed',

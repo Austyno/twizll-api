@@ -2,7 +2,14 @@ const signJWT = require('./generateToken')
 const { v4: uuidv4 } = require('uuid')
 const moment = require('moment')
 
-const createAuthTokenAndSend = async (user, message, statusCode, res) => {
+const createAuthTokenAndSend = async (
+  user,
+  message,
+  statusCode,
+  res,
+  flag = '',
+  errors={}
+) => {
   const token = signJWT(user._id)
 
   const refreshToken = uuidv4()
@@ -27,6 +34,8 @@ const createAuthTokenAndSend = async (user, message, statusCode, res) => {
     message,
     token,
     refreshToken,
+    flag,
+    errors,
     data: user,
   })
 }
