@@ -62,12 +62,19 @@ const signUpSeller = async (req, res, next) => {
             const otp = generateOtp()
 
             //send verification mail
-            await sendMail.withTemplate(
+            const email = await sendMail.withTemplate(
               { otp, fullName: sellerExist.fullName },
               sellerExist.email,
               '/verify.ejs',
               'Please verify your email'
             )
+
+            if(email){
+              sellerExist.emailVerified = false
+              sellerExist.emailVerificationCode = otp
+              sellerExist.save({ validateBeforeSave: false })
+            }
+            
           }
 
           return createAuthToken(
@@ -84,12 +91,17 @@ const signUpSeller = async (req, res, next) => {
             const otp = generateOtp()
 
             //send verification mail
-            await sendMail.withTemplate(
+            const mail = await sendMail.withTemplate(
               { otp, fullName: sellerExist.fullName },
               sellerExist.email,
               '/verify.ejs',
               'Please verify your email'
             )
+            if (mail) {
+              sellerExist.emailVerified = false
+              sellerExist.emailVerificationCode = otp
+              sellerExist.save({ validateBeforeSave: false })
+            }
           }
           return createAuthToken(
             sellerExist,
@@ -105,12 +117,17 @@ const signUpSeller = async (req, res, next) => {
           const otp = generateOtp()
 
           //send verification mail
-          await sendMail.withTemplate(
+          const userMail =await sendMail.withTemplate(
             { otp, fullName: sellerExist.fullName },
             sellerExist.email,
             '/verify.ejs',
             'Please verify your email'
           )
+          if (userMail) {
+            sellerExist.emailVerified = false
+            sellerExist.emailVerificationCode = otp
+            sellerExist.save({ validateBeforeSave: false })
+          }
         }
         return createAuthToken(
           sellerExist,
