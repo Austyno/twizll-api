@@ -47,36 +47,48 @@ const signUpSeller = async (req, res, next) => {
     let regErrors = {}
     const sellerExist = await Seller.findOne({ email })
     if (sellerExist) {
+      if (sellerExist.emailVerified === false) {
+        //generate otp
+        const otp = generateOtp()
+
+        //send verification mail
+        const email = await sendMail.withTemplate(
+          { otp, fullName: sellerExist.fullName },
+          sellerExist.email,
+          '/verify.ejs',
+          'Please verify your email'
+        )
+
+        if(email){
+          sellerExist.emailVerified = false
+          sellerExist.emailVerificationCode = otp
+          await sellerExist.save({ validateBeforeSave: false })
+        }
+        return createAuthToken(
+          sellerExist,
+          'user registered already.',
+          400,
+          res,
+          'verify email',
+          regErrors
+        )
+      }
+
       const sellerStore = await Store.findOne({ owner: sellerExist._id })
       if (sellerStore) {
         const docs = await VerificationDoc.findOne({ store: sellerStore._id })
-        if (docs) {
-          if (docs.proofOfId == null) {
+        if (!docs) {
+          return createAuthToken(
+            sellerExist,
+            'user registered already. Docs required',
+            400,
+            res,
+            'docs required'
+          )
+        } 
+        if (docs.proofOfId == null) {
             regErrors.proofOfId = 'please up load proof of ID'
-          }
-          if (docs.proofOfAddress == null) {
-            regErrors.proofOfAddress = 'please up load proof of address'
-          }
-          if (sellerExist.emailVerified === false) {
-            //generate otp
-            const otp = generateOtp()
-
-            //send verification mail
-            const email = await sendMail.withTemplate(
-              { otp, fullName: sellerExist.fullName },
-              sellerExist.email,
-              '/verify.ejs',
-              'Please verify your email'
-            )
-
-            if(email){
-              sellerExist.emailVerified = false
-              sellerExist.emailVerificationCode = otp
-              sellerExist.save({ validateBeforeSave: false })
-            }
-            
-          }
-
+            // Double-check this logic
           return createAuthToken(
             sellerExist,
             'user registered already.',
@@ -85,121 +97,88 @@ const signUpSeller = async (req, res, next) => {
             'Please login',
             regErrors
           )
-        } else {
-          if (sellerExist.emailVerified === false) {
-            //generate otp
-            const otp = generateOtp()
-
-            //send verification mail
-            const mail = await sendMail.withTemplate(
-              { otp, fullName: sellerExist.fullName },
-              sellerExist.email,
-              '/verify.ejs',
-              'Please verify your email'
-            )
-            if (mail) {
-              sellerExist.emailVerified = false
-              sellerExist.emailVerificationCode = otp
-              sellerExist.save({ validateBeforeSave: false })
-            }
-          }
+        }
+        if (docs.proofOfAddress == null) {
+          regErrors.proofOfAddress = 'please up load proof of address'
+          // Double-check this logic
           return createAuthToken(
             sellerExist,
-            'user registered already. Docs required',
+            'user registered already.',
             400,
             res,
-            'docs required'
+            'Please login',
+            regErrors
           )
         }
-      } else {
-        if (sellerExist.emailVerified === false) {
-          //generate otp
-          const otp = generateOtp()
+      } 
+      return createAuthToken(
+        sellerExist,
+        'user registered already.store required',
+        400,
+        res,
+        'store required'
+      )
+    } 
+    //registere user
+    let stripeCustomerId = ''
+    let freeTrial = {}
+    stripeCustomerId = await stripe.addNewCustomer(email)
+    freeTrial.status = 'active'
+    freeTrial.end_date = moment().add(30, 'days')
 
-          //send verification mail
-          const userMail =await sendMail.withTemplate(
-            { otp, fullName: sellerExist.fullName },
-            sellerExist.email,
-            '/verify.ejs',
-            'Please verify your email'
-          )
-          if (userMail) {
-            sellerExist.emailVerified = false
-            sellerExist.emailVerificationCode = otp
-            sellerExist.save({ validateBeforeSave: false })
-          }
-        }
-        return createAuthToken(
-          sellerExist,
-          'user registered already.store required',
-          400,
-          res,
-          'store required'
-        )
+    //create otp
+    const otp = generateOtp()
+    if (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined) {
+      const newSeller = await Seller.create({
+        emailVerificationCode: otp,
+        emailCodeTimeExpiry: moment().add(1, 'days'),
+        stripe_customer_id: stripeCustomerId.id,
+        free_trial: freeTrial,
+        email,
+        fullName,
+        phone,
+        password,
+      })
+
+      //send verification mail
+      await sendMail.withTemplate(
+        { otp, fullName },
+        email,
+        '/verify.ejs',
+        'Please verify your email'
+      )
+
+      // send mail to admin
+      const userData = {
+        email,
+        phone,
+        fullName,
+        role: 'seller',
       }
-    } else {
-      //registere user
-      let stripeCustomerId = ''
-      let freeTrial = {}
-      stripeCustomerId = await stripe.addNewCustomer(email)
-      freeTrial.status = 'active'
-      freeTrial.end_date = moment().add(30, 'days')
-
-      //create otp
-      const otp = generateOtp()
-      if (stripeCustomerId.id !== '' || stripeCustomerId.id !== undefined) {
-        const newSeller = await Seller.create({
-          emailVerificationCode: otp,
-          emailCodeTimeExpiry: moment().add(1, 'days'),
-          stripe_customer_id: stripeCustomerId.id,
-          free_trial: freeTrial,
-          email,
-          fullName,
-          phone,
-          password,
-        })
-
-        //send verification mail
-        await sendMail.withTemplate(
-          { otp, fullName },
-          email,
-          '/verify.ejs',
-          'Please verify your email'
-        )
-
-        // send mail to admin
-        const userData = {
-          email,
-          phone,
-          fullName,
-          role: 'seller',
-        }
-        await sendMail.notifyAdmin(
-          'info@twizll.com',
-          'New User',
-          userData,
-          'newUser'
-        )
-        await sendMail.notifyAdmin(
-          'sales@twizll.com',
-          'New User',
-          userData,
-          'newUser'
-        )
-        return createAuthToken(
-          newSeller,
-          'seller signed up successfully. check your mail for your verification code',
-          201,
-          res
-        )
-      } else {
-        return res.status(500).json({
-          status: 'failed',
-          message: 'sorry we could not register you now, please try again',
-          data: [],
-        })
-      }
-    }
+      await sendMail.notifyAdmin(
+        'info@twizll.com',
+        'New User',
+        userData,
+        'newUser'
+      )
+      await sendMail.notifyAdmin(
+        'sales@twizll.com',
+        'New User',
+        userData,
+        'newUser'
+      )
+      return createAuthToken(
+        newSeller,
+        'seller signed up successfully. check your mail for your verification code',
+        201,
+        res
+      )
+    } 
+    return res.status(500).json({
+      status: 'failed',
+      message: 'sorry we could not register you now, please try again',
+      data: [],
+    })
   } catch (e) {
     return next(e)
   }
