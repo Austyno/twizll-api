@@ -13,9 +13,10 @@ const fileUpload = require('express-fileupload')
 const app = express()
 const stripe = require('stripe')
 const morgan = require('morgan')
-
+const cron = require('./jobs')
 dotenv.config({ path: './config/config.env' })
 connectToDb()
+cron()
 
 const url =
   process.env.NODE_ENV === 'development'
