@@ -3,7 +3,7 @@ const { deactivateFreeTrial } = require('./jobs')
 const Time = require('./time')
 
 const runCron = () => {
-  cron.schedule(Time.SECONDS, () => {
+  cron.schedule(Time.MIDNIGHT, () => {
     deactivateFreeTrial()
   })
 }

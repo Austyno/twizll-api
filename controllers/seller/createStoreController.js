@@ -8,26 +8,36 @@ const open = require('open')
 const createStore = async (req, res, next) => {
   //seller must be logged in
   const seller = req.user
-  const { storeName, storeAddress, postalCode, city,country } = req.body
+  const { storeName, storeAddress, postalCode, city, country } = req.body
 
   if (!seller) {
-    return next(new Error('You need to sign in to create a store', 403))
+    return res.status(403).json({
+      status: 'failed',
+      message: 'You need to be signed in to create a store',
+      data: [],
+    })
   }
 
   const storeExist = await Store.findOne({ owner: seller.id })
 
   if (storeExist) {
-    return next(new Error('You already have a store created', 400))
+    return res.status(400).json({
+      status: 'failed',
+      message: 'You already have a store created',
+      data: [],
+    })
   }
-
+  //activeSubscription
   try {
+
     const store = await Store.create({
       owner: seller.id,
       storeName,
       storeAddress,
       city,
       postalCode,
-      country
+      country,
+      activeSubscription : seller.free_trial.status == 'active' ? true : false
     })
     if (store) {
       const wallet = await Wallet.create({

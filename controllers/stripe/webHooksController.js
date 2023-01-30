@@ -32,6 +32,11 @@ const webHooks = async (req, res, next) => {
       case 'customer.subscription.created':
         //locate user and update info based on returned info from stripe after subscription
         const user = await Seller.findOne({ stripe_customer_id: data.customer })
+        const store = Store.findOne({owner:user._id})
+        if(store){
+          store.activeSubscription = true
+          await store.save({validateBeforSave:false})
+        }
 
         user.free_trial.status = 'completed'
         user.plan.status = data.status

@@ -72,3 +72,6 @@ router
 
 
 module.exports = router
+// integrate subscription flow into web app.
+// when someone clicks on subscribe in the mobile app take them to the subscription page on the web app
+// when the page is created in the web app

@@ -143,3 +143,5 @@ const login = async (req, res, next) => {
   }
 }
 module.exports = login
+
+// code send email using mailchimp ?
