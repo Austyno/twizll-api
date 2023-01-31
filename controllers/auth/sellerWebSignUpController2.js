@@ -49,12 +49,16 @@ const signUpSellerWeb = async (req, res, next) => {
     const sellerExist = await Seller.findOne({ email })
     if (sellerExist) {
       const sellerStore = await Store.findOne({ owner: sellerExist._id })
-      storeRegistered =  sellerStore != null ? true : false
+      storeRegistered = sellerStore != null ? true : false
       if (sellerStore) {
         const docs = await VerificationDoc.findOne({ store: sellerStore._id })
         proofOfId = docs.proofOfId != null ? true : false
         proofOfAddress = docs.proofOfAddress != null ? true : false
       }
+
+      sellerExist.token = undefined
+      sellerExist.refreshToken._token = undefined
+      sellerExist.refreshToken.expiryDate = undefined
 
       if (sellerExist.emailVerified === false) {
         //generate otp
@@ -70,8 +74,6 @@ const signUpSellerWeb = async (req, res, next) => {
         if (email) {
           sellerExist.emailVerified = false
           sellerExist.emailVerificationCode = otp
-        sellerExist.token = undefined
-
           await sellerExist.save({ validateBeforeSave: false })
         }
         return res.status(400).json({
