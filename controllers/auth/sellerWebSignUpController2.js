@@ -117,6 +117,7 @@ const signUpSellerWeb = async (req, res, next) => {
           password,
         })
 
+
         //send verification mail
         await sendMail.withTemplate(
           { otp, fullName },

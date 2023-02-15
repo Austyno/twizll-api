@@ -12,23 +12,21 @@ const uploadDocs = async (req, res, next) => {
     const doc = req.files.proofOfAddress
 
     if (!allowedMediaTypes.includes(doc.mimetype.split('/')[1])) {
-      return next(
-        new Error(
-          `Media type ${
-            doc.mimetype.split('/')[1]
-          } is not allowed. Allowed doc types ${allowedMediaTypes}`,
-          400
-        )
-      )
+      return res.status(400).json({
+        status: 'failed',
+        message: `Media type ${
+          doc.mimetype.split('/')[1]
+        } is not allowed. Allowed doc types ${allowedMediaTypes}`,
+        data: [],
+      })
     }
 
-    if (doc.size > 1000000) {
-      return next(
-        new Error(
-          `Upload file size is too large. Upload a file less than 1mb`,
-          400
-        )
-      )
+    if (doc.size > 2000000) {
+      return res.status(400).json({
+        status: 'failed',
+        message: `Upload file size is too large. Upload a file less than 2mb`,
+        data: [],
+      })
     }
 
     try {
@@ -44,9 +42,12 @@ const uploadDocs = async (req, res, next) => {
         //upload doc
         doc.mv(`${upldPath}/${newName}`, async err => {
           if (err) {
-            return next(
-              new Error('there was a problem with document upload', 500)
-            )
+            return res.status(500).json({
+              status: 'failed',
+              message:
+                'there was a problem with document upload. Please try again',
+              data: [],
+            })
           }
           //add doc to db
           await VerificationDoc.create({
@@ -68,9 +69,12 @@ const uploadDocs = async (req, res, next) => {
         //upload doc
         doc.mv(`${upldPath}/${newName}`, async err => {
           if (err) {
-            return next(
-              new Error('there was a problem with document upload', 500)
-            )
+            return res.status(500).json({
+              status: 'failed',
+              message:
+                'there was a problem with document upload. Please try again',
+              data: [],
+            })
           }
 
           //update db with new doc
@@ -104,23 +108,21 @@ const uploadDocs = async (req, res, next) => {
     const doc = req.files.proofOfId
 
     if (!allowedMediaTypes.includes(doc.mimetype.split('/')[1])) {
-      return next(
-        new Error(
-          `Media type ${
-            doc.mimetype.split('/')[1]
-          } is not allowed. Allowed doc types ${allowedMediaTypes}`,
-          400
-        )
-      )
+      return res.status(400).json({
+        status: 'failed',
+        message: `Media type ${
+          doc.mimetype.split('/')[1]
+        } is not allowed. Allowed doc types ${allowedMediaTypes}`,
+        data: [],
+      })
     }
 
-    if (doc.size > 1000000) {
-      return next(
-        new Error(
-          `Upload file size is too large. Upload a file les than 1mb`,
-          400
-        )
-      )
+    if (doc.size > 2000000) {
+      return res.status(400).json({
+        status: 'failed',
+        message: `Upload file size is too large. Upload a file less than 2mb`,
+        data: [],
+      })
     }
 
     try {
@@ -136,9 +138,12 @@ const uploadDocs = async (req, res, next) => {
         //upload doc
         doc.mv(`${upldPath}/${newName}`, async err => {
           if (err) {
-            return next(
-              new Error('there was a problem with document upload', 500)
-            )
+            return res.status(500).json({
+              status: 'failed',
+              message:
+                'there was a problem with document upload. Please try again',
+              data: [],
+            })
           }
           //add doc to db
           await VerificationDoc.create({
@@ -184,7 +189,7 @@ const uploadDocs = async (req, res, next) => {
         })
       }
     } catch (e) {
-      return next(new Error(e.message, 500))
+      return next(e)
     }
   }
 }
