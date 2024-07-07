@@ -1,4 +1,4 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require('mongoose');
 
 const checkoutSessionSchema = new Schema(
   {
@@ -16,5 +16,5 @@ const checkoutSessionSchema = new Schema(
     },
   },
   { timestamps: true }
-)
-module.exports = model('CheckoutSession', checkoutSessionSchema)
+);
+module.exports = model('CheckoutSession', checkoutSessionSchema);
